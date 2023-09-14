@@ -88,6 +88,7 @@ export class ModLoader {
             const mod = this.getMod(modName);
             if (!mod) {
                 console.error('ModLoader getModImgFileReplaceList() (!mod)');
+                continue;
             }
             for (const [orgin, replace] of mod.bootJson.imgFileReplaceList) {
                 if (imgFileReplace.has(orgin)) {
