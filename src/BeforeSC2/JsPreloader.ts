@@ -8,23 +8,23 @@ export class JsPreloader {
     ) {
     }
 
-    startLoad() {
-        this.modUtils.getModListName().forEach(modName => {
+    async startLoad(): Promise<any> {
+        for (const modName of this.modUtils.getModListName()) {
             const mod = this.modUtils.getMod(modName);
             if (!mod) {
                 console.error('JsPreloader startLoad() mod not found: ', modName);
                 return;
             }
-            mod.scriptFileList_perload.forEach(T => {
+            for (const T of mod.scriptFileList_perload) {
                 console.log('JsPreloader startLoad() excute start: ', [T[0]]);
                 try {
-                    Function(T[1])();
+                    await Function(T[1])();
                 } catch (e) {
                     console.error('JsPreloader startLoad() excute error: ', [T[0]], e);
                 }
                 console.log('JsPreloader startLoad() excute end: ', [T[0]]);
-            });
-        });
+            }
+        }
     }
 }
 
