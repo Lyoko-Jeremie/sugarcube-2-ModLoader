@@ -33,6 +33,7 @@
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
      "types": [
+       "../BeforeSC2/export2window.d.ts"
      ],                                      /* Specify type package names to be included without being referenced in a source file. */
     // "allowUmdGlobalAccess": true,                     /* Allow accessing UMD globals from modules. */
     // "moduleSuffixes": [],                             /* List of file name suffixes to search when resolving a module. */
@@ -110,6 +111,7 @@
   "exclude": [
     "node_modules",
     "dist",
+    "BeforeSC2",
     "webpack.config.js"
   ]
 }
