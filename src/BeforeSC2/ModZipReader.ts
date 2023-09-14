@@ -26,7 +26,9 @@ export class ModZipReader {
             && isArray(get(bootJ, 'tweeFileList'))
             && every(get(bootJ, 'tweeFileList'), isString)
             && isArray(get(bootJ, 'imgFileList'))
-            && every(get(bootJ, 'imgFileList'), isString);
+            && every(get(bootJ, 'imgFileList'), isString)
+            && isArray(get(bootJ, 'imgFileReplaceList'))
+            && every(get(bootJ, 'imgFileReplaceList'), isString);
     }
 
     modBootFilePath = 'boot.json';
@@ -52,10 +54,23 @@ export class ModZipReader {
                 version: bootJ.version,
                 cache: new SC2DataInfo(bootJ.name),
                 imgs: [],
+                imgFileReplaceList: [],
                 bootJson: bootJ,
             };
 
             // load file
+            for (const imgRPath of bootJ.imgFileReplaceList) {
+                const imgFile = this.zip.file(imgRPath[1]);
+                if (imgFile) {
+                    const data = await imgFile.async('string');
+                    this.modInfo.imgFileReplaceList.push([
+                        imgRPath[0],
+                        data,
+                    ]);
+                } else {
+                    console.warn('cannot get imgFileReplaceList file from mod zip:', [this.modInfo.name, imgFile])
+                }
+            }
             for (const imgPath of bootJ.imgFileList) {
                 const imgFile = this.zip.file(imgPath);
                 if (imgFile) {
@@ -65,7 +80,7 @@ export class ModZipReader {
                         path: imgPath,
                     });
                 } else {
-                    console.warn('cannot get file from mod zip:', [this.modInfo.name, imgPath])
+                    console.warn('cannot get imgFileList file from mod zip:', [this.modInfo.name, imgPath])
                 }
             }
             for (const stylePath of bootJ.styleFileList) {
@@ -79,7 +94,7 @@ export class ModZipReader {
                         id: 0,
                     });
                 } else {
-                    console.warn('cannot get file from mod zip:', [this.modInfo.name, stylePath])
+                    console.warn('cannot get styleFileList file from mod zip:', [this.modInfo.name, stylePath])
                 }
             }
             for (const tweePath of bootJ.tweeFileList) {
@@ -96,7 +111,7 @@ export class ModZipReader {
                         tags: isWidget ? ['widget'] : [],
                     });
                 } else {
-                    console.warn('cannot get file from mod zip:', [this.modInfo.name, tweePath])
+                    console.warn('cannot get tweeFileList file from mod zip:', [this.modInfo.name, tweePath])
                 }
             }
             for (const scPath of bootJ.scriptFileList) {
@@ -110,7 +125,7 @@ export class ModZipReader {
                         id: 0,
                     });
                 } else {
-                    console.warn('cannot get file from mod zip:', [this.modInfo.name, scPath])
+                    console.warn('cannot get scriptFileList file from mod zip:', [this.modInfo.name, scPath])
                 }
             }
 

@@ -1,5 +1,11 @@
-import {SC2DataInfoCache} from './SC2DataInfoCache';
-import {ModLoader} from "./ModLoader";
+import {SC2DataInfo, SC2DataInfoCache} from './SC2DataInfoCache';
+import {ModDataLoadType, ModInfo, ModLoader} from "./ModLoader";
+import {cloneDeep} from "lodash";
+import {
+    concatMergeSC2DataInfoCache,
+    normalMergeSC2DataInfoCache,
+    replaceMergeSC2DataInfoCache
+} from "./MergeSC2DataInfoCache";
 
 export class SC2DataManager {
 
@@ -87,6 +93,114 @@ export class SC2DataManager {
             this.modLoader = new ModLoader(this.getSC2DataInfoCache());
         }
         return this.modLoader;
+    }
+
+
+    async startInit() {
+        await this.getModLoader().loadMod([ModDataLoadType.Remote, ModDataLoadType.Local]);
+        const confictResult = this.getModLoader().checkModConfictList();
+        console.log('mod confictResult', confictResult.map(T => {
+            return {
+                name: T.mod.dataSource,
+                style: Array.from(T.result.styleFileItems.conflict),
+                script: Array.from(T.result.scriptFileItems.conflict),
+                passage: Array.from(T.result.passageDataItems.conflict),
+            };
+        }));
+        this.patchModToGame();
+    }
+
+    patchModToGame() {
+        const modCache = this.getModLoader().modCache;
+        const modOrder = this.getModLoader().modOrder;
+        const orginSC2DataInfoCache = cloneDeep(this.getSC2DataInfoCache());
+
+        // concat mod
+        const em = normalMergeSC2DataInfoCache(
+            new SC2DataInfo('EmptyMod'),
+            ...modOrder.map(T => modCache.get(T))
+                .filter((T): T is ModInfo => !!T)
+                .map(T => T.cache)
+        );
+
+        // replace orgin img
+        for (const imgRPath of this.getModLoader().getModImgFileReplaceList()) {
+            em.passageDataItems.items.forEach(T => {
+                T.content = T.content.replace(imgRPath[0], imgRPath[1]);
+            });
+            em.styleFileItems.items.forEach(T => {
+                T.content = T.content.replace(imgRPath[0], imgRPath[1]);
+            });
+            em.scriptFileItems.items.forEach(T => {
+                T.content = T.content.replace(imgRPath[0], imgRPath[1]);
+            });
+        }
+
+        // then replace orgin
+        const modSC2DataInfoCache = replaceMergeSC2DataInfoCache(
+            orginSC2DataInfoCache,
+            em,
+        );
+
+        const newScriptNode = modSC2DataInfoCache.scriptFileItems.items.map(T => {
+            const s = document.createElement('script');
+            s.type = 'text/twine-javascript';
+            s.role = 'script';
+            s.id = 'twine-user-script';
+            s.innerText = T.content;
+            return s;
+        });
+        const newStyleNode = modSC2DataInfoCache.styleFileItems.items.map(T => {
+            const s = document.createElement('style');
+            s.type = 'text/twine-css';
+            s.id = 'twine-user-stylesheet';
+            s.role = 'stylesheet';
+            s.innerText = T.content;
+            return s;
+        });
+        const newPassageDataNode = modSC2DataInfoCache.passageDataItems.items.map(T => {
+            const s = document.createElement('tw-passagedata');
+            if (T.id && T.id > 0) {
+                s.setAttribute('pid', '' + T.id);
+            }
+            s.setAttribute('name', T.name);
+            s.setAttribute('tags', T.tags.join(' '));
+            if (T.position) {
+                s.setAttribute('position', T.position);
+            }
+            if (T.size) {
+                s.setAttribute('size', T.size);
+            }
+            s.innerText = T.content;
+            return s;
+        });
+
+        const rootNode = this.rootNode;
+        const styleNode = this.styleNode;
+        const scriptNode = this.scriptNode;
+        const passageDataNodeList = this.passageDataNodeList;
+
+        // remove old
+        for (const node of Array.from(styleNode)) {
+            rootNode.removeChild(node);
+        }
+        for (const node of Array.from(scriptNode)) {
+            rootNode.removeChild(node);
+        }
+        for (const node of Array.from(passageDataNodeList)) {
+            rootNode.removeChild(node);
+        }
+
+        // add new
+        for (const node of newStyleNode) {
+            rootNode.appendChild(node);
+        }
+        for (const node of newScriptNode) {
+            rootNode.appendChild(node);
+        }
+        for (const node of newPassageDataNode) {
+            rootNode.appendChild(node);
+        }
     }
 
 }

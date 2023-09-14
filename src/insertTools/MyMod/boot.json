@@ -21,6 +21,12 @@
     "MyMod_Image/typeBImage/222.png",
     "MyMod_Image/typeBImage/333.gif"
   ],
+  "imgFileReplaceList": [
+    [
+      "img/body/base.gif",
+      "MyMod_Image/typeAImage/333.gif"
+    ]
+  ],
   "addstionFile": [
     "readme.txt"
   ]

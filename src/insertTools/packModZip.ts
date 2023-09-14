@@ -19,6 +19,7 @@ export interface ModBootJson {
     tweeFileList: string[];
     imgFileList: string[];
     addstionFile: string[];
+    imgFileReplaceList: [string, string][];
 }
 
 export function validateBootJson(bootJ: any): bootJ is ModBootJson {
@@ -37,6 +38,8 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
         && every(get(bootJ, 'tweeFileList'), isString)
         && isArray(get(bootJ, 'imgFileList'))
         && every(get(bootJ, 'imgFileList'), isString)
+        && isArray(get(bootJ, 'imgFileReplaceList'))
+        && every(get(bootJ, 'imgFileReplaceList'), T => isArray(T) && T.length === 2 && isString(T[0]) && isString(T[1]))
         // useless file
         && isArray(get(bootJ, 'addstionFile'))
         && every(get(bootJ, 'addstionFile'), isString);

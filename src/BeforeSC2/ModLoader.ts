@@ -17,6 +17,8 @@ export interface ModBootJson {
     scriptFileList: string[];
     tweeFileList: string[];
     imgFileList: string[];
+    // orgin path, replace path
+    imgFileReplaceList: [string, string][];
 }
 
 export interface ModInfo {
@@ -24,6 +26,8 @@ export interface ModInfo {
     version: string;
     cache: SC2DataInfo;
     imgs: ModImg[];
+    // orgin path, replace path
+    imgFileReplaceList: [string, string][];
     bootJson: ModBootJson;
 }
 
@@ -46,10 +50,12 @@ export class ModLoader {
     }
 
     addMod(m: ModInfo) {
-        if (this.modCache.has(m.name)) {
+        const overwrite = this.modCache.get(m.name);
+        if (overwrite) {
             console.error('ModLoader addMod() has duplicate name: ', [m.name], ' will be overwrite');
         }
         this.modCache.set(m.name, m);
+        return !overwrite;
     }
 
     modOrder: string[] = [];
@@ -75,6 +81,28 @@ export class ModLoader {
         });
     }
 
+    getModImgFileReplaceList() {
+        // orgin path, replace
+        const imgFileReplace = new Map<string, string>();
+        for (const modName of this.modOrder) {
+            const mod = this.getMod(modName);
+            if (!mod) {
+                console.error('ModLoader getModImgFileReplaceList() (!mod)');
+            }
+            for (const [orgin, replace] of mod.bootJson.imgFileReplaceList) {
+                if (imgFileReplace.has(orgin)) {
+                    console.warn('ModLoader getModImgFileReplaceList() has duplicate orgin:',
+                        [orgin],
+                        ' on mod ',
+                        [modName],
+                        ' will be overwrite',
+                    );
+                }
+                imgFileReplace.set(orgin, replace);
+            }
+        }
+        return imgFileReplace;
+    }
 
     modLocalLoader?: LocalLoader;
     modRemoteLoader?: RemoteLoader;
@@ -91,7 +119,11 @@ export class ModLoader {
                         ok = await this.modRemoteLoader.loadTranslateDataFromRemote() || ok;
                         this.modRemoteLoader.modList.forEach(T => {
                             if (T.modInfo) {
-                                this.addMod(T.modInfo);
+                                const overwrite = !this.addMod(T.modInfo);
+                                if (overwrite) {
+                                    this.modOrder = this.modOrder.filter(T => T !== T);
+                                }
+                                this.modOrder.push(T.modInfo.name);
                             }
                         });
                     } catch (e) {
@@ -106,7 +138,11 @@ export class ModLoader {
                         ok = await this.modLocalLoader.loadModDataFromValueZip() || ok;
                         this.modLocalLoader.modList.forEach(T => {
                             if (T.modInfo) {
-                                this.addMod(T.modInfo);
+                                const overwrite = !this.addMod(T.modInfo);
+                                if (overwrite) {
+                                    this.modOrder = this.modOrder.filter(T => T !== T);
+                                }
+                                this.modOrder.push(T.modInfo.name);
                             }
                         });
                     } catch (e) {
