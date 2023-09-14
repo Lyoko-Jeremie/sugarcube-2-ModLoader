@@ -66,7 +66,7 @@ Degrees of Lewdity VERSION.html.mod.html
     "MyMod_script_1.js",
     "MyMod_script_2.js"
   ],
-  "tweeFileList": [       // twee 剧本文件。 注意：此处与正常的twee不同的是，这里每一个文件中有且只能有一个passage，且文件名需要和文件内的passage同名，否则无法正确加载
+  "tweeFileList": [       // twee 剧本文件
     "MyMod_Passage1.twee",
     "MyMod_Passage2.twee"
   ],
@@ -135,7 +135,7 @@ MyMod.mod.zip
 7. 具体的来说，mod会按照mod列表中的顺序加载，靠后的mod会覆盖靠前的mod的passage同名文件，mod之间的同名css/js文件会直接将内容concat到一起，故不会覆盖css/js/img等同名文件。
 8. 加载时首先计算mod之间的覆盖，然后将计算结果覆盖到原游戏中
 9. 当前版本的mod加载器的工作方式是直接将css/js/twee文件按照原版sc2的格式到html文件中。
-10. mod中的twee文件与正常的twee文件不同的是，这里每一个twee文件中有且只能有一个passage，且文件名需要和文件内的passage同名，否则会无法正确加载。
+10. ~mod中的twee文件与正常的twee文件不同的是，这里每一个twee文件中有且只能有一个passage，且文件名需要和文件内的passage同名，否则会无法正确加载。~ 此缺陷已解决，现在可以以原版同样的方式工作
 11. 使用imgFileReplaceList时请小心谨慎。
 
 
