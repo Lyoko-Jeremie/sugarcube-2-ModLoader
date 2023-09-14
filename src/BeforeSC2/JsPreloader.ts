@@ -18,7 +18,8 @@ export class JsPreloader {
             for (const T of mod.scriptFileList_perload) {
                 console.log('JsPreloader startLoad() excute start: ', [T[0]]);
                 try {
-                    await Function(T[1])();
+                    const R = await Function(`return ${T[1]}`)();
+                    console.log('JsPreloader startLoad() excute result: ', [T[0]], R);
                 } catch (e) {
                     console.error('JsPreloader startLoad() excute error: ', [T[0]], e);
                 }

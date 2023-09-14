@@ -1,4 +1,4 @@
-;(() => {
+(() => {
     // 自执行函数，会在mod插入html时执行此处内容
     console.log('MyMod_script_preload_example.js', '  ', '自执行函数，会在mod插入html时执行此处内容');
     const modUtils = window.modUtils;
@@ -41,6 +41,7 @@
         // console.log('MyMod_script_preload_example.js', '  ');
     });
 
+    return Promise.resolve("MyMod_script_preload_example.js ok");
 })();
 
 
