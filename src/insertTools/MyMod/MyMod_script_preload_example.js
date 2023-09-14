@@ -29,6 +29,10 @@
     console.log('MyMod_script_preload_example.js', ' 在SC2引擎启动后，只能使用`Wikifier.wikifyEval("<<xxxxx>>")`以动态求值的方式，来动态添加Passage，或执行特定的Passage ');
     // Wikifier.wikifyEval("<<updateFeats>>", passageObj, passageTitle);
     console.log('MyMod_script_preload_example.js', ' Wikifier.wikifyEval的函数签名为：Wikifier.wikifyEval(source, passageObj, passageTitle)， 通常可以以 Wikifier.wikifyEval("source", undefined, "MyMod_Passage_Eval0001") 的方式调用 ');
+    console.log('MyMod_script_preload_example.js',
+        ' 在以 Wikifier.wikifyEval("source", undefined, "MyMod_Passage_Eval0001") 的方式调用时，表示现在正在执行一个动态passage，' +
+        '它的名字是"MyMod_Passage_Eval0001"，其中"MyMod_Passage_Eval0001"是当前上下文的passageName，' +
+        '而不是被调用的passsageName，在这里可以是任意的（与现有passageName不重复的）字符串内容 ');
 
 
     $(document).one(":storyready", function () {
