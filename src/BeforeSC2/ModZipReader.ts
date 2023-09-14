@@ -8,7 +8,7 @@ export function Twee2Passage(s: string) {
     //      :: Widgets Bodywriting Objects [widget]
     //      :: Widgets Bodywriting Objects
     //      :: Widgets Bodywriting Objects [widget asdasd]
-    const r = s.split(/^(:: +(Widgets) +([^:"\\/\n\r\[\]]+)(?:(?: +\[((?:\w+ *)+)\] *)?|))$/gm);
+    const r = s.split(/^(:: +((?:[^:"\\/\n\r\[\] ]+ *)+)(?:(?: +\[((?:\w+ *)+)\] *)?|))$/gm);
     // ['xxx', ':: Widgets Bodywriting Objects [widget]', 'Widgets', 'Bodywriting Objects', 'widget', 'xxx']
     const rr: { name: string, tags: string[], contect: string }[] = [];
     for (let i = 0; i < r.length; i++) {
