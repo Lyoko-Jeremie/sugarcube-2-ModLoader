@@ -6,6 +6,7 @@
     "MyMod_style_2.css"
   ],
   "scriptFileList": [
+    "MyMod_script_hook_example.js",
     "MyMod_script_1.js",
     "MyMod_script_2.js"
   ],
