@@ -1,0 +1,122 @@
+import JSZip from 'jszip';
+import {every, get, isArray, isString} from 'lodash';
+import {SC2DataInfo} from "./SC2DataInfoCache";
+import {simulateMergeSC2DataInfoCache} from "./SimulateMerge";
+import {LocalLoader, RemoteLoader} from "./ModZipReader";
+
+export interface ModImg {
+    // base64
+    data: string;
+    path: string;
+}
+
+export interface ModBootJson {
+    name: string;
+    version: string;
+    styleFileList: string[];
+    scriptFileList: string[];
+    tweeFileList: string[];
+    imgFileList: string[];
+}
+
+export interface ModInfo {
+    name: string;
+    version: string;
+    cache: SC2DataInfo;
+    imgs: ModImg[];
+    bootJson: ModBootJson;
+}
+
+export enum ModDataLoadType {
+    'Remote' = 'Remote',
+    'Local' = 'Local',
+}
+
+export class ModLoader {
+
+    constructor(
+        public orginSC2DataInfoCache: SC2DataInfo,
+    ) {
+    }
+
+    modCache: Map<string, ModInfo> = new Map<string, ModInfo>();
+
+    getMod(modName: string) {
+        return this.modCache.get(modName);
+    }
+
+    addMod(m: ModInfo) {
+        if (this.modCache.has(m.name)) {
+            console.error('ModLoader addMod() has duplicate name: ', [m.name], ' will be overwrite');
+        }
+        this.modCache.set(m.name, m);
+    }
+
+    modOrder: string[] = [];
+
+    checkModConfict2Root(modName: string) {
+        const mod = this.getMod(modName);
+        if (!mod) {
+            console.error('ModLoader checkModConfictOne() (!mod)');
+            return undefined;
+        }
+        return simulateMergeSC2DataInfoCache(this.orginSC2DataInfoCache, mod.cache)[0];
+    }
+
+    checkModConfictList() {
+        const ml = this.modOrder.map(T => this.modCache.get(T))
+            .filter((T): T is ModInfo => !!T)
+            .map(T => T.cache);
+        return simulateMergeSC2DataInfoCache(this.orginSC2DataInfoCache, ...ml).map((T, index) => {
+            return {
+                mod: ml[index],
+                result: T,
+            };
+        });
+    }
+
+
+    modLocalLoader?: LocalLoader;
+    modRemoteLoader?: RemoteLoader;
+
+    public async loadMod(loadOrder: ModDataLoadType[]): Promise<boolean> {
+        let ok = false;
+        for (const loadType of loadOrder) {
+            switch (loadType) {
+                case ModDataLoadType.Remote:
+                    if (!this.modRemoteLoader) {
+                        this.modRemoteLoader = new RemoteLoader();
+                    }
+                    try {
+                        ok = await this.modRemoteLoader.loadTranslateDataFromRemote() || ok;
+                        this.modRemoteLoader.modList.forEach(T => {
+                            if (T.modInfo) {
+                                this.addMod(T.modInfo);
+                            }
+                        });
+                    } catch (e) {
+                        console.error(e);
+                    }
+                    break;
+                case ModDataLoadType.Local:
+                    if (!this.modLocalLoader) {
+                        this.modLocalLoader = new LocalLoader();
+                    }
+                    try {
+                        ok = await this.modLocalLoader.loadModDataFromValueZip() || ok;
+                        this.modLocalLoader.modList.forEach(T => {
+                            if (T.modInfo) {
+                                this.addMod(T.modInfo);
+                            }
+                        });
+                    } catch (e) {
+                        console.error(e);
+                    }
+                    break;
+                default:
+                    console.error('ModLoader loadTranslateData() unknown loadType:', [loadType]);
+            }
+        }
+        return Promise.resolve(ok);
+    }
+}

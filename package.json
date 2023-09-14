@@ -4,6 +4,7 @@
   "description": "SugarCube2 mod loader",
   "private": true,
   "scripts": {
+    "ts:BeforeSC2:w": "tsc -w -p ./src/BeforeSC2/tsconfig.json",
     "webpack:BeforeSC2:w": "webpack -w -c ./webpack.config.js",
     "ts:ForSC2:w": "tsc -w -p ./src/ForSC2/tsconfig.json",
     "ts:insertTools:w": "tsc -w -p ./src/insertTools/tsconfig.json"
