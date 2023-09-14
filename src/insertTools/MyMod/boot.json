@@ -1,8 +1,27 @@
 {
   "name": "MyMod",
   "version": "1.0.0",
-  "styleFileList": [],
-  "scriptFileList": [],
-  "tweeFileList": [],
-  "imgFileList": []
+  "styleFileList": [
+    "MyMod_style_1.css",
+    "MyMod_style_2.css"
+  ],
+  "scriptFileList": [
+    "MyMod_script_1.js",
+    "MyMod_script_2.js"
+  ],
+  "tweeFileList": [
+    "MyMod_Passage1.twee",
+    "MyMod_Passage2.twee"
+  ],
+  "imgFileList": [
+    "MyMod_Image/typeAImage/111.jpg",
+    "MyMod_Image/typeAImage/222.png",
+    "MyMod_Image/typeAImage/333.gif",
+    "MyMod_Image/typeBImage/111.jpg",
+    "MyMod_Image/typeBImage/222.png",
+    "MyMod_Image/typeBImage/333.gif"
+  ],
+  "addstionFile": [
+    "readme.txt"
+  ]
 }

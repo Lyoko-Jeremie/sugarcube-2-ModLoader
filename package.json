@@ -7,7 +7,7 @@
     "ts:BeforeSC2:w": "tsc -w -p ./src/BeforeSC2/tsconfig.json",
     "webpack:BeforeSC2:w": "webpack -w -c ./webpack.config.js",
     "ts:ForSC2:w": "tsc -w -p ./src/ForSC2/tsconfig.json",
-    "ts:insertTools:w": "tsc -w -p ./src/insertTools/tsconfig.json"
+    "webpack:insertTools:w": "webpack -w -c ./webpack-insertTools.config.js"
   },
   "packageManager": "yarn@3.4.1",
   "dependencies": {
