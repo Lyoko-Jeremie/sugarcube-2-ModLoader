@@ -15,6 +15,7 @@ export interface ModBootJson {
     version: string;
     styleFileList: string[];
     scriptFileList: string[];
+    scriptFileList_perload: string[];
     tweeFileList: string[];
     imgFileList: string[];
     // orgin path, replace path
@@ -28,6 +29,8 @@ export interface ModInfo {
     imgs: ModImg[];
     // orgin path, replace path
     imgFileReplaceList: [string, string][];
+    // file name, file contect
+    scriptFileList_perload: [string, string][];
     bootJson: ModBootJson;
 }
 

@@ -1,6 +1,8 @@
 import {SC2DataManager} from "./SC2DataManager";
 import {isSafeInteger} from "lodash";
 import {Twee2Passage, Twee2PassageR} from "./ModZipReader";
+import {SC2DataInfo} from "./SC2DataInfoCache";
+import {SimulateMergeResult} from "./SimulateMerge";
 
 export class ModUtils {
     constructor(
@@ -52,6 +54,10 @@ export class ModUtils {
 
     splitPassageFromTweeFile(fileString: string): Twee2PassageR[] {
         return Twee2Passage(fileString);
+    }
+
+    getConfictInfo(): { mod: SC2DataInfo, result: SimulateMergeResult }[] {
+        return this.pSC2DataManager.getConfictResult() || [];
     }
 
 }

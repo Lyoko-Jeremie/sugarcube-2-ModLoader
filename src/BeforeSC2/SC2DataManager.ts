@@ -6,6 +6,7 @@ import {
     normalMergeSC2DataInfoCache,
     replaceMergeSC2DataInfoCache
 } from "./MergeSC2DataInfoCache";
+import {SimulateMergeResult} from "./SimulateMerge";
 
 export class SC2DataManager {
 
@@ -96,10 +97,12 @@ export class SC2DataManager {
     }
 
 
+    confictResult?: { mod: SC2DataInfo, result: SimulateMergeResult }[];
+
     async startInit() {
         await this.getModLoader().loadMod([ModDataLoadType.Remote, ModDataLoadType.Local]);
-        const confictResult = this.getModLoader().checkModConfictList();
-        console.log('mod confictResult', confictResult.map(T => {
+        this.confictResult = this.getModLoader().checkModConfictList();
+        console.log('mod confictResult', this.confictResult.map(T => {
             return {
                 name: T.mod.dataSource,
                 style: Array.from(T.result.styleFileItems.conflict),
@@ -108,6 +111,10 @@ export class SC2DataManager {
             };
         }));
         this.patchModToGame();
+    }
+
+    getConfictResult() {
+        return this.confictResult;
     }
 
     cSC2DataInfoAfterPatchCache?: SC2DataInfoCache;
@@ -124,7 +131,7 @@ export class SC2DataManager {
         return this.cSC2DataInfoAfterPatchCache;
     }
 
-    flushAfterPatchCache(){
+    flushAfterPatchCache() {
         this.cSC2DataInfoAfterPatchCache = undefined;
         // this.getSC2DataInfoAfterPatch();
     }

@@ -2,7 +2,7 @@ import JSZip from 'jszip';
 import fs from 'fs';
 import path from 'path';
 import {promisify} from 'util';
-import {every, get, isArray, isString} from 'lodash';
+import {every, get, has, isArray, isString} from 'lodash';
 
 export async function img2base64Url(fPath: string) {
     const img = await promisify(fs.readFile)(fPath);
@@ -16,6 +16,7 @@ export interface ModBootJson {
     version: string;
     styleFileList: string[];
     scriptFileList: string[];
+    scriptFileList_perload?: string[];
     tweeFileList: string[];
     imgFileList: string[];
     addstionFile: string[];
@@ -42,7 +43,10 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
         && every(get(bootJ, 'imgFileReplaceList'), T => isArray(T) && T.length === 2 && isString(T[0]) && isString(T[1]))
         // useless file
         && isArray(get(bootJ, 'addstionFile'))
-        && every(get(bootJ, 'addstionFile'), isString);
+        && every(get(bootJ, 'addstionFile'), isString)
+        // optional
+        && (has(bootJ, 'scriptFileList_perload') ?
+            (isArray(get(bootJ, 'scriptFileList_perload')) && every(get(bootJ, 'addstionFile'), isString)) : true);
 }
 
 // NOTE: 同一个 twee 文件只能包含一个 passage ， 文件要以 passage 命名
@@ -89,6 +93,12 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
     for (const scriptPath of bootJson.addstionFile) {
         const scriptFile = await promisify(fs.readFile)(scriptPath, {encoding: 'utf-8'});
         zip.file(scriptPath, scriptFile);
+    }
+    if (bootJson.scriptFileList_perload) {
+        for (const scriptPath of bootJson.scriptFileList_perload) {
+            const scriptFile = await promisify(fs.readFile)(scriptPath, {encoding: 'utf-8'});
+            zip.file(scriptPath, scriptFile);
+        }
     }
     zip.file('boot.json', JSON.stringify(bootJson, undefined, ' '));
     const zipBase64 = await zip.generateAsync({

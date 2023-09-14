@@ -1,5 +1,5 @@
 import JSZip from "jszip";
-import {every, get, isArray, isString} from "lodash";
+import {every, get, has, isArray, isString} from "lodash";
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {ModBootJson, ModInfo} from "./ModLoader";
 
@@ -55,7 +55,10 @@ export class ModZipReader {
             && isArray(get(bootJ, 'imgFileList'))
             && every(get(bootJ, 'imgFileList'), isString)
             && isArray(get(bootJ, 'imgFileReplaceList'))
-            && every(get(bootJ, 'imgFileReplaceList'), T => isArray(T) && T.length === 2 && isString(T[0]) && isString(T[1]));
+            && every(get(bootJ, 'imgFileReplaceList'), T => isArray(T) && T.length === 2 && isString(T[0]) && isString(T[1]))
+            // optional
+            && (has(bootJ, 'scriptFileList_perload') ?
+                (isArray(get(bootJ, 'scriptFileList_perload')) && every(get(bootJ, 'addstionFile'), isString)) : true);
     }
 
     modBootFilePath = 'boot.json';
@@ -100,6 +103,7 @@ export class ModZipReader {
                 cache: new SC2DataInfo(bootJ.name),
                 imgs: [],
                 imgFileReplaceList: [],
+                scriptFileList_perload: [],
                 bootJson: bootJ,
             };
 
@@ -191,6 +195,19 @@ export class ModZipReader {
                 }
             }
             this.modInfo.cache.scriptFileItems.fillMap();
+
+            // optional
+            if (has(bootJ, 'scriptFileList_perload')) {
+                for (const scPath of bootJ.scriptFileList_perload) {
+                    const scFile = this.zip.file(scPath);
+                    if (scFile) {
+                        const data = await scFile.async('string');
+                        this.modInfo.scriptFileList_perload.push([scPath, data]);
+                    } else {
+                        console.warn('cannot get scriptFileList_perload file from mod zip:', [this.modInfo.name, scPath])
+                    }
+                }
+            }
 
             console.log('ModZipReader init() modInfo', this.modInfo);
             return true;
