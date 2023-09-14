@@ -8,19 +8,19 @@ export function Twee2Passage(s: string) {
     //      :: Widgets Bodywriting Objects [widget]
     //      :: Widgets Bodywriting Objects
     //      :: Widgets Bodywriting Objects [widget asdasd]
-    const r = s.split(/^(:: +(Widgets) +([^:"\\/\n\[\]]+)(?:(?: +\[((?:\w+ *)+)\] *)?|))$/gm);
+    const r = s.split(/^(:: +(Widgets) +([^:"\\/\n\r\[\]]+)(?:(?: +\[((?:\w+ *)+)\] *)?|))$/gm);
     // ['xxx', ':: Widgets Bodywriting Objects [widget]', 'Widgets', 'Bodywriting Objects', 'widget', 'xxx']
     const rr: { name: string, tags: string[], contect: string }[] = [];
     for (let i = 0; i < r.length; i++) {
         if (r[i] === 'Widgets') {
             rr.push({
-                name: r[i++],
-                tags: r[i++].split(' '),
-                contect: r[i++],
+                name: r[++i],
+                tags: r[++i]?.split(' ') || [],
+                contect: r[++i],
             });
         }
     }
-    return r;
+    return rr;
 }
 
 
@@ -49,7 +49,7 @@ export class ModZipReader {
             && isArray(get(bootJ, 'imgFileList'))
             && every(get(bootJ, 'imgFileList'), isString)
             && isArray(get(bootJ, 'imgFileReplaceList'))
-            && every(get(bootJ, 'imgFileReplaceList'), isString);
+            && every(get(bootJ, 'imgFileReplaceList'), T => isArray(T) && T.length === 2 && isString(T[0]) && isString(T[1]));
     }
 
     modBootFilePath = 'boot.json';
@@ -68,7 +68,25 @@ export class ModZipReader {
         }
         const bootJson = await bootJsonFile.async('string')
         const bootJ = JSON.parse(bootJson);
-        console.log('ModZipReader init() bootJ', bootJ);
+        // console.log('ModZipReader init() bootJ', bootJ);
+        // console.log('ModZipReader init() bootJ', this.validateBootJson(bootJ));
+        // console.log('ModZipReader init() bootJ', [
+        //     bootJ
+        //     , isString(get(bootJ, 'name'))
+        //     , get(bootJ, 'name').length > 0
+        //     , isString(get(bootJ, 'version'))
+        //     , get(bootJ, 'version').length > 0
+        //     , isArray(get(bootJ, 'styleFileList'))
+        //     , every(get(bootJ, 'styleFileList'), isString)
+        //     , isArray(get(bootJ, 'scriptFileList'))
+        //     , every(get(bootJ, 'scriptFileList'), isString)
+        //     , isArray(get(bootJ, 'tweeFileList'))
+        //     , every(get(bootJ, 'tweeFileList'), isString)
+        //     , isArray(get(bootJ, 'imgFileList'))
+        //     , every(get(bootJ, 'imgFileList'), isString)
+        //     , isArray(get(bootJ, 'imgFileReplaceList'))
+        //     , every(get(bootJ, 'imgFileReplaceList'), T => isArray(T) && T.length === 2 && isString(T[0]) && isString(T[1]))
+        // ]);
         if (this.validateBootJson(bootJ)) {
             this.modInfo = {
                 name: bootJ.name,
@@ -118,25 +136,40 @@ export class ModZipReader {
                     console.warn('cannot get styleFileList file from mod zip:', [this.modInfo.name, stylePath])
                 }
             }
+            this.modInfo.cache.styleFileItems.fillMap();
             for (const tweePath of bootJ.tweeFileList) {
                 const imgFile = this.zip.file(tweePath);
                 if (imgFile) {
                     const data = await imgFile.async('string');
                     const tp = Twee2Passage(data);
-                    console.log('Twee2Passage', tp);
-                    // <<widget "variablesStart2">>
-                    const isWidget = /<<widget\W+"([^ "]+)"\W*>>/.test(data);
-                    this.replaceImgWithBase64String(data);
-                    this.modInfo.cache.passageDataItems.items.push({
-                        name: tweePath,
-                        content: data,
-                        id: 0,
-                        tags: isWidget ? ['widget'] : [],
-                    });
+                    // console.log('Twee2Passage', tp);
+                    for (const p of tp) {
+                        this.replaceImgWithBase64String(p.contect);
+                        this.modInfo.cache.passageDataItems.items.push({
+                            name: p.name,
+                            content: p.contect,
+                            id: 0,
+                            tags: p.tags,
+                        });
+                    }
+
+
+                    // {
+                    //     // <<widget "variablesStart2">>
+                    //     const isWidget = /<<widget\W+"([^ "]+)"\W*>>/.test(data);
+                    //     this.replaceImgWithBase64String(data);
+                    //     this.modInfo.cache.passageDataItems.items.push({
+                    //         name: tweePath,
+                    //         content: data,
+                    //         id: 0,
+                    //         tags: isWidget ? ['widget'] : [],
+                    //     });
+                    // }
                 } else {
                     console.warn('cannot get tweeFileList file from mod zip:', [this.modInfo.name, tweePath])
                 }
             }
+            this.modInfo.cache.passageDataItems.fillMap();
             for (const scPath of bootJ.scriptFileList) {
                 const scFile = this.zip.file(scPath);
                 if (scFile) {
@@ -151,7 +184,9 @@ export class ModZipReader {
                     console.warn('cannot get scriptFileList file from mod zip:', [this.modInfo.name, scPath])
                 }
             }
+            this.modInfo.cache.scriptFileItems.fillMap();
 
+            console.log('ModZipReader init() modInfo', this.modInfo);
             return true;
         }
         return false;

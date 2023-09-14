@@ -57,6 +57,8 @@ export class CacheRecord<T extends { name: string, content: string }> {
     noName: T[] = [];
 
     replaceMerge(c: CacheRecord<T>) {
+        // console.log('CacheRecord.replaceMerge() this.items', this.items.length);
+        // console.log('CacheRecord.replaceMerge() this.map.size', this.map.size);
         for (const item of c.items) {
             if (this.map.has(item.name)) {
                 console.warn('CacheRecord.replaceMerge() has duplicate name:',
@@ -68,7 +70,9 @@ export class CacheRecord<T extends { name: string, content: string }> {
             this.map.set(item.name, item);
         }
         this.noName = this.noName.concat(c.noName);
-        this.noName = Array.from(this.map.values()).concat(this.noName);
+        this.items = Array.from(this.map.values()).concat(this.noName);
+        // console.log('CacheRecord.replaceMerge() this.items', this.items.length);
+        // console.log('CacheRecord.replaceMerge() this.map.size', this.map.size);
     }
 
     concatMerge(c: CacheRecord<T>) {
@@ -81,7 +85,7 @@ export class CacheRecord<T extends { name: string, content: string }> {
             }
         }
         this.noName = this.noName.concat(c.noName);
-        this.noName = Array.from(this.map.values()).concat(this.noName);
+        this.items = Array.from(this.map.values()).concat(this.noName);
     }
 
 }
@@ -115,14 +119,15 @@ export class SC2DataInfoCache extends SC2DataInfo {
             for (let i = 0; i < syl.length;) {
                 if (syl[i] === "/* twine-user-stylesheet #") {
                     this.styleFileItems.items.push({
-                        id: parseInt(syl[i++]), // i+1
-                        name: syl[i++], // i+2
-                        content: syl[i++],  // i+3
+                        id: parseInt(syl[++i]), // i+1
+                        name: syl[++i], // i+2
+                        content: syl[++i],  // i+3
                     });
                 }
                 ++i;
             }
         }
+        this.styleFileItems.fillMap();
 
         for (const sn of scriptNode) {
             // /* twine-user-script #1: "namespace.js" */
@@ -131,14 +136,15 @@ export class SC2DataInfoCache extends SC2DataInfo {
             for (let i = 0; i < scl.length;) {
                 if (scl[i] === "/* twine-user-script #") {
                     this.scriptFileItems.items.push({
-                        id: parseInt(scl[i++]), // i+1
-                        name: scl[i++], // i+2
-                        content: scl[i++],  // i+3
+                        id: parseInt(scl[++i]), // i+1
+                        name: scl[++i], // i+2
+                        content: scl[++i],  // i+3
                     });
                 }
                 ++i;
             }
         }
+        this.scriptFileItems.fillMap();
 
         for (const passageDataNode of passageDataNodes) {
             // <tw-passagedata pid="1" name="Upgrade Waiting Room" tags="widget" position="100,100" size="100,100">xxxxx</tw-passagedata>
@@ -151,6 +157,7 @@ export class SC2DataInfoCache extends SC2DataInfo {
                 size: passageDataNode.getAttribute('size') || '',
             });
         }
+        this.passageDataItems.fillMap();
 
     }
 

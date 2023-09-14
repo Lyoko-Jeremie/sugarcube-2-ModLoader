@@ -5,11 +5,14 @@ export function replaceMergeSC2DataInfoCache(...ic: SC2DataInfo[]) {
         throw new Error('replaceMergeSC2DataInfoCache (ic.length === 0)');
     }
     const ooo = ic[0];
+    // console.log('replaceMergeSC2DataInfoCache', ooo.passageDataItems.items.length);
     for (let i = 1; i < ic.length; i++) {
+        // console.log('replaceMergeSC2DataInfoCache', ooo, ic[i]);
         ooo.scriptFileItems.replaceMerge(ic[i].scriptFileItems);
         ooo.styleFileItems.replaceMerge(ic[i].styleFileItems);
         ooo.passageDataItems.replaceMerge(ic[i].passageDataItems);
     }
+    // console.log('replaceMergeSC2DataInfoCache', ooo.passageDataItems.items.length);
     return ooo;
 }
 

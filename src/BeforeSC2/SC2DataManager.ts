@@ -114,6 +114,7 @@ export class SC2DataManager {
         const modCache = this.getModLoader().modCache;
         const modOrder = this.getModLoader().modOrder;
         const orginSC2DataInfoCache = cloneDeep(this.getSC2DataInfoCache());
+        // console.log('modCache', modCache);
 
         // concat mod
         const em = normalMergeSC2DataInfoCache(
@@ -122,6 +123,7 @@ export class SC2DataManager {
                 .filter((T): T is ModInfo => !!T)
                 .map(T => T.cache)
         );
+        console.log('em', em);
 
         // replace orgin img
         for (const imgRPath of this.getModLoader().getModImgFileReplaceList()) {
@@ -136,41 +138,49 @@ export class SC2DataManager {
             });
         }
 
+        // console.log('orginSC2DataInfoCache', orginSC2DataInfoCache.passageDataItems.items.length);
         // then replace orgin
         const modSC2DataInfoCache = replaceMergeSC2DataInfoCache(
             orginSC2DataInfoCache,
             em,
         );
+        // console.log('modSC2DataInfoCache', modSC2DataInfoCache.passageDataItems.items.length);
 
-        const newScriptNode = modSC2DataInfoCache.scriptFileItems.items.map(T => {
-            const s = document.createElement('script');
-            s.type = 'text/twine-javascript';
-            s.role = 'script';
-            s.id = 'twine-user-script';
-            s.innerText = T.content;
-            return s;
-        });
-        const newStyleNode = modSC2DataInfoCache.styleFileItems.items.map(T => {
-            const s = document.createElement('style');
-            s.type = 'text/twine-css';
-            s.id = 'twine-user-stylesheet';
-            s.role = 'stylesheet';
-            s.innerText = T.content;
-            return s;
-        });
+        const newScriptNodeContent = modSC2DataInfoCache.scriptFileItems.items.reduce((acc, T) => {
+            return acc + `/* twine-user-stylesheet #${T.id}: "${T.name}" */\n${T.content}\n`;
+        }, '');
+        const newScriptNode = document.createElement('script');
+        newScriptNode.type = 'text/twine-javascript';
+        newScriptNode.setAttribute('role', 'script');
+        newScriptNode.setAttribute('id', 'twine-user-script');
+        newScriptNode.innerHTML = newScriptNodeContent;
+
+        const newStyleNodeContent = modSC2DataInfoCache.styleFileItems.items.reduce((acc, T) => {
+            return acc + `/* twine-user-script #${T.id}: "${T.name}" */\n${T.content}\n`;
+        }, '');
+        const newStyleNode = document.createElement('style');
+        newStyleNode.type = 'text/twine-css';
+        newStyleNode.setAttribute('role', 'stylesheet');
+        newStyleNode.setAttribute('id', 'twine-user-stylesheet');
+        newStyleNode.innerHTML = newStyleNodeContent;
+
+        // console.log('modSC2DataInfoCache.passageDataItems.items', modSC2DataInfoCache.passageDataItems.items);
+
         const newPassageDataNode = modSC2DataInfoCache.passageDataItems.items.map(T => {
             const s = document.createElement('tw-passagedata');
             if (T.id && T.id > 0) {
                 s.setAttribute('pid', '' + T.id);
             }
             s.setAttribute('name', T.name);
-            s.setAttribute('tags', T.tags.join(' '));
+            // console.log('tags', T.tags);
+            s.setAttribute('tags', T.tags?.join(' ') || '');
             if (T.position) {
                 s.setAttribute('position', T.position);
             }
             if (T.size) {
                 s.setAttribute('size', T.size);
             }
+            // s.innerText = `:: Widgets ${T.name}${T.tags?.length > 0 ? ` [${T.tags.join(' ')}]` : ''}\n${T.content}\n`;
             s.innerText = T.content;
             return s;
         });
@@ -192,12 +202,8 @@ export class SC2DataManager {
         }
 
         // add new
-        for (const node of newStyleNode) {
-            rootNode.appendChild(node);
-        }
-        for (const node of newScriptNode) {
-            rootNode.appendChild(node);
-        }
+        rootNode.appendChild(newScriptNode);
+        rootNode.appendChild(newStyleNode);
         for (const node of newPassageDataNode) {
             rootNode.appendChild(node);
         }
