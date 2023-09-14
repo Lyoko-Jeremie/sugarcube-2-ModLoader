@@ -110,6 +110,25 @@ export class SC2DataManager {
         this.patchModToGame();
     }
 
+    cSC2DataInfoAfterPatchCache?: SC2DataInfoCache;
+
+    getSC2DataInfoAfterPatch() {
+        if (!this.cSC2DataInfoAfterPatchCache) {
+            this.cSC2DataInfoAfterPatchCache = new SC2DataInfoCache(
+                'orgin',
+                Array.from(this.scriptNode),
+                Array.from(this.styleNode),
+                Array.from(this.passageDataNodeList) as HTMLElement[],
+            );
+        }
+        return this.cSC2DataInfoAfterPatchCache;
+    }
+
+    flushAfterPatchCache(){
+        this.cSC2DataInfoAfterPatchCache = undefined;
+        // this.getSC2DataInfoAfterPatch();
+    }
+
     patchModToGame() {
         const modCache = this.getModLoader().modCache;
         const modOrder = this.getModLoader().modOrder;
@@ -207,6 +226,9 @@ export class SC2DataManager {
         for (const node of newPassageDataNode) {
             rootNode.appendChild(node);
         }
+
+        // update cache
+        this.flushAfterPatchCache();
     }
 
 }
