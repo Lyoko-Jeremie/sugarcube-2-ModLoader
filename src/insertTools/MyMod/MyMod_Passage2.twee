@@ -1,0 +1,8 @@
+:: Widgets MyMod_Passage2 [widget]
+
+<<widget "MyMod_Passage2">>
+
+<<print "MyMod_Passage1">>
+
+<</widget>>
+

@@ -1,0 +1,15 @@
+:: Widgets MyMod_Passage1
+
+<<print "MyMod_Passage2">>
+
+:: Widgets MyMod_Passage3
+
+<<print "MyMod_Passage3">>
+
+:: Widgets MyMod_Passage4
+
+<<print "MyMod_Passage4">>
+
+:: Widgets MyMod_Passage5
+
+<<print "MyMod_Passage5">>

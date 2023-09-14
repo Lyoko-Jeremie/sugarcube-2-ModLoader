@@ -19,7 +19,7 @@ export async function loadFileAsBase64(fPath: string) {
     console.log('process.argv', process.argv);
     const htmlPath = process.argv[2];
     const jsonPath = process.argv[3];
-    const jsPath = process.argv[3];
+    const jsPath = process.argv[4];
     console.log('htmlPath', htmlPath);
     console.log('jsonPath', jsonPath);
     console.log('jsPath', jsPath);

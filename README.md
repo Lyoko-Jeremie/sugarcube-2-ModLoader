@@ -19,14 +19,20 @@ yarn run webpack:insertTools:w
 ```
 
 
+切换到 modList.json 所在文件夹
+
 ```shell
-node .\dist-insertTools\insert2html.js "<Degrees of Lewdity VERSION.html 文件路径>" "<modList.json 文件路径>" "<BeforeSC2.js 文件路径>"
+cd ./src/insertTools/modList.json
+```
+
+```shell
+node "<insert2html.js 文件路径>" "<Degrees of Lewdity VERSION.html 文件路径>" "<modList.json 文件>" "<BeforeSC2.js 文件路径>"
 ```
 
 例如：
 
 ```shell
-node .\dist-insertTools\insert2html.js "H:\Code\degrees-of-lewdity\Degrees of Lewdity VERSION.html" "src/insertTools/modList.json" "H:\Code\sugarcube-2\ModLoader\dist-BeforeSC2\BeforeSC2.js"
+node "H:\Code\sugarcube-2\ModLoader\dist-insertTools\insert2html.js" "H:\Code\degrees-of-lewdity\Degrees of Lewdity VERSION.html" "modList.json" "H:\Code\sugarcube-2\ModLoader\dist-BeforeSC2\BeforeSC2.js"
 ```
 
 会在原始html文件同目录下生成一个同名的html.mod.html文件，例如：
