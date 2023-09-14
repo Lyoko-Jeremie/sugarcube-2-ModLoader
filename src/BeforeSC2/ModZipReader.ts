@@ -3,14 +3,20 @@ import {every, get, isArray, isString} from "lodash";
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {ModBootJson, ModInfo} from "./ModLoader";
 
-export function Twee2Passage(s: string) {
+export interface Twee2PassageR {
+    name: string;
+    tags: string[];
+    contect: string;
+};
+
+export function Twee2Passage(s: string): Twee2PassageR[] {
     // match:
     //      :: Widgets Bodywriting Objects [widget]
     //      :: Widgets Bodywriting Objects
     //      :: Widgets Bodywriting Objects [widget asdasd]
     const r = s.split(/^(:: +((?:[^:"\\/\n\r\[\] ]+ *)+)(?:(?: +\[((?:\w+ *)+)\] *)?|))$/gm);
     // ['xxx', ':: Widgets Bodywriting Objects [widget]', 'Widgets', 'Bodywriting Objects', 'widget', 'xxx']
-    const rr: { name: string, tags: string[], contect: string }[] = [];
+    const rr: Twee2PassageR[] = [];
     for (let i = 0; i < r.length; i++) {
         if (r[i] === 'Widgets') {
             rr.push({

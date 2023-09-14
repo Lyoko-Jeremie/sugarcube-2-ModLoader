@@ -1,5 +1,6 @@
 import {SC2DataManager} from "./SC2DataManager";
 import {isSafeInteger} from "lodash";
+import {Twee2Passage, Twee2PassageR} from "./ModZipReader";
 
 export class ModUtils {
     constructor(
@@ -47,6 +48,10 @@ export class ModUtils {
         rootNode.appendChild(node);
 
         this.pSC2DataManager.flushAfterPatchCache();
+    }
+
+    splitPassageFromTweeFile(fileString: string): Twee2PassageR[] {
+        return Twee2Passage(fileString);
     }
 
 }
