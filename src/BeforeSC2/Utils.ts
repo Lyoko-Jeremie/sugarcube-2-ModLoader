@@ -28,7 +28,7 @@ export class ModUtils {
         content: string,
         // tags = ['widget'] if it's a widget
         tags: string[] = [],
-        pid: undefined | number = undefined,
+        pid: undefined | number = 0,
     ) {
         const rootNode = this.pSC2DataManager.rootNode;
         const passageDataNodeList = this.pSC2DataManager.passageDataNodeList;
