@@ -62,6 +62,9 @@ Degrees of Lewdity VERSION.html.mod.html
     "MyMod_style_1.css",
     "MyMod_style_2.css"
   ],
+  "scriptFileList_perload": [   // 预加载的 js 脚本文件 ， 会在引擎初始化前启动， 可以在此处动态修改Passage的内容
+    "MyMod_script_preload_example.js"
+  ],
   "scriptFileList": [     // js 脚本文件
     "MyMod_script_1.js",
     "MyMod_script_2.js"
