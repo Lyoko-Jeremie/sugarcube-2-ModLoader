@@ -39,7 +39,7 @@ node "H:\Code\sugarcube-2\ModLoader\dist-insertTools\insert2html.js" "H:\Code\de
 ```
 Degrees of Lewdity VERSION.html.mod.html
 ```
-打开`Degrees of Lewdity VERSION.html.i18n.html`文件， play
+打开`Degrees of Lewdity VERSION.html.mod.html`文件， play
 
 ----------------
 
@@ -63,7 +63,7 @@ Degrees of Lewdity VERSION.html.mod.html
     "MyMod_style_2.css"
   ],
   "scriptFileList_perload": [   // 预加载的 js 脚本文件 ， 会在引擎初始化前启动， 可以在此处动态修改Passage的内容
-    "MyMod_script_preload_example.js"
+    "MyMod_script_preload_example.js"     // 注意 scriptFileList_perload 文件有固定的格式，参见样例 src/insertTools/MyMod/MyMod_script_preload_example.js
   ],
   "scriptFileList": [     // js 脚本文件
     "MyMod_script_1.js",

@@ -1,4 +1,8 @@
 (() => {
+    // 文件必须以 `(() => {` 在第一行第一个字符开头，以 `})();` 结尾，其他所有代码都必须在这个自调用函数中
+    // 文件的开头会有一个等价的`return`，这个return会由JsPreloader在调用时插入到这个文件的开头
+    // 这样才能确保这个文件的返回值会被JsPreloader正确接收
+
     // 自执行函数，会在mod插入html时执行此处内容
     console.log('MyMod_script_preload_example.js', '  ', '自执行函数，会在mod插入html时执行此处内容');
     const modUtils = window.modUtils;
@@ -41,6 +45,7 @@
         // console.log('MyMod_script_preload_example.js', '  ');
     });
 
+    // 这里的返回值会被JsPreloader接收，如果返回的是一个Promise，则会等待这个Promise执行完毕后再继续执行下一个脚本，或继续初始化引擎
     return Promise.resolve("MyMod_script_preload_example.js ok");
 })();
 
