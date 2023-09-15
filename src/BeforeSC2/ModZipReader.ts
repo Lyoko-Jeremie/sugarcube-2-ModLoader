@@ -58,7 +58,9 @@ export class ModZipReader {
             && every(get(bootJ, 'imgFileReplaceList'), T => isArray(T) && T.length === 2 && isString(T[0]) && isString(T[1]))
             // optional
             && (has(bootJ, 'scriptFileList_perload') ?
-                (isArray(get(bootJ, 'scriptFileList_perload')) && every(get(bootJ, 'addstionFile'), isString)) : true);
+                (isArray(get(bootJ, 'scriptFileList_perload')) && every(get(bootJ, 'scriptFileList_perload'), isString)) : true)
+            && (has(bootJ, 'scriptFileList_earlyload') ?
+                (isArray(get(bootJ, 'scriptFileList_earlyload')) && every(get(bootJ, 'scriptFileList_earlyload'), isString)) : true);
     }
 
     modBootFilePath = 'boot.json';
@@ -104,6 +106,7 @@ export class ModZipReader {
                 imgs: [],
                 imgFileReplaceList: [],
                 scriptFileList_perload: [],
+                scriptFileList_earlyload: [],
                 bootJson: bootJ,
             };
 
@@ -205,6 +208,17 @@ export class ModZipReader {
                         this.modInfo.scriptFileList_perload.push([scPath, data]);
                     } else {
                         console.warn('cannot get scriptFileList_perload file from mod zip:', [this.modInfo.name, scPath])
+                    }
+                }
+            }
+            if (has(bootJ, 'scriptFileList_perload')) {
+                for (const scPath of bootJ.scriptFileList_earlyload) {
+                    const scFile = this.zip.file(scPath);
+                    if (scFile) {
+                        const data = await scFile.async('string');
+                        this.modInfo.scriptFileList_earlyload.push([scPath, data]);
+                    } else {
+                        console.warn('cannot get scriptFileList_earlyload file from mod zip:', [this.modInfo.name, scPath])
                     }
                 }
             }

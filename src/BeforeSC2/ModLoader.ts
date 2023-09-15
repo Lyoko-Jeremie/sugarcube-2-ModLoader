@@ -16,6 +16,7 @@ export interface ModBootJson {
     styleFileList: string[];
     scriptFileList: string[];
     scriptFileList_perload: string[];
+    scriptFileList_earlyload: string[];
     tweeFileList: string[];
     imgFileList: string[];
     // orgin path, replace path
@@ -31,6 +32,8 @@ export interface ModInfo {
     imgFileReplaceList: [string, string][];
     // file name, file contect
     scriptFileList_perload: [string, string][];
+    // file name, file contect
+    scriptFileList_earlyload: [string, string][];
     bootJson: ModBootJson;
 }
 
@@ -157,6 +160,27 @@ export class ModLoader {
                     console.error('ModLoader loadTranslateData() unknown loadType:', [loadType]);
             }
         }
+        await this.initModEarlyLoadScript();
         return Promise.resolve(ok);
+    }
+
+    private async initModEarlyLoadScript() {
+        for (const modName of this.modOrder) {
+            const mod = this.getMod(modName);
+            if (!mod) {
+                console.error('ModLoader initModEarlyLoadScript() (!mod)');
+                continue;
+            }
+            for (const [name, content] of mod.scriptFileList_earlyload) {
+                console.log('ModLoader initModEarlyLoadScript() excute start: ', [name]);
+                try {
+                    const R = await Function(`return ${content}`)();
+                    console.log('ModLoader initModEarlyLoadScript() excute result: ', [name], R);
+                } catch (e) {
+                    console.error('ModLoader initModEarlyLoadScript() excute error: ', [name], e);
+                }
+                console.log('ModLoader initModEarlyLoadScript() excute end: ', [name]);
+            }
+        }
     }
 }

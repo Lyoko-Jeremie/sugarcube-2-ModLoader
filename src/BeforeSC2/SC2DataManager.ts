@@ -1,4 +1,4 @@
-import {SC2DataInfo, SC2DataInfoCache} from './SC2DataInfoCache';
+import {PassageDataItem, SC2DataInfo, SC2DataInfoCache} from './SC2DataInfoCache';
 import {ModDataLoadType, ModInfo, ModLoader} from "./ModLoader";
 import {cloneDeep} from "lodash";
 import {
@@ -72,8 +72,16 @@ export class SC2DataManager {
         return true;
     }
 
+    createNewSC2DataInfoFromNow(): SC2DataInfo {
+        return new SC2DataInfoCache(
+            'orgin',
+            Array.from(this.scriptNode),
+            Array.from(this.styleNode),
+            Array.from(this.passageDataNodeList) as HTMLElement[],
+        );
+    }
 
-    orginSC2DataInfoCache?: SC2DataInfoCache;
+    private orginSC2DataInfoCache?: SC2DataInfoCache;
 
     getSC2DataInfoCache() {
         if (!this.orginSC2DataInfoCache) {
@@ -87,7 +95,7 @@ export class SC2DataManager {
         return this.orginSC2DataInfoCache;
     }
 
-    modLoader?: ModLoader;
+    private modLoader?: ModLoader;
 
     getModLoader() {
         if (!this.modLoader) {
@@ -97,7 +105,7 @@ export class SC2DataManager {
     }
 
 
-    confictResult?: { mod: SC2DataInfo, result: SimulateMergeResult }[];
+    private confictResult?: { mod: SC2DataInfo, result: SimulateMergeResult }[];
 
     async startInit() {
         await this.getModLoader().loadMod([ModDataLoadType.Remote, ModDataLoadType.Local]);
@@ -117,7 +125,7 @@ export class SC2DataManager {
         return this.confictResult;
     }
 
-    cSC2DataInfoAfterPatchCache?: SC2DataInfoCache;
+    private cSC2DataInfoAfterPatchCache?: SC2DataInfoCache;
 
     getSC2DataInfoAfterPatch() {
         if (!this.cSC2DataInfoAfterPatchCache) {
@@ -176,7 +184,7 @@ export class SC2DataManager {
             return acc + `/* twine-user-stylesheet #${T.id}: "${T.name}" */\n${T.content}\n`;
         }, '');
         const newScriptNode = document.createElement('script');
-        newScriptNode.type = 'text/twine-javascript';
+        newScriptNode.setAttribute('type', 'text/twine-javascript');
         newScriptNode.setAttribute('role', 'script');
         newScriptNode.setAttribute('id', 'twine-user-script');
         newScriptNode.innerHTML = newScriptNodeContent;
@@ -185,7 +193,7 @@ export class SC2DataManager {
             return acc + `/* twine-user-script #${T.id}: "${T.name}" */\n${T.content}\n`;
         }, '');
         const newStyleNode = document.createElement('style');
-        newStyleNode.type = 'text/twine-css';
+        newStyleNode.setAttribute('type', 'text/twine-css');
         newStyleNode.setAttribute('role', 'stylesheet');
         newStyleNode.setAttribute('id', 'twine-user-stylesheet');
         newStyleNode.innerHTML = newStyleNodeContent;
@@ -193,22 +201,7 @@ export class SC2DataManager {
         // console.log('modSC2DataInfoCache.passageDataItems.items', modSC2DataInfoCache.passageDataItems.items);
 
         const newPassageDataNode = modSC2DataInfoCache.passageDataItems.items.map(T => {
-            const s = document.createElement('tw-passagedata');
-            if (T.id && T.id > 0) {
-                s.setAttribute('pid', '' + T.id);
-            }
-            s.setAttribute('name', T.name);
-            // console.log('tags', T.tags);
-            s.setAttribute('tags', T.tags?.join(' ') || '');
-            if (T.position) {
-                s.setAttribute('position', T.position);
-            }
-            if (T.size) {
-                s.setAttribute('size', T.size);
-            }
-            // s.innerText = `:: Widgets ${T.name}${T.tags?.length > 0 ? ` [${T.tags.join(' ')}]` : ''}\n${T.content}\n`;
-            s.innerText = T.content;
-            return s;
+            return this.makePassageNode(T);
         });
 
         const rootNode = this.rootNode;
@@ -236,6 +229,35 @@ export class SC2DataManager {
 
         // update cache
         this.flushAfterPatchCache();
+    }
+
+    makePassageNode(T: PassageDataItem) {
+        const s = document.createElement('tw-passagedata');
+        if (T.id && T.id > 0) {
+            s.setAttribute('pid', '' + T.id);
+        }
+        s.setAttribute('name', T.name);
+        // console.log('tags', T.tags);
+        s.setAttribute('tags', T.tags?.join(' ') || '');
+        if (T.position) {
+            s.setAttribute('position', T.position);
+        }
+        if (T.size) {
+            s.setAttribute('size', T.size);
+        }
+        // s.innerText = `:: Widgets ${T.name}${T.tags?.length > 0 ? ` [${T.tags.join(' ')}]` : ''}\n${T.content}\n`;
+        s.innerText = T.content;
+        return s;
+    }
+
+    rePlacePassage(toRemovePassageDataNodeList: Element[], toAddPassageDataNodeList: Element[],) {
+        const rootNode = this.rootNode;
+        for (const node of toRemovePassageDataNodeList) {
+            rootNode.removeChild(node);
+        }
+        for (const node of toAddPassageDataNodeList) {
+            rootNode.appendChild(node);
+        }
     }
 
 }

@@ -1,8 +1,9 @@
 import {SC2DataManager} from "./SC2DataManager";
 import {isSafeInteger} from "lodash";
 import {Twee2Passage, Twee2PassageR} from "./ModZipReader";
-import {SC2DataInfo} from "./SC2DataInfoCache";
+import {PassageDataItem, SC2DataInfo, SC2DataInfoCache} from "./SC2DataInfoCache";
 import {SimulateMergeResult} from "./SimulateMerge";
+import {replaceMergeSC2DataInfoCache, replaceMergeSC2DataInfoCacheForce} from "./MergeSC2DataInfoCache";
 
 export class ModUtils {
     constructor(
@@ -24,6 +25,31 @@ export class ModUtils {
 
     getAllPassageData(name: string) {
         return this.pSC2DataManager.getSC2DataInfoAfterPatch().passageDataItems.items;
+    }
+
+    createNewSC2DataInfoFromNow() {
+        return this.pSC2DataManager.getSC2DataInfoAfterPatch();
+    }
+
+    updatePassageDataMany(pd: PassageDataItem[], replaceForce: boolean = false) {
+        const tt = this.pSC2DataManager.getSC2DataInfoAfterPatch();
+        const ti = new SC2DataInfo('temp');
+        ti.passageDataItems.items = pd;
+        ti.passageDataItems.fillMap();
+
+        if (replaceForce) {
+            const nt = replaceMergeSC2DataInfoCacheForce(tt, ti);
+        } else {
+            const nt = replaceMergeSC2DataInfoCache(tt, ti);
+        }
+
+        this.pSC2DataManager.rePlacePassage(
+            tt.passageDataNodes,
+            ti.passageDataItems.items.map(item => {
+                return this.pSC2DataManager.makePassageNode(item);
+            }),
+        );
+
     }
 
     updatePassageData(

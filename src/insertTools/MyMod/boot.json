@@ -5,10 +5,14 @@
     "MyMod_style_1.css",
     "MyMod_style_2.css"
   ],
+  "scriptFileList_earlyload": [
+    "MyMod_script_earlyload_example.js"
+  ],
   "scriptFileList_perload": [
     "MyMod_script_preload_example.js",
     "MyMod_script_preload_example2.js",
-    "MyMod_script_preload_example3.js"
+    "MyMod_script_preload_example3.js",
+    "MyMod_script_preload_example_with_earlyload.js"
   ],
   "scriptFileList": [
     "MyMod_script_hook_example.js",

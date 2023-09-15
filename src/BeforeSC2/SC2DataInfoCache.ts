@@ -56,16 +56,18 @@ export class CacheRecord<T extends { name: string, content: string }> {
     map: Map<string, T> = new Map<string, T>();
     noName: T[] = [];
 
-    replaceMerge(c: CacheRecord<T>) {
+    replaceMerge(c: CacheRecord<T>, noWarnning: boolean = false) {
         // console.log('CacheRecord.replaceMerge() this.items', this.items.length);
         // console.log('CacheRecord.replaceMerge() this.map.size', this.map.size);
         for (const item of c.items) {
             if (this.map.has(item.name)) {
-                console.warn('CacheRecord.replaceMerge() has duplicate name:',
-                    [item.name],
-                    [this.cacheRecordName, this.dataSource],
-                    [c.cacheRecordName, c.dataSource],
-                );
+                if (!noWarnning) {
+                    console.warn('CacheRecord.replaceMerge() has duplicate name:',
+                        [item.name],
+                        [this.cacheRecordName, this.dataSource],
+                        [c.cacheRecordName, c.dataSource],
+                    );
+                }
             }
             this.map.set(item.name, item);
         }
