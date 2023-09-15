@@ -6,7 +6,8 @@
     "MyMod_style_2.css"
   ],
   "scriptFileList_earlyload": [
-    "MyMod_script_earlyload_example.js"
+    "MyMod_script_earlyload_example.js",
+    "MyMod_script_earlyload_example_readzip.js"
   ],
   "scriptFileList_inject_early": [
     "MyMod_script_inject_early_example.js"

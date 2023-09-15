@@ -33,10 +33,19 @@ export function Twee2Passage(s: string): Twee2PassageR[] {
 export class ModZipReader {
     constructor(
         public zip: JSZip,
+        public loaderBase: LoaderBase,
     ) {
     }
 
     modInfo?: ModInfo;
+
+    getModInfo() {
+        return this.modInfo;
+    }
+
+    getZipFile() {
+        return this.zip;
+    }
 
     validateBootJson(bootJ: any): bootJ is ModBootJson {
         return bootJ
@@ -112,6 +121,7 @@ export class ModZipReader {
                 scriptFileList_inject_early: [],
                 bootJson: bootJ,
             };
+            this.loaderBase.addZipFile(bootJ.name, this);
 
             // load file
             for (const imgRPath of bootJ.imgFileReplaceList) {
@@ -244,10 +254,26 @@ export class ModZipReader {
     }
 }
 
-export class LocalLoader {
+export class LoaderBase {
+    modList: ModZipReader[] = [];
+    modZipList: Map<string, ModZipReader[]> = new Map<string, ModZipReader[]>();
+
+    getZipFile(name: string) {
+        return this.modZipList.get(name);
+    }
+
+    addZipFile(name: string, zip: ModZipReader) {
+        if (this.modZipList.has(name)) {
+            this.modZipList.get(name)!.push(zip);
+            return;
+        }
+        this.modZipList.set(name, [zip]);
+    }
+}
+
+export class LocalLoader extends LoaderBase {
     modDataValueZipListPath = 'modDataValueZipList';
 
-    modList: ModZipReader[] = [];
 
     async loadModDataFromValueZip(): Promise<boolean> {
         if ((window as any)[this.modDataValueZipListPath]) {
@@ -260,7 +286,7 @@ export class LocalLoader {
                 for (const modDataValueZip of modDataValueZipList) {
                     try {
                         const m = await JSZip.loadAsync(modDataValueZip, {base64: true}).then(zip => {
-                            return new ModZipReader(zip);
+                            return new ModZipReader(zip, this);
                         });
                         if (await m.init()) {
                             this.modList.push(m);
@@ -277,9 +303,7 @@ export class LocalLoader {
     }
 }
 
-export class RemoteLoader {
-
-    modList: ModZipReader[] = [];
+export class RemoteLoader extends LoaderBase {
 
     modDataRemoteListPath = 'modList.json';
 
@@ -298,7 +322,7 @@ export class RemoteLoader {
                         .then(T => T.blob())
                         .then(T => JSZip.loadAsync(T))
                         .then(zip => {
-                            return new ModZipReader(zip);
+                            return new ModZipReader(zip, this);
                         });
                     if (await m.init()) {
                         this.modList.push(m);

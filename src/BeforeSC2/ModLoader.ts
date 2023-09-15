@@ -116,8 +116,12 @@ export class ModLoader {
         return imgFileReplace;
     }
 
-    modLocalLoader?: LocalLoader;
-    modRemoteLoader?: RemoteLoader;
+    private modLocalLoader?: LocalLoader;
+    private modRemoteLoader?: RemoteLoader;
+
+    public getModZipLoader() {
+        return this.modLocalLoader || this.modRemoteLoader;
+    }
 
     public async loadMod(loadOrder: ModDataLoadType[]): Promise<boolean> {
         let ok = false;
