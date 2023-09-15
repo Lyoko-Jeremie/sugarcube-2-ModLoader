@@ -60,7 +60,9 @@ export class ModZipReader {
             && (has(bootJ, 'scriptFileList_perload') ?
                 (isArray(get(bootJ, 'scriptFileList_perload')) && every(get(bootJ, 'scriptFileList_perload'), isString)) : true)
             && (has(bootJ, 'scriptFileList_earlyload') ?
-                (isArray(get(bootJ, 'scriptFileList_earlyload')) && every(get(bootJ, 'scriptFileList_earlyload'), isString)) : true);
+                (isArray(get(bootJ, 'scriptFileList_earlyload')) && every(get(bootJ, 'scriptFileList_earlyload'), isString)) : true)
+            && (has(bootJ, 'scriptFileList_inject_early') ?
+                (isArray(get(bootJ, 'scriptFileList_inject_early')) && every(get(bootJ, 'scriptFileList_inject_early'), isString)) : true);
     }
 
     modBootFilePath = 'boot.json';
@@ -107,6 +109,7 @@ export class ModZipReader {
                 imgFileReplaceList: [],
                 scriptFileList_perload: [],
                 scriptFileList_earlyload: [],
+                scriptFileList_inject_early: [],
                 bootJson: bootJ,
             };
 
@@ -211,12 +214,23 @@ export class ModZipReader {
                     }
                 }
             }
-            if (has(bootJ, 'scriptFileList_perload')) {
+            if (has(bootJ, 'scriptFileList_earlyload')) {
                 for (const scPath of bootJ.scriptFileList_earlyload) {
                     const scFile = this.zip.file(scPath);
                     if (scFile) {
                         const data = await scFile.async('string');
                         this.modInfo.scriptFileList_earlyload.push([scPath, data]);
+                    } else {
+                        console.warn('cannot get scriptFileList_earlyload file from mod zip:', [this.modInfo.name, scPath])
+                    }
+                }
+            }
+            if (has(bootJ, 'scriptFileList_inject_early')) {
+                for (const scPath of bootJ.scriptFileList_inject_early) {
+                    const scFile = this.zip.file(scPath);
+                    if (scFile) {
+                        const data = await scFile.async('string');
+                        this.modInfo.scriptFileList_inject_early.push([scPath, data]);
                     } else {
                         console.warn('cannot get scriptFileList_earlyload file from mod zip:', [this.modInfo.name, scPath])
                     }

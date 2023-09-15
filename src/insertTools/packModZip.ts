@@ -18,6 +18,7 @@ export interface ModBootJson {
     scriptFileList: string[];
     scriptFileList_perload?: string[];
     scriptFileList_earlyload?: string[];
+    scriptFileList_inject_early?: string[];
     tweeFileList: string[];
     imgFileList: string[];
     addstionFile: string[];
@@ -49,7 +50,9 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
         && (has(bootJ, 'scriptFileList_perload') ?
             (isArray(get(bootJ, 'scriptFileList_perload')) && every(get(bootJ, 'scriptFileList_perload'), isString)) : true)
         && (has(bootJ, 'scriptFileList_earlyload') ?
-            (isArray(get(bootJ, 'scriptFileList_earlyload')) && every(get(bootJ, 'scriptFileList_earlyload'), isString)) : true);
+            (isArray(get(bootJ, 'scriptFileList_earlyload')) && every(get(bootJ, 'scriptFileList_earlyload'), isString)) : true)
+        && (has(bootJ, 'scriptFileList_inject_early') ?
+            (isArray(get(bootJ, 'scriptFileList_inject_early')) && every(get(bootJ, 'scriptFileList_inject_early'), isString)) : true);
 }
 
 // NOTE: 同一个 twee 文件只能包含一个 passage ， 文件要以 passage 命名
@@ -105,6 +108,12 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
     }
     if (bootJson.scriptFileList_earlyload) {
         for (const scriptPath of bootJson.scriptFileList_earlyload) {
+            const scriptFile = await promisify(fs.readFile)(scriptPath, {encoding: 'utf-8'});
+            zip.file(scriptPath, scriptFile);
+        }
+    }
+    if (bootJson.scriptFileList_inject_early) {
+        for (const scriptPath of bootJson.scriptFileList_inject_early) {
             const scriptFile = await promisify(fs.readFile)(scriptPath, {encoding: 'utf-8'});
             zip.file(scriptPath, scriptFile);
         }

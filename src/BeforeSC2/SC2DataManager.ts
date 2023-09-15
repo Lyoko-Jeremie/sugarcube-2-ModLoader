@@ -99,7 +99,7 @@ export class SC2DataManager {
 
     getModLoader() {
         if (!this.modLoader) {
-            this.modLoader = new ModLoader(this.getSC2DataInfoCache());
+            this.modLoader = new ModLoader(this.getSC2DataInfoCache(), this);
         }
         return this.modLoader;
     }

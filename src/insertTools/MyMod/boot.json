@@ -8,6 +8,9 @@
   "scriptFileList_earlyload": [
     "MyMod_script_earlyload_example.js"
   ],
+  "scriptFileList_inject_early": [
+    "MyMod_script_inject_early_example.js"
+  ],
   "scriptFileList_perload": [
     "MyMod_script_preload_example.js",
     "MyMod_script_preload_example2.js",

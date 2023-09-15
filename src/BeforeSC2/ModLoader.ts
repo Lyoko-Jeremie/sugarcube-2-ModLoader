@@ -3,6 +3,7 @@ import {every, get, isArray, isString} from 'lodash';
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {simulateMergeSC2DataInfoCache} from "./SimulateMerge";
 import {LocalLoader, RemoteLoader} from "./ModZipReader";
+import {SC2DataManager} from "./SC2DataManager";
 
 export interface ModImg {
     // base64
@@ -17,6 +18,7 @@ export interface ModBootJson {
     scriptFileList: string[];
     scriptFileList_perload: string[];
     scriptFileList_earlyload: string[];
+    scriptFileList_inject_early: string[];
     tweeFileList: string[];
     imgFileList: string[];
     // orgin path, replace path
@@ -34,6 +36,8 @@ export interface ModInfo {
     scriptFileList_perload: [string, string][];
     // file name, file contect
     scriptFileList_earlyload: [string, string][];
+    // file name, file contect
+    scriptFileList_inject_early: [string, string][];
     bootJson: ModBootJson;
 }
 
@@ -46,6 +50,7 @@ export class ModLoader {
 
     constructor(
         public orginSC2DataInfoCache: SC2DataInfo,
+        public gSC2DataManager?: SC2DataManager,
     ) {
     }
 
@@ -160,8 +165,35 @@ export class ModLoader {
                     console.error('ModLoader loadTranslateData() unknown loadType:', [loadType]);
             }
         }
+        this.initModInjectEarlyLoadInDomScript();
         await this.initModEarlyLoadScript();
         return Promise.resolve(ok);
+    }
+
+    private initModInjectEarlyLoadInDomScript() {
+        for (const modName of this.modOrder) {
+            const mod = this.getMod(modName);
+            if (!mod) {
+                console.error('ModLoader initModInjectEarlyLoadScript() (!mod)');
+                continue;
+            }
+            for (const [name, content] of mod.scriptFileList_inject_early) {
+                console.log('ModLoader initModInjectEarlyLoadScript() inject start: ', [name]);
+                const script = document.createElement('script');
+                script.innerHTML = content;
+                script.setAttribute('scriptName', (name));
+                script.setAttribute('modName', (modName));
+                if (this.gSC2DataManager) {
+                    // insert before SC2 data rootNode
+                    this.gSC2DataManager?.rootNode.before(script);
+                } else {
+                    // or insert to head
+                    console.warn('ModLoader initModInjectEarlyLoadScript() gSC2DataManager is undefined, insert to head');
+                    document.head.appendChild(script);
+                }
+                console.log('ModLoader initModInjectEarlyLoadScript() inject end: ', [name]);
+            }
+        }
     }
 
     private async initModEarlyLoadScript() {
