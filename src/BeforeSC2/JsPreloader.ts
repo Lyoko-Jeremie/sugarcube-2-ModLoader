@@ -15,7 +15,7 @@ export class JsPreloader {
                 console.error('JsPreloader startLoad() mod not found: ', modName);
                 return;
             }
-            for (const T of mod.scriptFileList_perload) {
+            for (const T of mod.scriptFileList_preload) {
                 console.log('JsPreloader startLoad() excute start: ', [T[0]]);
                 try {
                     const R = await Function(`return ${T[1]}`)();
