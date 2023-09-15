@@ -156,10 +156,26 @@ export class ModUtils {
         return this.pSC2DataManager.getConfictResult() || [];
     }
 
+    /**
+     * 将字符串对正则表达式转义，用于直接将字符串用在正则表达式匹配前的消毒处理
+     * @param pattern   需要转义的字符串
+     * @return string   转义后的字符串
+     */
     escapedPatternString(pattern: string): string {
         return pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
+    /**
+     * 尝试在指定位置附近替换字符串
+     * @param content       原始字符串
+     * @param searchString  需要查找的字符串
+     * @param replaceString     需要替换的字符串
+     * @param positionHint      查找的位置
+     * @param tolerance1        第一阶快速查找容差 见 @ref tryStringSearch
+     * @param tolerance2Negative    第二阶正则查找（负方向）容差 见 @ref tryStringSearch
+     * @param tolerance2Positive    第二阶正则查找（正方向）容差 见 @ref tryStringSearch
+     * @return  string  替换后的字符串
+     */
     tryStringReplace(content: string,
                      searchString: string,
                      replaceString: string,
@@ -187,6 +203,16 @@ export class ModUtils {
         return s;
     }
 
+    /**
+     * 尝试在指定位置附近查找字符串
+     * @param content  原始字符串
+     * @param searchString  需要查找的字符串
+     * @param positionHint  查找的位置
+     * @param tolerance1    第一阶快速查找容差，（常数字符串比对），如果为0则不使用。此方法可在正负tolerance1个位置范围下查找
+     * @param tolerance2Negative    第二阶正则查找（负方向）容差，（正则字符串比对）。
+     * @param tolerance2Positive    第二阶正则查找（正方向）容差，（正则字符串比对）。如果正负都为0则不使用。此方法可在正负tolerance2Negative个位置范围下查找。
+     * @return  number  查找到的位置，如果没有找到则返回undefined
+     */
     tryStringSearch(content: string,
                     searchString: string,
                     positionHint: number,
@@ -229,6 +255,13 @@ export class ModUtils {
         return undefined;
     }
 
+    /**
+     * 在指定位置插入字符串
+     * @param content  原始字符串
+     * @param insertString  需要插入的字符串
+     * @param position  插入的位置
+     * @return string   插入后的字符串
+     */
     insertStringInPosition(content: string, insertString: string, position: number) {
         return content.slice(0, position) + insertString + content.slice(position);
     }
