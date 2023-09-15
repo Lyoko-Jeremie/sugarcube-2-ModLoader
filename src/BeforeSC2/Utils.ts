@@ -169,38 +169,20 @@ export class ModUtils {
                      tolerance2Positive: number = 0,
     ) {
         let s = content;
-        const from = searchString;
         const to = replaceString;
-        const pos = positionHint;
-        if (s.substring(pos, pos + from.length) === from) {
-            s = s.substring(0, pos) + to + s.substring(pos + from.length);
-            return s;
-        }
-        if (tolerance1 > 0) {
-            for (let i = pos - tolerance1; i <= pos + tolerance1; i++) {
-                if (s.substring(i, i + from.length) === from) {
-                    s = s.substring(0, i) + to + s.substring(i + from.length);
-                    return s;
-                }
-            }
-        }
-        if (tolerance2Negative !== 0 || tolerance2Positive !== 0) {
-            try {
-                let re: RegExp | undefined = new RegExp(this.escapedPatternString(from), '');
-                // re.lastIndex = pos;
-                const startPos = Math.max(0, pos - tolerance2Negative);
-                const endPos = Math.min(s.length, pos + from.length + tolerance2Positive);
-                const mm = re.exec(s.substring(startPos, endPos));
-                if (mm) {
-                    const pStart = startPos + mm.index;
-                    const pEnd = pStart + from.length;
-                    s = s.substring(0, pStart) + to + s.substring(pEnd);
-                }
-                re = undefined;
-                return s;
-            } catch (e) {
-                console.error(e);
-            }
+        const pStart = this.tryStringSearch(
+            content,
+            searchString,
+            positionHint,
+            tolerance1,
+            tolerance2Negative,
+            tolerance2Positive,
+        );
+        if (pStart) {
+            s = s.substring(0, pStart) + to + s.substring(pStart + s.length);
+        } else {
+            console.warn('tryStringReplace() cannot find',
+                [[content], [searchString], [replaceString], positionHint, tolerance1, tolerance2Negative, tolerance2Positive]);
         }
         return s;
     }
