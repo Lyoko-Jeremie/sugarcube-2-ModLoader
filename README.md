@@ -54,7 +54,7 @@ Degrees of Lewdity VERSION.html.mod.html
 
 格式如下（样例 src/insertTools/MyMod/boot.json）：
 
-```json
+```json5
 {
   "name": "MyMod",    // mod名字
   "version": "1.0.0", // mod版本
@@ -62,7 +62,13 @@ Degrees of Lewdity VERSION.html.mod.html
     "MyMod_style_1.css",
     "MyMod_style_2.css"
   ],
-  "scriptFileList_preload": [   // 预加载的 js 脚本文件 ， 会在引擎初始化前启动， 可以在此处动态修改Passage的内容
+  "scriptFileList_inject_early": [  // 提前注入的 js 脚本 ， 会在当前mod加载后立即插入到dom中由浏览器按照script的标注执行方式执行
+    "MyMod_script_inject_early_example.js"
+  ],
+  "scriptFileList_earlyload": [     // 提前加载的 js 脚本 ， 会在当前mod加载后，inject_early脚本全部插入完成后，由modloader执行并等待异步指令返回，可以在这里读取到未修改的Passage的内容
+    "MyMod_script_earlyload_example.js"
+  ],
+  "scriptFileList_preload": [     // 预加载的 js 脚本文件 ， 会在引擎初始化前、mod的数据文件全部加载并合并到html的tw-storydata中后，由modloader执行并等待异步指令返回， 可以在此处调用modloader的API读取最新的Passage数据并动态修改覆盖Passage的内容
     "MyMod_script_preload_example.js"     // 注意 scriptFileList_preload 文件有固定的格式，参见样例 src/insertTools/MyMod/MyMod_script_preload_example.js
   ],
   "scriptFileList": [     // js 脚本文件
@@ -142,5 +148,15 @@ MyMod.mod.zip
 11. 使用imgFileReplaceList时请小心谨慎。
 
 
+---
+
+
+对于一个想要修改passage的mod，有这么4个可以修改的地方
+1. scriptFileList_inject_early ， 这个会在当前mod读取之后，“立即”插入到script脚本由浏览器按照script标签的标准执行，这里可以调用ModLoader的API，可以读取未经修改的SC2 data （包括原始的passage）（如果其他mod没有在inject_early中修改）
+2. scriptFileList_earlyload  ，这个会在当前mod读取之后，inject_early 脚本插入完之后，由modloader执行并等待异步指令返回，这里可以调用ModLoader的API，可以自行异步操作，干一些远程加载之类的活，也可以在这里读取未经修改的SC2 data（包括原始的passage）（如果其他mod没有在inject_early中修改也没有在earlyload中修改）
+3. tweeFileList ，这个是mod的主体，会在modloader读取所有mod之后，做【1 合并所有mod追加的数据，2 将合并结果覆盖到原始游戏】的过程应用修改到原始游戏SC2 data上
+4. scriptFileList_preload ， 这个会在mod文件全部应用到SC2 data之后由modloader执行并等待异步操作返回，这里可以像earlyload一样做异步工作，也可以读取到mod应用之后的SC2 data
+
+上面的步骤结束之后SC2引擎才会开始启动，读取SC2 data，然后开始游戏，整个步骤都是在加载屏幕（那个转圈圈）完成的。
 
 
