@@ -64,10 +64,11 @@ export class ModUtils {
         ti.passageDataItems.items = pd;
         ti.passageDataItems.fillMap();
 
+        let nt;
         if (replaceForce) {
-            const nt = replaceMergeSC2DataInfoCacheForce(tt, ti);
+            nt = replaceMergeSC2DataInfoCacheForce(tt, ti);
         } else {
-            const nt = replaceMergeSC2DataInfoCache(tt, ti);
+            nt = replaceMergeSC2DataInfoCache(tt, ti);
         }
 
         this.pSC2DataManager.rePlacePassage(
@@ -78,6 +79,27 @@ export class ModUtils {
         );
 
         return this.pSC2DataManager.flushAfterPatchCache();
+    }
+
+    /**
+     * 批量更新passage数据，如果存在则覆盖，如果不存在则创建
+     * @param pd 需要更新的passage列表
+     * @param replaceForce 强制覆盖而不提示警告
+     */
+    updatePassageDataManyEarly(pd: PassageDataItem[], oldSC2Data: SC2DataInfoCache) {
+        const ti = new SC2DataInfo('temp');
+        ti.passageDataItems.items = pd;
+        ti.passageDataItems.fillMap();
+
+        this.pSC2DataManager.rePlacePassage(
+            oldSC2Data.passageDataNodes,
+            ti.passageDataItems.items.map(item => {
+                return this.pSC2DataManager.makePassageNode(item);
+            }),
+        );
+
+        this.pSC2DataManager.flushAfterPatchCache();
+        this.pSC2DataManager.earlyResetSC2DataInfoCache();
     }
 
     /**

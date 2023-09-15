@@ -83,6 +83,12 @@ export class SC2DataManager {
 
     private orginSC2DataInfoCache?: SC2DataInfoCache;
 
+    earlyResetSC2DataInfoCache() {
+        this.orginSC2DataInfoCache = undefined;
+        this.getSC2DataInfoCache();
+        this.flushAfterPatchCache();
+    }
+
     getSC2DataInfoCache() {
         if (!this.orginSC2DataInfoCache) {
             this.orginSC2DataInfoCache = new SC2DataInfoCache(
@@ -251,12 +257,20 @@ export class SC2DataManager {
     }
 
     rePlacePassage(toRemovePassageDataNodeList: Element[], toAddPassageDataNodeList: Element[],) {
+        console.log('rePlacePassage()', toRemovePassageDataNodeList, toAddPassageDataNodeList);
         const rootNode = this.rootNode;
+        console.log('rePlacePassage() rootNode', rootNode);
         for (const node of toRemovePassageDataNodeList) {
-            rootNode.removeChild(node);
+            const rn = rootNode.removeChild(node);
+            if (!rn) {
+                console.log('rePlacePassage() (!rn)', [node]);
+            }
         }
         for (const node of toAddPassageDataNodeList) {
-            rootNode.appendChild(node);
+            const an = rootNode.appendChild(node);
+            if (!an) {
+                console.log('rePlacePassage() (!an)', [node]);
+            }
         }
     }
 

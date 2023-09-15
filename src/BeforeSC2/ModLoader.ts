@@ -23,6 +23,7 @@ export interface ModBootJson {
     imgFileList: string[];
     // orgin path, replace path
     imgFileReplaceList: [string, string][];
+    addstionFile: string[];
 }
 
 export interface ModInfo {
