@@ -16,7 +16,7 @@ export interface ModBootJson {
     version: string;
     styleFileList: string[];
     scriptFileList: string[];
-    scriptFileList_perload: string[];
+    scriptFileList_preload: string[];
     scriptFileList_earlyload: string[];
     scriptFileList_inject_early: string[];
     tweeFileList: string[];
@@ -33,7 +33,7 @@ export interface ModInfo {
     // orgin path, replace path
     imgFileReplaceList: [string, string][];
     // file name, file contect
-    scriptFileList_perload: [string, string][];
+    scriptFileList_preload: [string, string][];
     // file name, file contect
     scriptFileList_earlyload: [string, string][];
     // file name, file contect

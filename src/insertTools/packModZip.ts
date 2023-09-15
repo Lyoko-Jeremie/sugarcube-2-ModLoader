@@ -16,7 +16,7 @@ export interface ModBootJson {
     version: string;
     styleFileList: string[];
     scriptFileList: string[];
-    scriptFileList_perload?: string[];
+    scriptFileList_preload?: string[];
     scriptFileList_earlyload?: string[];
     scriptFileList_inject_early?: string[];
     tweeFileList: string[];
@@ -47,8 +47,8 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
         && isArray(get(bootJ, 'addstionFile'))
         && every(get(bootJ, 'addstionFile'), isString)
         // optional
-        && (has(bootJ, 'scriptFileList_perload') ?
-            (isArray(get(bootJ, 'scriptFileList_perload')) && every(get(bootJ, 'scriptFileList_perload'), isString)) : true)
+        && (has(bootJ, 'scriptFileList_preload') ?
+            (isArray(get(bootJ, 'scriptFileList_preload')) && every(get(bootJ, 'scriptFileList_preload'), isString)) : true)
         && (has(bootJ, 'scriptFileList_earlyload') ?
             (isArray(get(bootJ, 'scriptFileList_earlyload')) && every(get(bootJ, 'scriptFileList_earlyload'), isString)) : true)
         && (has(bootJ, 'scriptFileList_inject_early') ?

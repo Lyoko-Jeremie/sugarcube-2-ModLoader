@@ -57,8 +57,8 @@ export class ModZipReader {
             && isArray(get(bootJ, 'imgFileReplaceList'))
             && every(get(bootJ, 'imgFileReplaceList'), T => isArray(T) && T.length === 2 && isString(T[0]) && isString(T[1]))
             // optional
-            && (has(bootJ, 'scriptFileList_perload') ?
-                (isArray(get(bootJ, 'scriptFileList_perload')) && every(get(bootJ, 'scriptFileList_perload'), isString)) : true)
+            && (has(bootJ, 'scriptFileList_preload') ?
+                (isArray(get(bootJ, 'scriptFileList_preload')) && every(get(bootJ, 'scriptFileList_preload'), isString)) : true)
             && (has(bootJ, 'scriptFileList_earlyload') ?
                 (isArray(get(bootJ, 'scriptFileList_earlyload')) && every(get(bootJ, 'scriptFileList_earlyload'), isString)) : true)
             && (has(bootJ, 'scriptFileList_inject_early') ?
@@ -107,7 +107,7 @@ export class ModZipReader {
                 cache: new SC2DataInfo(bootJ.name),
                 imgs: [],
                 imgFileReplaceList: [],
-                scriptFileList_perload: [],
+                scriptFileList_preload: [],
                 scriptFileList_earlyload: [],
                 scriptFileList_inject_early: [],
                 bootJson: bootJ,
@@ -203,14 +203,14 @@ export class ModZipReader {
             this.modInfo.cache.scriptFileItems.fillMap();
 
             // optional
-            if (has(bootJ, 'scriptFileList_perload')) {
-                for (const scPath of bootJ.scriptFileList_perload) {
+            if (has(bootJ, 'scriptFileList_preload')) {
+                for (const scPath of bootJ.scriptFileList_preload) {
                     const scFile = this.zip.file(scPath);
                     if (scFile) {
                         const data = await scFile.async('string');
-                        this.modInfo.scriptFileList_perload.push([scPath, data]);
+                        this.modInfo.scriptFileList_preload.push([scPath, data]);
                     } else {
-                        console.warn('cannot get scriptFileList_perload file from mod zip:', [this.modInfo.name, scPath])
+                        console.warn('cannot get scriptFileList_preload file from mod zip:', [this.modInfo.name, scPath])
                     }
                 }
             }
