@@ -73,7 +73,7 @@ export class ModUtils {
 
         this.pSC2DataManager.rePlacePassage(
             tt.passageDataNodes,
-            ti.passageDataItems.items.map(item => {
+            nt.passageDataItems.items.map(item => {
                 return this.pSC2DataManager.makePassageNode(item);
             }),
         );
