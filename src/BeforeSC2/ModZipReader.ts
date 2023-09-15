@@ -15,10 +15,11 @@ export function Twee2Passage(s: string): Twee2PassageR[] {
     //      :: Widgets Bodywriting Objects
     //      :: Widgets Bodywriting Objects [widget asdasd]
     const r = s.split(/^(:: +((?:[^:"\\/\n\r\[\] ]+ *)+)(?:(?: +\[((?:\w+ *)+)\] *)?|))$/gm);
+    // console.log('Twee2Passage split ', r, [s]);
     // ['xxx', ':: Widgets Bodywriting Objects [widget]', 'Widgets', 'Bodywriting Objects', 'widget', 'xxx']
     const rr: Twee2PassageR[] = [];
     for (let i = 0; i < r.length; i++) {
-        if (r[i] === 'Widgets') {
+        if (r[i].startsWith(':: ')) {
             rr.push({
                 name: r[++i],
                 tags: r[++i]?.split(' ') || [],
@@ -168,7 +169,7 @@ export class ModZipReader {
                 if (imgFile) {
                     const data = await imgFile.async('string');
                     const tp = Twee2Passage(data);
-                    // console.log('Twee2Passage', tp);
+                    // console.log('Twee2Passage', tp, [data]);
                     for (const p of tp) {
                         this.replaceImgWithBase64String(p.contect);
                         this.modInfo.cache.passageDataItems.items.push({
