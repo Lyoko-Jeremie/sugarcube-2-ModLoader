@@ -178,11 +178,11 @@ export class ModLoader {
         for (const modName of this.modOrder) {
             const mod = this.getMod(modName);
             if (!mod) {
-                console.error('ModLoader initModInjectEarlyLoadScript() (!mod)');
+                console.error('ModLoader ====== initModInjectEarlyLoadScript() (!mod)');
                 continue;
             }
             for (const [name, content] of mod.scriptFileList_inject_early) {
-                console.log('ModLoader initModInjectEarlyLoadScript() inject start: ', [name]);
+                console.log('ModLoader ====== initModInjectEarlyLoadScript() inject start: ', [name]);
                 const script = document.createElement('script');
                 script.innerHTML = content;
                 script.setAttribute('scriptName', (name));
@@ -192,10 +192,10 @@ export class ModLoader {
                     this.gSC2DataManager?.rootNode.before(script);
                 } else {
                     // or insert to head
-                    console.warn('ModLoader initModInjectEarlyLoadScript() gSC2DataManager is undefined, insert to head');
+                    console.warn('ModLoader ====== initModInjectEarlyLoadScript() gSC2DataManager is undefined, insert to head');
                     document.head.appendChild(script);
                 }
-                console.log('ModLoader initModInjectEarlyLoadScript() inject end: ', [name]);
+                console.log('ModLoader ====== initModInjectEarlyLoadScript() inject end: ', [name]);
             }
         }
     }
@@ -204,18 +204,18 @@ export class ModLoader {
         for (const modName of this.modOrder) {
             const mod = this.getMod(modName);
             if (!mod) {
-                console.error('ModLoader initModEarlyLoadScript() (!mod)');
+                console.error('ModLoader ====== initModEarlyLoadScript() (!mod)');
                 continue;
             }
             for (const [name, content] of mod.scriptFileList_earlyload) {
-                console.log('ModLoader initModEarlyLoadScript() excute start: ', [name]);
+                console.log('ModLoader ====== initModEarlyLoadScript() excute start: ', [name]);
                 try {
                     const R = await Function(`return ${content}`)();
-                    console.log('ModLoader initModEarlyLoadScript() excute result: ', [name], R);
+                    console.log('ModLoader ====== initModEarlyLoadScript() excute result: ', [name], R);
                 } catch (e) {
-                    console.error('ModLoader initModEarlyLoadScript() excute error: ', [name], e);
+                    console.error('ModLoader ====== initModEarlyLoadScript() excute error: ', [name], e);
                 }
-                console.log('ModLoader initModEarlyLoadScript() excute end: ', [name]);
+                console.log('ModLoader ====== initModEarlyLoadScript() excute end: ', [name]);
             }
         }
     }

@@ -86,7 +86,7 @@ export class ModZipReader {
     async init() {
         const bootJsonFile = this.zip.file(this.modBootFilePath);
         if (!bootJsonFile) {
-            console.log('ModZipReader init() cannot find :', this.modBootFilePath);
+            console.log('ModLoader ====== ModZipReader init() cannot find :', this.modBootFilePath);
             return false;
         }
         const bootJson = await bootJsonFile.async('string')
@@ -248,7 +248,7 @@ export class ModZipReader {
                 }
             }
 
-            console.log('ModZipReader init() modInfo', this.modInfo);
+            console.log('ModLoader ====== ModZipReader init() modInfo', this.modInfo);
             return true;
         }
         return false;
@@ -278,7 +278,7 @@ export class LocalLoader extends LoaderBase {
 
     async loadModDataFromValueZip(): Promise<boolean> {
         if ((window as any)[this.modDataValueZipListPath]) {
-            console.log('loadModDataFromValueZip() DataValueZip', [(window as any)[this.modDataValueZipListPath]]);
+            console.log('ModLoader ====== loadModDataFromValueZip() DataValueZip', [(window as any)[this.modDataValueZipListPath]]);
 
             const modDataValueZipList: undefined | string[] = (window as any)[this.modDataValueZipListPath];
             if (modDataValueZipList && isArray(modDataValueZipList) && modDataValueZipList.every(isString)) {
@@ -313,6 +313,7 @@ export class RemoteLoader extends LoaderBase {
             console.error(E);
             return undefined;
         });
+        console.log('ModLoader ====== loadTranslateDataFromRemote() modList', modList);
 
         if (modList && isArray(modList) && modList.every(isString)) {
 

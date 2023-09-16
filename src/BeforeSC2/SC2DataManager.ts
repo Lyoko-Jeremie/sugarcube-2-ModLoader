@@ -128,12 +128,12 @@ export class SC2DataManager {
     private confictResult?: { mod: SC2DataInfo, result: SimulateMergeResult }[];
 
     async startInit() {
-        console.log('SC2DataManager startInit() start');
+        console.log('ModLoader ====== SC2DataManager startInit() start');
         // keep orginSC2DataInfoCache valid, keep it have the unmodified vanilla data
         this.getSC2DataInfoCache();
         await this.getModLoader().loadMod([ModDataLoadType.Remote, ModDataLoadType.Local]);
         this.confictResult = this.getModLoader().checkModConfictList();
-        console.log('mod confictResult', this.confictResult.map(T => {
+        console.log('ModLoader ====== mod confictResult', this.confictResult.map(T => {
             return {
                 name: T.mod.dataSource,
                 style: Array.from(T.result.styleFileItems.conflict),
@@ -185,7 +185,7 @@ export class SC2DataManager {
         // console.log('modCache', modCache);
 
         // concat mod
-        console.log('concat mod');
+        console.log('ModLoader ====== patchModToGame() Concat Mod');
         const em = normalMergeSC2DataInfoCache(
             new SC2DataInfo('EmptyMod'),
             ...modOrder.map(T => modCache.get(T))
@@ -211,6 +211,7 @@ export class SC2DataManager {
         // console.log('orginSC2DataInfoCache', orginSC2DataInfoCache.scriptNode[0].innerHTML);
         // console.log('patchModToGame() orginSC2DataInfoCache', structuredClone(orginSC2DataInfoCache.scriptFileItems));
         // console.log('em', em);
+        console.log('ModLoader ====== patchModToGame() Replace Game');
         // then replace orgin
         const modSC2DataInfoCache = replaceMergeSC2DataInfoCache(
             orginSC2DataInfoCache.cloneSC2DataInfo(),
