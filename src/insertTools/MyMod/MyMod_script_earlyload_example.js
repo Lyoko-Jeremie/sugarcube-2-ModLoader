@@ -5,7 +5,7 @@
     const modUtils = window.modUtils;
     const modSC2DataManager = window.modSC2DataManager;
 
-    const ogrinPassageData = structuredClone(modSC2DataManager.getSC2DataInfoCache().passageDataItems.items);
+    const ogrinPassageData = structuredClone(modSC2DataManager.getSC2DataInfoAfterPatch().passageDataItems.items);
 
     window.MyMod_PassageOverwrite = ogrinPassageData.map(T => {
         T.name;

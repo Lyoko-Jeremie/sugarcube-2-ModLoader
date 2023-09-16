@@ -84,11 +84,16 @@ export class SC2DataManager {
     private orginSC2DataInfoCache?: SC2DataInfoCache;
 
     earlyResetSC2DataInfoCache() {
-        this.orginSC2DataInfoCache = undefined;
-        this.getSC2DataInfoCache();
+        // this.orginSC2DataInfoCache = undefined;
+        // this.getSC2DataInfoCache();
         this.flushAfterPatchCache();
     }
 
+    /**
+     * 读取原始的没有被修改过的SC2Data，
+     * 对于mod来说，如无必要不要使用这里的数据，
+     * 特别是合并时不要使用此处的数据作为数据源，而是使用 getSC2DataInfoAfterPatch()，否则会覆盖之前的mod的修改，导致之前的修改无效
+     */
     getSC2DataInfoCache() {
         if (!this.orginSC2DataInfoCache) {
             this.orginSC2DataInfoCache = new SC2DataInfoCache(
@@ -105,7 +110,7 @@ export class SC2DataManager {
 
     getModLoader() {
         if (!this.modLoader) {
-            this.modLoader = new ModLoader(this.getSC2DataInfoCache(), this);
+            this.modLoader = new ModLoader(this);
         }
         return this.modLoader;
     }
@@ -133,6 +138,10 @@ export class SC2DataManager {
 
     private cSC2DataInfoAfterPatchCache?: SC2DataInfoCache;
 
+    /**
+     * 获取最新的SC2Data，此处获得的是之前的mod修改后的最新的SC2Data数据，
+     * 此处使用了缓存，如果修改了SC2Data，请调用 flushAfterPatchCache() 来清除缓存，重新从html中读取最新的SC2Data
+     */
     getSC2DataInfoAfterPatch() {
         if (!this.cSC2DataInfoAfterPatchCache) {
             this.cSC2DataInfoAfterPatchCache = new SC2DataInfoCache(
@@ -147,16 +156,18 @@ export class SC2DataManager {
 
     flushAfterPatchCache() {
         this.cSC2DataInfoAfterPatchCache = undefined;
-        // this.getSC2DataInfoAfterPatch();
+        this.getSC2DataInfoAfterPatch();
     }
 
     patchModToGame() {
         const modCache = this.getModLoader().modCache;
         const modOrder = this.getModLoader().modOrder;
-        const orginSC2DataInfoCache = cloneDeep(this.getSC2DataInfoCache());
+        this.cSC2DataInfoAfterPatchCache = undefined;
+        const orginSC2DataInfoCache = cloneDeep(this.getSC2DataInfoAfterPatch());
         // console.log('modCache', modCache);
 
         // concat mod
+        console.log('concat mod');
         const em = normalMergeSC2DataInfoCache(
             new SC2DataInfo('EmptyMod'),
             ...modOrder.map(T => modCache.get(T))

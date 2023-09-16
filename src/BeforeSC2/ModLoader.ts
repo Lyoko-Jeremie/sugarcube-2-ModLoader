@@ -50,8 +50,7 @@ export enum ModDataLoadType {
 export class ModLoader {
 
     constructor(
-        public orginSC2DataInfoCache: SC2DataInfo,
-        public gSC2DataManager?: SC2DataManager,
+        public gSC2DataManager: SC2DataManager,
     ) {
     }
 
@@ -78,14 +77,14 @@ export class ModLoader {
             console.error('ModLoader checkModConfictOne() (!mod)');
             return undefined;
         }
-        return simulateMergeSC2DataInfoCache(this.orginSC2DataInfoCache, mod.cache)[0];
+        return simulateMergeSC2DataInfoCache(this.gSC2DataManager.getSC2DataInfoAfterPatch(), mod.cache)[0];
     }
 
     checkModConfictList() {
         const ml = this.modOrder.map(T => this.modCache.get(T))
             .filter((T): T is ModInfo => !!T)
             .map(T => T.cache);
-        return simulateMergeSC2DataInfoCache(this.orginSC2DataInfoCache, ...ml).map((T, index) => {
+        return simulateMergeSC2DataInfoCache(this.gSC2DataManager.getSC2DataInfoAfterPatch(), ...ml).map((T, index) => {
             return {
                 mod: ml[index],
                 result: T,
