@@ -63,9 +63,11 @@ export class CacheRecord<T extends { name: string, content: string }> {
             if (this.map.has(item.name)) {
                 if (!noWarnning) {
                     console.warn('CacheRecord.replaceMerge() has duplicate name:',
-                        [item.name],
                         [this.cacheRecordName, this.dataSource],
                         [c.cacheRecordName, c.dataSource],
+                        this.map,
+                        c.items,
+                        [item.name, item.content],
                     );
                 }
             }
