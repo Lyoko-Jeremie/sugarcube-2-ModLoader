@@ -112,9 +112,9 @@ export class SC2DataInfoCache extends SC2DataInfo {
         const r = new SC2DataInfo(
             this.dataSource,
         );
-        r.styleFileItems = structuredClone(this.styleFileItems);
-        r.scriptFileItems = structuredClone(this.scriptFileItems);
-        r.passageDataItems = structuredClone(this.passageDataItems);
+        r.styleFileItems = cloneDeep(this.styleFileItems);
+        r.scriptFileItems = cloneDeep(this.scriptFileItems);
+        r.passageDataItems = cloneDeep(this.passageDataItems);
         return r;
     }
 
