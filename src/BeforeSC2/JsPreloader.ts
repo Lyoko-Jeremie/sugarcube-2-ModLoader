@@ -9,6 +9,7 @@ export class JsPreloader {
     }
 
     async startLoad(): Promise<any> {
+        console.log('JsPreloader startLoad() start');
         // keep orginSC2DataInfoCache valid, keep it have the unmodified vanilla data
         this.pSC2DataManager.getSC2DataInfoCache();
         for (const modName of this.modUtils.getModListName()) {

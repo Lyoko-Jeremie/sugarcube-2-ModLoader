@@ -1,4 +1,4 @@
-import {parseInt} from "lodash";
+import {cloneDeep, parseInt} from "lodash";
 
 export interface StyleTextFileItem {
     // 0 means no id
@@ -57,8 +57,8 @@ export class CacheRecord<T extends { name: string, content: string }> {
     noName: T[] = [];
 
     replaceMerge(c: CacheRecord<T>, noWarnning: boolean = false) {
-        // console.log('CacheRecord.replaceMerge() this.items', this.items.length);
-        // console.log('CacheRecord.replaceMerge() this.map.size', this.map.size);
+        // console.log('CacheRecord.replaceMerge() start this.items', this.items.length);
+        // console.log('CacheRecord.replaceMerge() start this.map.size', this.map.size);
         for (const item of c.items) {
             if (this.map.has(item.name)) {
                 if (!noWarnning) {
@@ -75,8 +75,8 @@ export class CacheRecord<T extends { name: string, content: string }> {
         }
         this.noName = this.noName.concat(c.noName);
         this.items = Array.from(this.map.values()).concat(this.noName);
-        // console.log('CacheRecord.replaceMerge() this.items', this.items.length);
-        // console.log('CacheRecord.replaceMerge() this.map.size', this.map.size);
+        // console.log('CacheRecord.replaceMerge() end this.items', this.items.length);
+        // console.log('CacheRecord.replaceMerge() end this.map.size', this.map.size);
     }
 
     concatMerge(c: CacheRecord<T>) {
@@ -157,7 +157,9 @@ export class SC2DataInfoCache extends SC2DataInfo {
                 }
                 ++i;
             }
+            // console.log('this.scriptFileItems.items sn.innerText', scl, [sn.innerText], this.scriptFileItems.items.length)
         }
+        // console.log('this.scriptFileItems.items', this.scriptFileItems.items.length);
         this.scriptFileItems.fillMap();
 
         for (const passageDataNode of passageDataNodes) {

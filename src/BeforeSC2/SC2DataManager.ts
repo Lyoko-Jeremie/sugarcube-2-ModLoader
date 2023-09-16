@@ -109,8 +109,9 @@ export class SC2DataManager {
                 Array.from(this.styleNode),
                 Array.from(this.passageDataNodeList) as HTMLElement[],
             );
+            console.log('getSC2DataInfoCache() init', this.orginSC2DataInfoCache);
         }
-        console.log('getSC2DataInfoCache() this.orginSC2DataInfoCache', this.orginSC2DataInfoCache);
+        // console.log('getSC2DataInfoCache() get', this.orginSC2DataInfoCache);
         return this.orginSC2DataInfoCache;
     }
 
@@ -127,6 +128,9 @@ export class SC2DataManager {
     private confictResult?: { mod: SC2DataInfo, result: SimulateMergeResult }[];
 
     async startInit() {
+        console.log('SC2DataManager startInit() start');
+        // keep orginSC2DataInfoCache valid, keep it have the unmodified vanilla data
+        this.getSC2DataInfoCache();
         await this.getModLoader().loadMod([ModDataLoadType.Remote, ModDataLoadType.Local]);
         this.confictResult = this.getModLoader().checkModConfictList();
         console.log('mod confictResult', this.confictResult.map(T => {
@@ -160,7 +164,10 @@ export class SC2DataManager {
                 Array.from(this.styleNode),
                 Array.from(this.passageDataNodeList) as HTMLElement[],
             );
+            // console.log('getSC2DataInfoAfterPatch() init', this.cSC2DataInfoAfterPatchCache);
+            console.log('getSC2DataInfoAfterPatch() init cloneSC2DataInfo', this.cSC2DataInfoAfterPatchCache.cloneSC2DataInfo());
         }
+        // console.log('getSC2DataInfoAfterPatch() get', this.cSC2DataInfoAfterPatchCache);
         return this.cSC2DataInfoAfterPatchCache;
     }
 
@@ -173,7 +180,8 @@ export class SC2DataManager {
         const modCache = this.getModLoader().modCache;
         const modOrder = this.getModLoader().modOrder;
         this.cSC2DataInfoAfterPatchCache = undefined;
-        const orginSC2DataInfoCache = cloneDeep(this.getSC2DataInfoAfterPatch());
+        this.flushAfterPatchCache();
+        const orginSC2DataInfoCache = this.getSC2DataInfoAfterPatch();
         // console.log('modCache', modCache);
 
         // concat mod
@@ -184,7 +192,8 @@ export class SC2DataManager {
                 .filter((T): T is ModInfo => !!T)
                 .map(T => T.cache)
         );
-        console.log('em', em);
+        // console.log('em scriptFileItems length', em.scriptFileItems.items.length);
+        // console.log('orginSC2DataInfoCache scriptFileItems length', orginSC2DataInfoCache.scriptFileItems.items.length);
 
         // replace orgin img
         for (const imgRPath of this.getModLoader().getModImgFileReplaceList()) {
@@ -199,13 +208,18 @@ export class SC2DataManager {
             });
         }
 
-        // console.log('orginSC2DataInfoCache', orginSC2DataInfoCache.passageDataItems.items.length);
+        // console.log('orginSC2DataInfoCache', orginSC2DataInfoCache.scriptNode[0].innerHTML);
+        // console.log('patchModToGame() orginSC2DataInfoCache', structuredClone(orginSC2DataInfoCache.scriptFileItems));
+        // console.log('em', em);
         // then replace orgin
         const modSC2DataInfoCache = replaceMergeSC2DataInfoCache(
-            orginSC2DataInfoCache,
+            orginSC2DataInfoCache.cloneSC2DataInfo(),
             em,
         );
-        // console.log('modSC2DataInfoCache', modSC2DataInfoCache.passageDataItems.items.length);
+        // console.log('patchModToGame() orginSC2DataInfoCache', structuredClone(orginSC2DataInfoCache.scriptFileItems));
+        // console.log('patchModToGame() orginSC2DataInfoCache', orginSC2DataInfoCache);
+        // console.log('patchModToGame() modSC2DataInfoCache', modSC2DataInfoCache);
+        // console.log('patchModToGame() modSC2DataInfoCache scriptFileItems length', modSC2DataInfoCache.scriptFileItems.items.length);
 
         const newScriptNode = this.makeScriptNode(modSC2DataInfoCache);
 
@@ -216,6 +230,10 @@ export class SC2DataManager {
         const newPassageDataNode = modSC2DataInfoCache.passageDataItems.items.map(T => {
             return this.makePassageNode(T);
         });
+
+        // console.log('patchModToGame() newScriptNode', newScriptNode);
+        // console.log('patchModToGame() newStyleNode', newStyleNode);
+        // console.log('patchModToGame() newPassageDataNode', newPassageDataNode);
 
         const rootNode = this.rootNode;
         const styleNode = this.styleNode;
@@ -267,6 +285,7 @@ export class SC2DataManager {
         const newStyleNodeContent = sc.styleFileItems.items.reduce((acc, T) => {
             return acc + `/* twine-user-stylesheet #${T.id}: "${T.name}" */\n${T.content}\n`;
         }, '');
+        // console.log('makeStyleNode', newStyleNodeContent);
         const newStyleNode = document.createElement('style');
         newStyleNode.setAttribute('type', 'text/twine-css');
         newStyleNode.setAttribute('role', 'stylesheet');
@@ -279,6 +298,7 @@ export class SC2DataManager {
         const newScriptNodeContent = sc.scriptFileItems.items.reduce((acc, T) => {
             return acc + `/* twine-user-script #${T.id}: "${T.name}" */\n${T.content}\n`;
         }, '');
+        // console.log('makeScriptNode', newScriptNodeContent);
         const newScriptNode = document.createElement('script');
         newScriptNode.setAttribute('type', 'text/twine-javascript');
         newScriptNode.setAttribute('role', 'script');

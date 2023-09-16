@@ -125,6 +125,9 @@ export class ModUtils {
             rootNode.removeChild(node);
         }
 
+        // console.log('replaceFollowSC2DataInfo() newScriptNode', newScriptNode);
+        // console.log('replaceFollowSC2DataInfo() newStyleNode', newStyleNode);
+
         // add new
         rootNode.appendChild(newScriptNode);
         rootNode.appendChild(newStyleNode);
@@ -134,6 +137,8 @@ export class ModUtils {
 
         // update cache
         this.pSC2DataManager.flushAfterPatchCache();
+
+        // console.log('replaceFollowSC2DataInfo() done', this.pSC2DataManager.getSC2DataInfoAfterPatch());
 
     }
 
