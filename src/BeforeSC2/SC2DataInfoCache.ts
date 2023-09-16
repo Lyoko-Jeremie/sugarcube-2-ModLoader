@@ -128,7 +128,7 @@ export class SC2DataInfoCache extends SC2DataInfo {
 
         for (const sn of styleNode) {
             // /* twine-user-stylesheet #1: "error.css" */
-            const syl = sn.innerText.split(/(\/\* twine-user-stylesheet #)(\d+): "(\D+)" \*\//);
+            const syl = sn.innerText.split(/(\/\* twine-user-stylesheet #)(\d+): "([^'"]+)" \*\//);
             // will get : ["xxxxx", "/* twine-user-stylesheet #", "1", "error.css", "xxxxx"]
             for (let i = 0; i < syl.length;) {
                 if (syl[i] === "/* twine-user-stylesheet #") {
@@ -145,7 +145,7 @@ export class SC2DataInfoCache extends SC2DataInfo {
 
         for (const sn of scriptNode) {
             // /* twine-user-script #1: "namespace.js" */
-            const scl = sn.innerText.split(/(\/\* twine-user-script #)(\d+): "(\D+)" \*\//);
+            const scl = sn.innerText.split(/(\/\* twine-user-script #)(\d+): "([^'"]+)" \*\//);
             // will get : ["xxxxx", "/* twine-user-script #", "1", "namespace.js", "xxxxx"]
             for (let i = 0; i < scl.length;) {
                 if (scl[i] === "/* twine-user-script #") {
