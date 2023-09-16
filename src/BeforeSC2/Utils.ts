@@ -1,5 +1,6 @@
 import {SC2DataManager} from "./SC2DataManager";
 import {isSafeInteger} from "lodash";
+import _ from "lodash";
 import {Twee2Passage, Twee2PassageR} from "./ModZipReader";
 import {PassageDataItem, SC2DataInfo, SC2DataInfoCache} from "./SC2DataInfoCache";
 import {SimulateMergeResult} from "./SimulateMerge";
@@ -304,6 +305,10 @@ export class ModUtils {
      */
     insertStringInPosition(content: string, insertString: string, position: number) {
         return content.slice(0, position) + insertString + content.slice(position);
+    }
+
+    getLodash() {
+        return _;
     }
 
 }
