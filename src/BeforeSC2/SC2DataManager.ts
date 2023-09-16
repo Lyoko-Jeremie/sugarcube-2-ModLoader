@@ -81,9 +81,16 @@ export class SC2DataManager {
         );
     }
 
+    /**
+     * 用于缓存原始的没有经过任何修改的原始的原版SC2Data
+     * never set it to undefined OR overwrite it
+     * @private
+     */
     private orginSC2DataInfoCache?: SC2DataInfoCache;
 
     earlyResetSC2DataInfoCache() {
+        // keep orginSC2DataInfoCache valid
+        this.getSC2DataInfoCache();
         // this.orginSC2DataInfoCache = undefined;
         // this.getSC2DataInfoCache();
         this.flushAfterPatchCache();
@@ -103,6 +110,7 @@ export class SC2DataManager {
                 Array.from(this.passageDataNodeList) as HTMLElement[],
             );
         }
+        console.log('getSC2DataInfoCache() this.orginSC2DataInfoCache', this.orginSC2DataInfoCache);
         return this.orginSC2DataInfoCache;
     }
 
@@ -143,6 +151,8 @@ export class SC2DataManager {
      * 此处使用了缓存，如果修改了SC2Data，请调用 flushAfterPatchCache() 来清除缓存，重新从html中读取最新的SC2Data
      */
     getSC2DataInfoAfterPatch() {
+        // keep orginSC2DataInfoCache valid
+        this.getSC2DataInfoCache();
         if (!this.cSC2DataInfoAfterPatchCache) {
             this.cSC2DataInfoAfterPatchCache = new SC2DataInfoCache(
                 'orgin',
@@ -197,23 +207,9 @@ export class SC2DataManager {
         );
         // console.log('modSC2DataInfoCache', modSC2DataInfoCache.passageDataItems.items.length);
 
-        const newScriptNodeContent = modSC2DataInfoCache.scriptFileItems.items.reduce((acc, T) => {
-            return acc + `/* twine-user-stylesheet #${T.id}: "${T.name}" */\n${T.content}\n`;
-        }, '');
-        const newScriptNode = document.createElement('script');
-        newScriptNode.setAttribute('type', 'text/twine-javascript');
-        newScriptNode.setAttribute('role', 'script');
-        newScriptNode.setAttribute('id', 'twine-user-script');
-        newScriptNode.innerHTML = newScriptNodeContent;
+        const newScriptNode = this.makeScriptNode(modSC2DataInfoCache);
 
-        const newStyleNodeContent = modSC2DataInfoCache.styleFileItems.items.reduce((acc, T) => {
-            return acc + `/* twine-user-script #${T.id}: "${T.name}" */\n${T.content}\n`;
-        }, '');
-        const newStyleNode = document.createElement('style');
-        newStyleNode.setAttribute('type', 'text/twine-css');
-        newStyleNode.setAttribute('role', 'stylesheet');
-        newStyleNode.setAttribute('id', 'twine-user-stylesheet');
-        newStyleNode.innerHTML = newStyleNodeContent;
+        const newStyleNode = this.makeStyleNode(modSC2DataInfoCache);
 
         // console.log('modSC2DataInfoCache.passageDataItems.items', modSC2DataInfoCache.passageDataItems.items);
 
@@ -265,6 +261,30 @@ export class SC2DataManager {
         // s.innerText = `:: Widgets ${T.name}${T.tags?.length > 0 ? ` [${T.tags.join(' ')}]` : ''}\n${T.content}\n`;
         s.innerText = T.content;
         return s;
+    }
+
+    makeStyleNode(sc: SC2DataInfo) {
+        const newStyleNodeContent = sc.styleFileItems.items.reduce((acc, T) => {
+            return acc + `/* twine-user-script #${T.id}: "${T.name}" */\n${T.content}\n`;
+        }, '');
+        const newStyleNode = document.createElement('style');
+        newStyleNode.setAttribute('type', 'text/twine-css');
+        newStyleNode.setAttribute('role', 'stylesheet');
+        newStyleNode.setAttribute('id', 'twine-user-stylesheet');
+        newStyleNode.innerHTML = newStyleNodeContent;
+        return newStyleNode;
+    }
+
+    makeScriptNode(sc: SC2DataInfo) {
+        const newScriptNodeContent = sc.scriptFileItems.items.reduce((acc, T) => {
+            return acc + `/* twine-user-stylesheet #${T.id}: "${T.name}" */\n${T.content}\n`;
+        }, '');
+        const newScriptNode = document.createElement('script');
+        newScriptNode.setAttribute('type', 'text/twine-javascript');
+        newScriptNode.setAttribute('role', 'script');
+        newScriptNode.setAttribute('id', 'twine-user-script');
+        newScriptNode.innerHTML = newScriptNodeContent;
+        return newScriptNode;
     }
 
     rePlacePassage(toRemovePassageDataNodeList: Element[], toAddPassageDataNodeList: Element[],) {

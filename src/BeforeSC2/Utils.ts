@@ -102,6 +102,41 @@ export class ModUtils {
         this.pSC2DataManager.earlyResetSC2DataInfoCache();
     }
 
+    replaceFollowSC2DataInfo(newSC2Data: SC2DataInfo, oldSC2DataCache: SC2DataInfoCache) {
+
+        const newScriptNode = this.pSC2DataManager.makeScriptNode(newSC2Data);
+
+        const newStyleNode = this.pSC2DataManager.makeStyleNode(newSC2Data);
+
+        const newPassageDataNode = newSC2Data.passageDataItems.items.map(T => {
+            return this.pSC2DataManager.makePassageNode(T);
+        });
+
+        const rootNode = this.pSC2DataManager.rootNode;
+
+        // remove old
+        for (const node of Array.from(oldSC2DataCache.styleNode)) {
+            rootNode.removeChild(node);
+        }
+        for (const node of Array.from(oldSC2DataCache.scriptNode)) {
+            rootNode.removeChild(node);
+        }
+        for (const node of Array.from(oldSC2DataCache.passageDataNodes)) {
+            rootNode.removeChild(node);
+        }
+
+        // add new
+        rootNode.appendChild(newScriptNode);
+        rootNode.appendChild(newStyleNode);
+        for (const node of newPassageDataNode) {
+            rootNode.appendChild(node);
+        }
+
+        // update cache
+        this.pSC2DataManager.flushAfterPatchCache();
+
+    }
+
     /**
      * 更新passage数据，如果存在则覆盖，如果不存在则创建
      * @param name passageName
