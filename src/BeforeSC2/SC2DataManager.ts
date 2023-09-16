@@ -265,7 +265,7 @@ export class SC2DataManager {
 
     makeStyleNode(sc: SC2DataInfo) {
         const newStyleNodeContent = sc.styleFileItems.items.reduce((acc, T) => {
-            return acc + `/* twine-user-script #${T.id}: "${T.name}" */\n${T.content}\n`;
+            return acc + `/* twine-user-stylesheet #${T.id}: "${T.name}" */\n${T.content}\n`;
         }, '');
         const newStyleNode = document.createElement('style');
         newStyleNode.setAttribute('type', 'text/twine-css');
@@ -277,7 +277,7 @@ export class SC2DataManager {
 
     makeScriptNode(sc: SC2DataInfo) {
         const newScriptNodeContent = sc.scriptFileItems.items.reduce((acc, T) => {
-            return acc + `/* twine-user-stylesheet #${T.id}: "${T.name}" */\n${T.content}\n`;
+            return acc + `/* twine-user-script #${T.id}: "${T.name}" */\n${T.content}\n`;
         }, '');
         const newScriptNode = document.createElement('script');
         newScriptNode.setAttribute('type', 'text/twine-javascript');
