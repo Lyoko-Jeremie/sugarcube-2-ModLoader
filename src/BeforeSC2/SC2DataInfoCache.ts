@@ -33,6 +33,14 @@ export class CacheRecord<T extends { name: string, content: string }> {
     ) {
     }
 
+    clean() {
+        this.items = [];
+        this.map.clear();
+        this.noName = [];
+        this.dataSource = '';
+        this.cacheRecordName = '';
+    }
+
     items: T[] = [];
 
     fillMap() {
@@ -103,6 +111,10 @@ export class SC2DataInfo {
         // 'orgin' OR modName
         public dataSource: string,
     ) {
+    }
+
+    clean() {
+        this.scriptFileItems.clean();
     }
 }
 

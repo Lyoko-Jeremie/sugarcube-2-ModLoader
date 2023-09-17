@@ -1,9 +1,9 @@
-import JSZip from 'jszip';
 import {every, get, isArray, isString} from 'lodash';
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {simulateMergeSC2DataInfoCache} from "./SimulateMerge";
 import {LocalLoader, RemoteLoader} from "./ModZipReader";
 import {SC2DataManager} from "./SC2DataManager";
+import {JsPreloader} from 'JsPreloader';
 
 export interface ModImg {
     // base64
@@ -210,7 +210,8 @@ export class ModLoader {
             for (const [name, content] of mod.scriptFileList_earlyload) {
                 console.log('ModLoader ====== initModEarlyLoadScript() excute start: ', [name]);
                 try {
-                    const R = await Function(`return ${content}`)();
+                    // const R = await Function(`return ${content}`)();
+                    const R = await JsPreloader.JsRunner(content, name, modName, 'EarlyLoadScript', this.gSC2DataManager);
                     console.log('ModLoader ====== initModEarlyLoadScript() excute result: ', [name], R);
                 } catch (e) {
                     console.error('ModLoader ====== initModEarlyLoadScript() excute error: ', [name], e);

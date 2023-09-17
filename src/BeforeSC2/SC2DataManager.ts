@@ -7,6 +7,7 @@ import {
     replaceMergeSC2DataInfoCache
 } from "./MergeSC2DataInfoCache";
 import {SimulateMergeResult} from "./SimulateMerge";
+import {ModLoadController} from "./ModLoadController";
 
 export class SC2DataManager {
 
@@ -96,6 +97,13 @@ export class SC2DataManager {
         this.flushAfterPatchCache();
     }
 
+    cleanAllCacheAfterModLoadEnd() {
+        this.orginSC2DataInfoCache?.clean();
+        this.orginSC2DataInfoCache = undefined;
+        this.cSC2DataInfoAfterPatchCache?.clean();
+        this.cSC2DataInfoAfterPatchCache = undefined;
+    }
+
     /**
      * 读取原始的没有被修改过的SC2Data，
      * 对于mod来说，如无必要不要使用这里的数据，
@@ -109,7 +117,7 @@ export class SC2DataManager {
                 Array.from(this.styleNode),
                 Array.from(this.passageDataNodeList) as HTMLElement[],
             );
-            console.log('getSC2DataInfoCache() init', this.orginSC2DataInfoCache);
+            // console.log('getSC2DataInfoCache() init', this.orginSC2DataInfoCache);
         }
         // console.log('getSC2DataInfoCache() get', this.orginSC2DataInfoCache);
         return this.orginSC2DataInfoCache;
@@ -124,13 +132,26 @@ export class SC2DataManager {
         return this.modLoader;
     }
 
+    private modLoadController?: ModLoadController;
+
+    getModLoadController() {
+        if (!this.modLoadController) {
+            this.modLoadController = new ModLoadController(this);
+        }
+        return this.modLoadController;
+    }
 
     private confictResult?: { mod: SC2DataInfo, result: SimulateMergeResult }[];
 
     async startInit() {
         console.log('ModLoader ====== SC2DataManager startInit() start');
+
         // keep orginSC2DataInfoCache valid, keep it have the unmodified vanilla data
         this.getSC2DataInfoCache();
+
+        // init ModLoadController , keep it init before every mod load
+        this.getModLoadController();
+
         await this.getModLoader().loadMod([ModDataLoadType.Remote, ModDataLoadType.Local]);
         this.confictResult = this.getModLoader().checkModConfictList();
         console.log('ModLoader ====== mod confictResult', this.confictResult.map(T => {
