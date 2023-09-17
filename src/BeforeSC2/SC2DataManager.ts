@@ -127,12 +127,20 @@ export class SC2DataManager {
 
     getModLoader() {
         if (!this.modLoader) {
-            this.modLoader = new ModLoader(this, this.modLoadController);
+            console.log('this.modLoadControllerCallback', this.getModLoadController());
+            this.modLoader = new ModLoader(this, this.getModLoadController());
         }
         return this.modLoader;
     }
 
-    private modLoadController: ModLoadController = new ModLoadController(this);
+    private modLoadController?: ModLoadController;
+
+    getModLoadController() {
+        if (!this.modLoadController) {
+            this.modLoadController = new ModLoadController(this);
+        }
+        return this.modLoadController;
+    }
 
     private confictResult?: { mod: SC2DataInfo, result: SimulateMergeResult }[];
 

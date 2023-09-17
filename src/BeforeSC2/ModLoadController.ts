@@ -1,4 +1,4 @@
-import {ModBootJson, ModLoader} from "ModLoader";
+import {ModBootJson} from "ModLoader";
 import {SC2DataManager} from "SC2DataManager";
 import JSZip from "jszip";
 import {LocalStorageLoader} from "./ModZipReader";
@@ -13,12 +13,10 @@ export interface ModLoadControllerCallback {
 }
 
 export class ModLoadController implements ModLoadControllerCallback {
-    public modLoader: ModLoader;
 
     constructor(
         public gSC2DataManager: SC2DataManager
     ) {
-        this.modLoader = this.gSC2DataManager.getModLoader();
     }
 
     canLoadThisMod(bootJson: ModBootJson, zip: JSZip): boolean {
