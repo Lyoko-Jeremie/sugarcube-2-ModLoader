@@ -311,4 +311,8 @@ export class ModUtils {
         return _;
     }
 
+    getModLoadController() {
+        return this.pSC2DataManager.getModLoadController();
+    }
+
 }
