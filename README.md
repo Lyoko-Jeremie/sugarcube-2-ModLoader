@@ -112,6 +112,12 @@ Degrees of Lewdity VERSION.html.mod.html
 
 打包：
 
+编译脚本
+
+```shell
+yarn run webpack:insertTools:w
+```
+
 切换到 Mod 所在文件夹
 ```shell
 cd src/insertTools/MyMod
