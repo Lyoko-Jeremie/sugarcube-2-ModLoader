@@ -222,6 +222,7 @@ export class ModLoader {
                 script.innerHTML = content;
                 script.setAttribute('scriptName', (name));
                 script.setAttribute('modName', (modName));
+                script.setAttribute('stage', ('InjectEarlyLoad'));
                 if (this.gSC2DataManager) {
                     // insert before SC2 data rootNode
                     this.gSC2DataManager?.rootNode.before(script);
