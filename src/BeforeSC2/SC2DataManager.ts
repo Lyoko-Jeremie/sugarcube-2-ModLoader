@@ -127,19 +127,12 @@ export class SC2DataManager {
 
     getModLoader() {
         if (!this.modLoader) {
-            this.modLoader = new ModLoader(this);
+            this.modLoader = new ModLoader(this, this.modLoadController);
         }
         return this.modLoader;
     }
 
-    private modLoadController?: ModLoadController;
-
-    getModLoadController() {
-        if (!this.modLoadController) {
-            this.modLoadController = new ModLoadController(this);
-        }
-        return this.modLoadController;
-    }
+    private modLoadController: ModLoadController = new ModLoadController(this);
 
     private confictResult?: { mod: SC2DataInfo, result: SimulateMergeResult }[];
 
@@ -148,9 +141,6 @@ export class SC2DataManager {
 
         // keep orginSC2DataInfoCache valid, keep it have the unmodified vanilla data
         this.getSC2DataInfoCache();
-
-        // init ModLoadController , keep it init before every mod load
-        this.getModLoadController();
 
         await this.getModLoader().loadMod([ModDataLoadType.Remote, ModDataLoadType.Local]);
         this.confictResult = this.getModLoader().checkModConfictList();

@@ -1,9 +1,10 @@
 import {every, get, isArray, isString} from 'lodash';
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {simulateMergeSC2DataInfoCache} from "./SimulateMerge";
-import {LocalLoader, RemoteLoader} from "./ModZipReader";
+import {Base64ZipStringLoader, LocalLoader, LocalStorageLoader, RemoteLoader} from "./ModZipReader";
 import {SC2DataManager} from "./SC2DataManager";
 import {JsPreloader} from 'JsPreloader';
+import {ModLoadControllerCallback} from "./ModLoadController";
 
 export interface ModImg {
     // base64
@@ -45,12 +46,14 @@ export interface ModInfo {
 export enum ModDataLoadType {
     'Remote' = 'Remote',
     'Local' = 'Local',
+    'LocalStorage' = 'LocalStorage',
 }
 
 export class ModLoader {
 
     constructor(
         public gSC2DataManager: SC2DataManager,
+        public modLoadControllerCallback: ModLoadControllerCallback,
     ) {
     }
 
@@ -116,11 +119,24 @@ export class ModLoader {
         return imgFileReplace;
     }
 
+    private modLocalStorageLoader?: LocalStorageLoader;
     private modLocalLoader?: LocalLoader;
     private modRemoteLoader?: RemoteLoader;
 
     public getModZipLoader() {
         return this.modLocalLoader || this.modRemoteLoader;
+    }
+
+    public getLocalStorageLoader() {
+        return this.modLocalStorageLoader;
+    }
+
+    public getLocalLoader() {
+        return this.modLocalLoader;
+    }
+
+    public getRemoteLoader() {
+        return this.modRemoteLoader;
     }
 
     public async loadMod(loadOrder: ModDataLoadType[]): Promise<boolean> {
@@ -129,10 +145,10 @@ export class ModLoader {
             switch (loadType) {
                 case ModDataLoadType.Remote:
                     if (!this.modRemoteLoader) {
-                        this.modRemoteLoader = new RemoteLoader();
+                        this.modRemoteLoader = new RemoteLoader(this.modLoadControllerCallback);
                     }
                     try {
-                        ok = await this.modRemoteLoader.loadTranslateDataFromRemote() || ok;
+                        ok = await this.modRemoteLoader.load() || ok;
                         this.modRemoteLoader.modList.forEach(T => {
                             if (T.modInfo) {
                                 const overwrite = !this.addMod(T.modInfo);
@@ -148,11 +164,30 @@ export class ModLoader {
                     break;
                 case ModDataLoadType.Local:
                     if (!this.modLocalLoader) {
-                        this.modLocalLoader = new LocalLoader();
+                        this.modLocalLoader = new LocalLoader(this.modLoadControllerCallback);
                     }
                     try {
-                        ok = await this.modLocalLoader.loadModDataFromValueZip() || ok;
+                        ok = await this.modLocalLoader.load() || ok;
                         this.modLocalLoader.modList.forEach(T => {
+                            if (T.modInfo) {
+                                const overwrite = !this.addMod(T.modInfo);
+                                if (overwrite) {
+                                    this.modOrder = this.modOrder.filter(T => T !== T);
+                                }
+                                this.modOrder.push(T.modInfo.name);
+                            }
+                        });
+                    } catch (e) {
+                        console.error(e);
+                    }
+                    break;
+                case ModDataLoadType.LocalStorage:
+                    if (!this.modLocalStorageLoader) {
+                        this.modLocalStorageLoader = new LocalStorageLoader(this.modLoadControllerCallback);
+                    }
+                    try {
+                        ok = await this.modLocalStorageLoader.load() || ok;
+                        this.modLocalStorageLoader.modList.forEach(T => {
                             if (T.modInfo) {
                                 const overwrite = !this.addMod(T.modInfo);
                                 if (overwrite) {

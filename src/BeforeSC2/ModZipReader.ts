@@ -2,6 +2,7 @@ import JSZip from "jszip";
 import {every, get, has, isArray, isString} from "lodash";
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {ModBootJson, ModInfo} from "./ModLoader";
+import {ModLoadControllerCallback} from "./ModLoadController";
 
 export interface Twee2PassageR {
     name: string;
@@ -35,6 +36,7 @@ export class ModZipReader {
     constructor(
         public zip: JSZip,
         public loaderBase: LoaderBase,
+        public modLoadControllerCallback: ModLoadControllerCallback,
     ) {
     }
 
@@ -48,7 +50,7 @@ export class ModZipReader {
         return this.zip;
     }
 
-    validateBootJson(bootJ: any): bootJ is ModBootJson {
+    static validateBootJson(bootJ: any): bootJ is ModBootJson {
         return bootJ
             && isString(get(bootJ, 'name'))
             && get(bootJ, 'name').length > 0
@@ -75,7 +77,7 @@ export class ModZipReader {
                 (isArray(get(bootJ, 'scriptFileList_inject_early')) && every(get(bootJ, 'scriptFileList_inject_early'), isString)) : true);
     }
 
-    modBootFilePath = 'boot.json';
+    static modBootFilePath = 'boot.json';
 
     replaceImgWithBase64String(s: string) {
         this.modInfo?.imgs.forEach(T => {
@@ -84,9 +86,9 @@ export class ModZipReader {
     }
 
     async init() {
-        const bootJsonFile = this.zip.file(this.modBootFilePath);
+        const bootJsonFile = this.zip.file(ModZipReader.modBootFilePath);
         if (!bootJsonFile) {
-            console.log('ModLoader ====== ModZipReader init() cannot find :', this.modBootFilePath);
+            console.log('ModLoader ====== ModZipReader init() cannot find :', ModZipReader.modBootFilePath);
             return false;
         }
         const bootJson = await bootJsonFile.async('string')
@@ -110,7 +112,11 @@ export class ModZipReader {
         //     , isArray(get(bootJ, 'imgFileReplaceList'))
         //     , every(get(bootJ, 'imgFileReplaceList'), T => isArray(T) && T.length === 2 && isString(T[0]) && isString(T[1]))
         // ]);
-        if (this.validateBootJson(bootJ)) {
+        if (ModZipReader.validateBootJson(bootJ)) {
+            if (!this.modLoadControllerCallback.canLoadThisMod(bootJ, this.zip)) {
+                console.log('ModLoader ====== ModZipReader init() this mod be filted by ModLoadController:', bootJ);
+                return false;
+            }
             this.modInfo = {
                 name: bootJ.name,
                 version: bootJ.version,
@@ -259,6 +265,11 @@ export class LoaderBase {
     modList: ModZipReader[] = [];
     modZipList: Map<string, ModZipReader[]> = new Map<string, ModZipReader[]>();
 
+    constructor(
+        public modLoadControllerCallback: ModLoadControllerCallback,
+    ) {
+    }
+
     getZipFile(name: string) {
         return this.modZipList.get(name);
     }
@@ -270,15 +281,155 @@ export class LoaderBase {
         }
         this.modZipList.set(name, [zip]);
     }
+
+    async load(): Promise<boolean> {
+        throw new Error('LoaderBase load() not implement');
+    }
+}
+
+export class LocalStorageLoader extends LoaderBase {
+
+    static modDataLocalStorageZipList = 'modDataLocalStorageZipList';
+
+    async load(): Promise<boolean> {
+
+        const listFile = localStorage.getItem(LocalStorageLoader.modDataLocalStorageZipList);
+        if (!listFile) {
+            return Promise.resolve(false);
+        }
+        let list: string[];
+        try {
+            list = JSON.parse(listFile);
+        } catch (e) {
+            console.error(e);
+            return Promise.resolve(false);
+        }
+        if (!(isArray(list) && list.every(isString))) {
+            return Promise.resolve(false);
+        }
+
+        console.log('ModLoader ====== LocalStorageLoader load() list', list);
+
+        // modDataBase64ZipStringList: base64[]
+        for (const zipPath of list) {
+            const base64ZipString = localStorage.getItem(zipPath);
+            if (!base64ZipString) {
+                console.error('ModLoader ====== LocalStorageLoader load() cannot get zipPath:', zipPath);
+                continue;
+            }
+            try {
+                const m = await JSZip.loadAsync(base64ZipString, {base64: true}).then(zip => {
+                    return new ModZipReader(zip, this, this.modLoadControllerCallback);
+                });
+                if (await m.init()) {
+                    this.modList.push(m);
+                }
+            } catch (E) {
+                console.error(E);
+            }
+        }
+
+        return Promise.resolve(true);
+    }
+
+    static listMod() {
+        const ls = localStorage.getItem(this.modDataLocalStorageZipList);
+        if (!ls) {
+            return undefined;
+        }
+        try {
+            const l = JSON.parse(ls);
+            if (Array.isArray(l) && l.every(isString)) {
+                return l;
+            }
+        } catch (e) {
+            return undefined;
+        }
+        return undefined;
+    }
+
+    static calcModNameKey(name: string) {
+        return `modDataLocalStorageZip:${name}`;
+    }
+
+    static addMod(name: string, modBase64String: string) {
+        const l = this.listMod() || [];
+        const k = this.calcModNameKey(name);
+        l.push(name);
+        localStorage.setItem(this.modDataLocalStorageZipList, JSON.stringify(l));
+        localStorage.setItem(k, modBase64String);
+    }
+
+    static removeMod(name: string) {
+        let l = this.listMod() || [];
+        l = l.filter(T => T !== name);
+        const k = this.calcModNameKey(name);
+        localStorage.setItem(this.modDataLocalStorageZipList, JSON.stringify(l));
+        localStorage.removeItem(k);
+    }
+
+    // get bootJson from zip
+    static async checkModZipFile(modBase64String: string) {
+        try {
+            const zip = await JSZip.loadAsync(modBase64String, {base64: true});
+            const bootJsonFile = zip.file(ModZipReader.modBootFilePath);
+            if (!bootJsonFile) {
+                console.log('ModLoader ====== LocalStorageLoader checkModeZipFile() cannot find bootJsonFile:', ModZipReader.modBootFilePath);
+                return undefined;
+            }
+            const bootJson = await bootJsonFile.async('string')
+            const bootJ = JSON.parse(bootJson);
+            if (ModZipReader.validateBootJson(bootJ)) {
+                return bootJ;
+            }
+            return undefined;
+        } catch (E) {
+            console.error(E);
+        }
+        return undefined;
+    }
+
+}
+
+
+export class Base64ZipStringLoader extends LoaderBase {
+
+    constructor(
+        public modLoadControllerCallback: ModLoadControllerCallback,
+        // base64ZipStringList: base64[]
+        public base64ZipStringList: string[],
+    ) {
+        super(modLoadControllerCallback);
+    }
+
+    async load(): Promise<boolean> {
+
+        // modDataBase64ZipStringList: base64[]
+        for (const base64ZipString of this.base64ZipStringList) {
+            try {
+                const m = await JSZip.loadAsync(base64ZipString, {base64: true}).then(zip => {
+                    return new ModZipReader(zip, this, this.modLoadControllerCallback);
+                });
+                if (await m.init()) {
+                    this.modList.push(m);
+                }
+            } catch (E) {
+                console.error(E);
+            }
+        }
+
+        return Promise.resolve(true);
+    }
+
 }
 
 export class LocalLoader extends LoaderBase {
     modDataValueZipListPath = 'modDataValueZipList';
 
 
-    async loadModDataFromValueZip(): Promise<boolean> {
+    async load(): Promise<boolean> {
         if ((window as any)[this.modDataValueZipListPath]) {
-            console.log('ModLoader ====== loadModDataFromValueZip() DataValueZip', [(window as any)[this.modDataValueZipListPath]]);
+            console.log('ModLoader ====== LocalLoader load() DataValueZip', [(window as any)[this.modDataValueZipListPath]]);
 
             const modDataValueZipList: undefined | string[] = (window as any)[this.modDataValueZipListPath];
             if (modDataValueZipList && isArray(modDataValueZipList) && modDataValueZipList.every(isString)) {
@@ -287,7 +438,7 @@ export class LocalLoader extends LoaderBase {
                 for (const modDataValueZip of modDataValueZipList) {
                     try {
                         const m = await JSZip.loadAsync(modDataValueZip, {base64: true}).then(zip => {
-                            return new ModZipReader(zip, this);
+                            return new ModZipReader(zip, this, this.modLoadControllerCallback);
                         });
                         if (await m.init()) {
                             this.modList.push(m);
@@ -308,12 +459,12 @@ export class RemoteLoader extends LoaderBase {
 
     modDataRemoteListPath = 'modList.json';
 
-    async loadTranslateDataFromRemote(): Promise<boolean> {
+    async load(): Promise<boolean> {
         const modList: undefined | string[] = await fetch(this.modDataRemoteListPath).then(T => T.json()).catch(E => {
             console.error(E);
             return undefined;
         });
-        console.log('ModLoader ====== loadTranslateDataFromRemote() modList', modList);
+        console.log('ModLoader ====== RemoteLoader load() modList', modList);
 
         if (modList && isArray(modList) && modList.every(isString)) {
 
@@ -324,7 +475,7 @@ export class RemoteLoader extends LoaderBase {
                         .then(T => T.blob())
                         .then(T => JSZip.loadAsync(T))
                         .then(zip => {
-                            return new ModZipReader(zip, this);
+                            return new ModZipReader(zip, this, this.modLoadControllerCallback);
                         });
                     if (await m.init()) {
                         this.modList.push(m);
