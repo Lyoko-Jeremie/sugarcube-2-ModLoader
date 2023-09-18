@@ -5,7 +5,7 @@
     const modUtils = window.modUtils;
     const modSC2DataManager = window.modSC2DataManager;
 
-    const zips = modSC2DataManager.getModLoader().getModZipLoader().getZipFile('MyMod');
+    const zips = modSC2DataManager.getModLoader().getModZip('MyMod');
     if (zips && zips.length > 0) {
         // 可以在这里读取当前mod的zip压缩包中的资源
 

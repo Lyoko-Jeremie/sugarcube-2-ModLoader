@@ -163,6 +163,7 @@ export class ModLoader {
 
     public async loadMod(loadOrder: ModDataLoadType[]): Promise<boolean> {
         let ok = false;
+        this.modOrder = [];
         for (const loadType of loadOrder) {
             switch (loadType) {
                 case ModDataLoadType.Remote:
@@ -175,7 +176,7 @@ export class ModLoader {
                             if (T.modInfo) {
                                 const overwrite = !this.addMod(T.modInfo);
                                 if (overwrite) {
-                                    this.modOrder = this.modOrder.filter(T => T !== T);
+                                    this.modOrder = this.modOrder.filter(T1 => T1 !== T.modInfo!.name);
                                 }
                                 this.modOrder.push(T.modInfo.name);
                             }
@@ -194,7 +195,7 @@ export class ModLoader {
                             if (T.modInfo) {
                                 const overwrite = !this.addMod(T.modInfo);
                                 if (overwrite) {
-                                    this.modOrder = this.modOrder.filter(T => T !== T);
+                                    this.modOrder = this.modOrder.filter(T1 => T1 !== T.modInfo!.name);
                                 }
                                 this.modOrder.push(T.modInfo.name);
                             }
@@ -213,7 +214,7 @@ export class ModLoader {
                             if (T.modInfo) {
                                 const overwrite = !this.addMod(T.modInfo);
                                 if (overwrite) {
-                                    this.modOrder = this.modOrder.filter(T => T !== T);
+                                    this.modOrder = this.modOrder.filter(T1 => T1 !== T.modInfo!.name);
                                 }
                                 this.modOrder.push(T.modInfo.name);
                             }

@@ -150,7 +150,8 @@ export class SC2DataManager {
         // keep orginSC2DataInfoCache valid, keep it have the unmodified vanilla data
         this.getSC2DataInfoCache();
 
-        await this.getModLoader().loadMod([ModDataLoadType.Remote, ModDataLoadType.Local]);
+        await this.getModLoader().loadMod([ModDataLoadType.Remote, ModDataLoadType.Local, ModDataLoadType.LocalStorage]);
+
         this.confictResult = this.getModLoader().checkModConfictList();
         console.log('ModLoader ====== mod confictResult', this.confictResult.map(T => {
             return {
@@ -160,6 +161,7 @@ export class SC2DataManager {
                 passage: Array.from(T.result.passageDataItems.conflict),
             };
         }));
+
         this.patchModToGame();
     }
 
@@ -201,7 +203,6 @@ export class SC2DataManager {
         this.cSC2DataInfoAfterPatchCache = undefined;
         this.flushAfterPatchCache();
         const orginSC2DataInfoCache = this.getSC2DataInfoAfterPatch();
-        // console.log('modCache', modCache);
 
         // concat mod
         console.log('ModLoader ====== patchModToGame() Concat Mod');

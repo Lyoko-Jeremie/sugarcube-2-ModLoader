@@ -23,7 +23,7 @@ const config = {
     filename: '[name].js',
   },
   // https://webpack.js.org/configuration/devtool/
-  devtool: 'inline-source-map',
+  // devtool: 'inline-source-map',
   // https://webpack.js.org/configuration/target/
   target: 'web',
   // target: 'node',

@@ -312,7 +312,7 @@ export class LocalStorageLoader extends LoaderBase {
 
         // modDataBase64ZipStringList: base64[]
         for (const zipPath of list) {
-            const base64ZipString = localStorage.getItem(zipPath);
+            const base64ZipString = localStorage.getItem(LocalStorageLoader.calcModNameKey(zipPath));
             if (!base64ZipString) {
                 console.error('ModLoader ====== LocalStorageLoader load() cannot get zipPath:', zipPath);
                 continue;
@@ -335,16 +335,19 @@ export class LocalStorageLoader extends LoaderBase {
     static listMod() {
         const ls = localStorage.getItem(this.modDataLocalStorageZipList);
         if (!ls) {
+            console.log('ModLoader ====== LocalStorageLoader listMod() cannot find modDataLocalStorageZipList');
             return undefined;
         }
         try {
             const l = JSON.parse(ls);
+            console.log('ModLoader ====== LocalStorageLoader listMod() modDataLocalStorageZipList', l);
             if (Array.isArray(l) && l.every(isString)) {
                 return l;
             }
         } catch (e) {
-            return undefined;
+            console.error(e);
         }
+        console.log('ModLoader ====== LocalStorageLoader listMod() modDataLocalStorageZipList Invalid');
         return undefined;
     }
 
@@ -353,11 +356,11 @@ export class LocalStorageLoader extends LoaderBase {
     }
 
     static addMod(name: string, modBase64String: string) {
-        const l = this.listMod() || [];
+        let l = new Set(this.listMod() || []);
         const k = this.calcModNameKey(name);
-        l.push(name);
-        localStorage.setItem(this.modDataLocalStorageZipList, JSON.stringify(l));
+        l.add(name);
         localStorage.setItem(k, modBase64String);
+        localStorage.setItem(this.modDataLocalStorageZipList, JSON.stringify(Array.from(l)));
     }
 
     static removeMod(name: string) {
@@ -375,18 +378,18 @@ export class LocalStorageLoader extends LoaderBase {
             const bootJsonFile = zip.file(ModZipReader.modBootFilePath);
             if (!bootJsonFile) {
                 console.log('ModLoader ====== LocalStorageLoader checkModeZipFile() cannot find bootJsonFile:', ModZipReader.modBootFilePath);
-                return undefined;
+                return `bootJsonFile ${ModZipReader.modBootFilePath} Invalid`;
             }
             const bootJson = await bootJsonFile.async('string')
             const bootJ = JSON.parse(bootJson);
             if (ModZipReader.validateBootJson(bootJ)) {
                 return bootJ;
             }
-            return undefined;
-        } catch (E) {
-            console.error(E);
+            return `bootJson Invalid`;
+        } catch (E: any) {
+            console.error('checkModZipFile', E);
+            return Promise.reject(E);
         }
-        return undefined;
     }
 
 }
