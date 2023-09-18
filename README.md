@@ -157,7 +157,7 @@ MyMod.mod.zip
 2. 图片文件的路径是相对于zip文件根目录的路径，但在打包时要相对于执行目录的路径。
 3. 图片会在mod读取时将所有使用图片（路径）的位置替换为图片的 base64url 。
 4. 若文件中出现了与图片路径极其相似的字符串，该字符串也会被替换为图片的 base64url ，请注意。
-5. 同一个mod内的文件名不能重复，也尽量不要和原游戏或其他mod重复。与原游戏重复的部分会覆盖游戏源文件。（图片不受此规则影响）。
+5. 同一个mod内的文件名不能重复，也尽量不要和原游戏或其他mod重复。与原游戏重复的部分会覆盖游戏源文件。
 7. 具体的来说，mod会按照mod列表中的顺序加载，靠后的mod会覆盖靠前的mod的passage同名文件，mod之间的同名css/js文件会直接将内容concat到一起，故不会覆盖css/js/img等同名文件。
 8. 加载时首先计算mod之间的覆盖，然后将计算结果覆盖到原游戏中
 9. 当前版本的mod加载器的工作方式是直接将css/js/twee文件按照原版sc2的格式到html文件中。
@@ -169,8 +169,8 @@ MyMod.mod.zip
 
 
 对于一个想要修改passage的mod，有这么4个可以修改的地方
-1. scriptFileList_inject_early ， 这个会在当前mod读取之后，“立即”插入到script脚本由浏览器按照script标签的标准执行，这里可以调用ModLoader的API，可以读取未经修改的SC2 data （包括原始的passage）（如果其他mod没有在inject_early中修改）
-2. scriptFileList_earlyload  ，这个会在当前mod读取之后，inject_early 脚本插入完之后，由modloader执行并等待异步指令返回，这里可以调用ModLoader的API，可以自行异步操作，干一些远程加载之类的活，也可以在这里读取未经修改的SC2 data（包括原始的passage）（如果其他mod没有在inject_early中修改也没有在earlyload中修改）
+1. scriptFileList_inject_early ， 这个会在当前mod读取之后，“立即”插入到script脚本由浏览器按照script标签的标准执行，这里可以调用ModLoader的API，可以读取未经修改的SC2 data （包括原始的passage）
+2. scriptFileList_earlyload  ，这个会在当前mod读取之后，inject_early 脚本插入完之后，由modloader执行并等待异步指令返回，这里可以调用ModLoader的API，可以执行异步操作，干一些远程加载之类的活，也可以在这里读取未经修改的SC2 data（包括原始的passage）
 3. tweeFileList ，这个是mod的主体，会在modloader读取所有mod之后，做【1 合并所有mod追加的数据，2 将合并结果覆盖到原始游戏】的过程应用修改到原始游戏SC2 data上
 4. scriptFileList_preload ， 这个会在mod文件全部应用到SC2 data之后由modloader执行并等待异步操作返回，这里可以像earlyload一样做异步工作，也可以读取到mod应用之后的SC2 data
 
