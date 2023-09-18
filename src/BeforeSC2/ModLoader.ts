@@ -1,7 +1,7 @@
 import {every, get, isArray, isString} from 'lodash';
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {simulateMergeSC2DataInfoCache} from "./SimulateMerge";
-import {Base64ZipStringLoader, LocalLoader, LocalStorageLoader, RemoteLoader} from "./ModZipReader";
+import {LocalLoader, LocalStorageLoader, RemoteLoader} from "./ModZipReader";
 import {SC2DataManager} from "./SC2DataManager";
 import {JsPreloader} from 'JsPreloader';
 import {ModLoadControllerCallback} from "./ModLoadController";
@@ -123,8 +123,30 @@ export class ModLoader {
     private modLocalLoader?: LocalLoader;
     private modRemoteLoader?: RemoteLoader;
 
-    public getModZipLoader() {
-        return this.modLocalLoader || this.modRemoteLoader;
+    // public getModZipLoader() {
+    //     return this.modLocalLoader || this.modRemoteLoader;
+    // }
+
+    getModZip(modName: string) {
+        if (this.modLocalLoader) {
+            const mod = this.modLocalLoader.getZipFile(modName);
+            if (mod) {
+                return mod;
+            }
+        }
+        if (this.modRemoteLoader) {
+            const mod = this.modRemoteLoader.getZipFile(modName);
+            if (mod) {
+                return mod;
+            }
+        }
+        if (this.modLocalStorageLoader) {
+            const mod = this.modLocalStorageLoader.getZipFile(modName);
+            if (mod) {
+                return mod;
+            }
+        }
+        return undefined;
     }
 
     public getLocalStorageLoader() {
