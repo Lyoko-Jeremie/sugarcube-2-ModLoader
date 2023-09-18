@@ -1,60 +1,9 @@
 
 # ModLoader
 
-
-**当前项目处于开发阶段，如您不知道如何使用NodeJs，或者不知道如何使用Yarn，请等待后续发布的的简易使用指南和快速Mod打包工具**
-
-
 ---
 
-# 开发使用方法
-
-
-编译脚本
-
-```shell
-yarn run webpack:BeforeSC2:w
-yarn run ts:ForSC2:w
-yarn run webpack:insertTools:w
-```
-
-如何插入Mod加载器以及内嵌到html文件：
-
-编写 modList.json 文件，格式如下：
-（样本可参见 src/insertTools/modList.json ）
-```json
-[
-  'mod1.zip',
-  'mod2.zip'
-]
-```
-
-
-切换到 modList.json 所在文件夹
-
-```shell
-cd ./src/insertTools/modList.json
-```
-
-```shell
-node "<insert2html.js 文件路径>" "<Degrees of Lewdity VERSION.html 文件路径>" "<modList.json 文件>" "<BeforeSC2.js 文件路径>"
-```
-
-例如：
-
-```shell
-node "H:\Code\sugarcube-2\ModLoader\dist-insertTools\insert2html.js" "H:\Code\degrees-of-lewdity\Degrees of Lewdity VERSION.html" "modList.json" "H:\Code\sugarcube-2\ModLoader\dist-BeforeSC2\BeforeSC2.js"
-```
-
-会在原始html文件同目录下生成一个同名的html.mod.html文件，例如：
-```
-Degrees of Lewdity VERSION.html.mod.html
-```
-打开`Degrees of Lewdity VERSION.html.mod.html`文件， play
-
-----------------
-
-如何制作 Mod.zip 文件：
+# 如何制作 Mod.zip 文件：
 
 
 给自己的mod命名
@@ -120,6 +69,33 @@ Degrees of Lewdity VERSION.html.mod.html
 ```
 
 
+### 手动打包方法
+
+这个方法只需要有一个可以压缩Zip压缩包的压缩工具，和细心的心。
+
+1. 使用你喜爱的编辑器，编辑好boot.json文件
+
+2. 在boot.json文件根目录使用压缩工具（例如如下例子中使用的 [7-Zip](7-zip.org/)，其他软件方法类似），**仔细选择 boot.json 以及在其中引用的文件打包成zip文件**
+
+![](https://raw.githubusercontent.com/wiki/Lyoko-Jeremie/sugarcube-2-ModLoader/fast/step1.png)
+
+3. 设置压缩参数（**格式Zip，算法Deflate，压缩等级越大越好，没有密码**）
+
+![](https://raw.githubusercontent.com/wiki/Lyoko-Jeremie/sugarcube-2-ModLoader/fast/step2.png)
+
+4. 点击确定，等待压缩完成
+
+5. 压缩后请打开压缩文件再次检查：（**boot.json 文件在根目录**，boot.json中编写的文件路径和压缩完毕之后的结构**一模一样**，任何一个文件的压缩算法只能是**Store或Deflate**）
+
+![](https://raw.githubusercontent.com/wiki/Lyoko-Jeremie/sugarcube-2-ModLoader/fast/step3.png)
+
+
+6. 重命名压缩包为 mod名字.mod.zip  （这一步**可选**）
+
+
+### 自动打包方法
+
+这个方法需要有NodeJs和Yarn使用知识
 
 打包：
 
@@ -152,12 +128,12 @@ node "H:\Code\sugarcube-2\ModLoader\dist-insertTools\packModZip.js" "boot.json"
 MyMod.mod.zip
 ```
 
-注意：
+### 注意：
 1. boot.json 文件内的路径都是相对路径，相对于zip文件根目录的路径，且在打包时也要相对于执行目录的路径。
 2. 图片文件的路径是相对于zip文件根目录的路径，但在打包时要相对于执行目录的路径。
 3. 图片会在mod读取时将所有使用图片（路径）的位置替换为图片的 base64url 。
 4. 若文件中出现了与图片路径极其相似的字符串，该字符串也会被替换为图片的 base64url ，请注意。
-5. 同一个mod内的文件名不能重复，也尽量不要和原游戏或其他mod重复。与原游戏重复的部分会覆盖游戏源文件。
+5. 同一个mod内的文件名不能重复，也尽量不要和原游戏或其他mod重复。与原游戏重复的部分会覆盖游戏源文件。（图片例外）
 7. 具体的来说，mod会按照mod列表中的顺序加载，靠后的mod会覆盖靠前的mod的passage同名文件，mod之间的同名css/js文件会直接将内容concat到一起，故不会覆盖css/js/img等同名文件。
 8. 加载时首先计算mod之间的覆盖，然后将计算结果覆盖到原游戏中
 9. 当前版本的mod加载器的工作方式是直接将css/js/twee文件按照原版sc2的格式到html文件中。
@@ -175,5 +151,57 @@ MyMod.mod.zip
 4. scriptFileList_preload ， 这个会在mod文件全部应用到SC2 data之后由modloader执行并等待异步操作返回，这里可以像earlyload一样做异步工作，也可以读取到mod应用之后的SC2 data
 
 上面的步骤结束之后SC2引擎才会开始启动，读取SC2 data，然后开始游戏，整个步骤都是在加载屏幕（那个转圈圈）完成的。
+
+
+
+
+
+
+---
+
+# 开发方法
+
+
+编译脚本
+
+```shell
+yarn run webpack:BeforeSC2:w
+yarn run ts:ForSC2:w
+yarn run webpack:insertTools:w
+```
+
+如何插入Mod加载器以及内嵌到html文件：
+
+编写 modList.json 文件，格式如下：
+（样本可参见 src/insertTools/modList.json ）
+```json
+[
+  'mod1.zip',
+  'mod2.zip'
+]
+```
+
+
+切换到 modList.json 所在文件夹
+
+```shell
+cd ./src/insertTools/modList.json
+```
+
+```shell
+node "<insert2html.js 文件路径>" "<Degrees of Lewdity VERSION.html 文件路径>" "<modList.json 文件>" "<BeforeSC2.js 文件路径>"
+```
+
+例如：
+
+```shell
+node "H:\Code\sugarcube-2\ModLoader\dist-insertTools\insert2html.js" "H:\Code\degrees-of-lewdity\Degrees of Lewdity VERSION.html" "modList.json" "H:\Code\sugarcube-2\ModLoader\dist-BeforeSC2\BeforeSC2.js"
+```
+
+会在原始html文件同目录下生成一个同名的html.mod.html文件，例如：
+```
+Degrees of Lewdity VERSION.html.mod.html
+```
+打开`Degrees of Lewdity VERSION.html.mod.html`文件， play
 
 
