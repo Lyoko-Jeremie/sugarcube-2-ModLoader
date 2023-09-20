@@ -203,6 +203,8 @@ export class SC2DataManager {
     }
 
     patchModToGame() {
+        this.getModLoadController().PatchModToGame_start();
+
         const modCache = this.getModLoader().modCache;
         const modOrder = this.getModLoader().modOrder;
         this.cSC2DataInfoAfterPatchCache = undefined;
@@ -286,6 +288,8 @@ export class SC2DataManager {
 
         // update cache
         this.flushAfterPatchCache();
+
+        this.getModLoadController().PatchModToGame_end();
     }
 
     makePassageNode(T: PassageDataItem) {

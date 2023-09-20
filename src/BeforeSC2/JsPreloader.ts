@@ -20,6 +20,7 @@ export class JsPreloader {
             }
             for (const T of mod.scriptFileList_preload) {
                 console.log('ModLoader ====== JsPreloader startLoad() excute start: ', [T[0]]);
+                this.pSC2DataManager.getModLoadController().Load_start(modName, T[0]);
                 try {
                     // const R = await Function(`return ${T[1]}`)();
                     const R = await JsPreloader.JsRunner(T[1], T[0], modName, 'JsPreloader', this.pSC2DataManager);
@@ -28,6 +29,7 @@ export class JsPreloader {
                     console.error('ModLoader ====== JsPreloader startLoad() excute error: ', [T[0]], e);
                 }
                 console.log('ModLoader ====== JsPreloader startLoad() excute end: ', [T[0]]);
+                this.pSC2DataManager.getModLoadController().Load_end(modName, T[0]);
             }
         }
         console.log('ModLoader ====== JsPreloader startLoad() clean');

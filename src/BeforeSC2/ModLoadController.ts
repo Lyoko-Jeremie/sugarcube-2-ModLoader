@@ -4,35 +4,92 @@ import JSZip from "jszip";
 import {IndexDBLoader, LocalStorageLoader} from "./ModZipReader";
 
 
-export interface LifeTimeCircleHook extends ModLoadControllerCallback {
+export interface LifeTimeCircleHook extends Partial<ModLoadControllerCallback> {
 
 }
 
 export interface ModLoadControllerCallback {
     canLoadThisMod(bootJson: ModBootJson, zip: JSZip): boolean;
+
+    InjectEarlyLoad_start(modName: string, fileName: string): void;
+
+    InjectEarlyLoad_end(modName: string, fileName: string): void;
+
+    EarlyLoad_start(modName: string, fileName: string): void;
+
+    EarlyLoad_end(modName: string, fileName: string): void;
+
+    Load_start(modName: string, fileName: string): void;
+
+    Load_end(modName: string, fileName: string): void;
+
+    PatchModToGame_start(): void;
+
+    PatchModToGame_end(): void;
 }
+
+const ModLoadControllerCallback_PatchHook = [
+    'PatchModToGame_start',
+    'PatchModToGame_end',
+] as const;
+const ModLoadControllerCallback_ScriptLoadHook = [
+    'InjectEarlyLoad_start',
+    'InjectEarlyLoad_end',
+    'EarlyLoad_start',
+    'EarlyLoad_end',
+    'Load_start',
+    'Load_end',
+] as const;
 
 export class ModLoadController implements ModLoadControllerCallback {
 
     constructor(
         public gSC2DataManager: SC2DataManager
     ) {
+        ModLoadControllerCallback_ScriptLoadHook.forEach((T) => {
+            this[T] = (modName: string, fileName: string) => {
+                this.lifeTimeCircleHookTable.forEach((hook) => {
+                    if (hook[T]) {
+                        hook[T]!.apply(hook, [modName, fileName]);
+                    }
+                });
+            };
+        });
+        ModLoadControllerCallback_PatchHook.forEach((T) => {
+            this[T] = () => {
+                this.lifeTimeCircleHookTable.forEach((hook) => {
+                    if (hook[T]) {
+                        hook[T]!.apply(hook, []);
+                    }
+                });
+            };
+        });
     }
+
+    EarlyLoad_end!: (modName: string, fileName: string) => void;
+    EarlyLoad_start!: (modName: string, fileName: string) => void;
+    InjectEarlyLoad_end!: (modName: string, fileName: string) => void;
+    InjectEarlyLoad_start!: (modName: string, fileName: string) => void;
+    Load_end!: (modName: string, fileName: string) => void;
+    Load_start!: (modName: string, fileName: string) => void;
+    PatchModToGame_end!: () => void;
+    PatchModToGame_start!: () => void;
 
     canLoadThisMod(bootJson: ModBootJson, zip: JSZip): boolean {
         return this.lifeTimeCircleHookTable.reduce((acc, T) => {
-            return acc && T.canLoadThisMod(bootJson, zip);
+            return acc && (T.canLoadThisMod ? T.canLoadThisMod(bootJson, zip) : true);
         }, true);
     }
 
-    lifeTimeCircleHookTable: LifeTimeCircleHook[] = [];
+
+    private lifeTimeCircleHookTable: LifeTimeCircleHook[] = [];
 
     addLifeTimeCircleHook(hook: LifeTimeCircleHook) {
         this.lifeTimeCircleHookTable.push(hook);
     }
 
     removeLifeTimeCircleHook(hook: LifeTimeCircleHook) {
-
+        // TODO
     }
 
     clearLifeTimeCircleHook() {
