@@ -31,7 +31,7 @@
   "scriptFileList_preload": [     // 预加载的 js 脚本文件 ， 会在引擎初始化前、mod的数据文件全部加载并合并到html的tw-storydata中后，由modloader执行并等待异步指令返回， 可以在此处调用modloader的API读取最新的Passage数据并动态修改覆盖Passage的内容
     "MyMod_script_preload_example.js"     // 注意 scriptFileList_preload 文件有固定的格式，参见样例 src/insertTools/MyMod/MyMod_script_preload_example.js
   ],
-  "scriptFileList": [     // js 脚本文件
+  "scriptFileList": [     // js 脚本文件，这是游戏的一部分
     "MyMod_script_1.js",
     "MyMod_script_2.js"
   ],
