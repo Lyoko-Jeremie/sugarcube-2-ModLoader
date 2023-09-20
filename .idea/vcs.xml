@@ -4,6 +4,7 @@
     <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/mod/ModLoaderGui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/mod/ModLoaderGui/src/GM_config_TS" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/mod/i18n" vcs="Git" />
   </component>
 </project>
