@@ -1,5 +1,6 @@
 import JSZip from "jszip";
 import {every, get, has, isArray, isString} from "lodash";
+import {get as keyval_get, set as keyval_set, del as keyval_del, createStore, UseStore, setMany} from 'idb-keyval';
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {ModBootJson, ModInfo} from "./ModLoader";
 import {ModLoadControllerCallback} from "./ModLoadController";
@@ -394,6 +395,130 @@ export class LocalStorageLoader extends LoaderBase {
 
 }
 
+export class IndexDBLoader extends LoaderBase {
+
+    static dbName: string = 'ModLoader_IndexDBLoader';
+    static storeName: string = 'ModLoader_IndexDBLoader';
+
+    static modDataIndexDBZipList = 'modDataIndexDBZipList';
+
+    customStore: UseStore;
+
+    constructor(
+        public modLoadControllerCallback: ModLoadControllerCallback,
+    ) {
+        super(modLoadControllerCallback);
+        this.customStore = createStore(IndexDBLoader.dbName, IndexDBLoader.storeName);
+    }
+
+    async load(): Promise<boolean> {
+
+        const listFile = await keyval_get(IndexDBLoader.modDataIndexDBZipList, this.customStore);
+        if (!listFile) {
+            return Promise.resolve(false);
+        }
+        let list: string[];
+        try {
+            list = JSON.parse(listFile);
+        } catch (e) {
+            console.error(e);
+            return Promise.resolve(false);
+        }
+        if (!(isArray(list) && list.every(isString))) {
+            return Promise.resolve(false);
+        }
+
+        console.log('ModLoader ====== IndexDBLoader load() list', list);
+
+        // modDataBase64ZipStringList: base64[]
+        for (const zipPath of list) {
+            const base64ZipString = await keyval_get(IndexDBLoader.calcModNameKey(zipPath), this.customStore);
+            if (!base64ZipString) {
+                console.error('ModLoader ====== IndexDBLoader load() cannot get zipPath:', zipPath);
+                continue;
+            }
+            try {
+                const m = await JSZip.loadAsync(base64ZipString, {base64: true}).then(zip => {
+                    return new ModZipReader(zip, this, this.modLoadControllerCallback);
+                });
+                if (await m.init()) {
+                    this.modList.push(m);
+                }
+            } catch (E) {
+                console.error(E);
+            }
+        }
+
+        return Promise.resolve(true);
+    }
+
+    static async listMod() {
+        const ls = await keyval_get(IndexDBLoader.modDataIndexDBZipList, createStore(IndexDBLoader.dbName, IndexDBLoader.storeName));
+        if (!ls) {
+            console.log('ModLoader ====== IndexDBLoader listMod() cannot find modDataIndexDBZipList');
+            return undefined;
+        }
+        try {
+            const l = JSON.parse(ls);
+            console.log('ModLoader ====== IndexDBLoader listMod() modDataIndexDBZipList', l);
+            if (Array.isArray(l) && l.every(isString)) {
+                return l;
+            }
+        } catch (e) {
+            console.error(e);
+        }
+        console.log('ModLoader ====== IndexDBLoader listMod() modDataIndexDBZipList Invalid');
+        return undefined;
+    }
+
+    static calcModNameKey(name: string) {
+        return `modDataIndexDBZip:${name}`;
+    }
+
+    static async addMod(name: string, modBase64String: string) {
+        let l = new Set(await this.listMod() || []);
+        const k = this.calcModNameKey(name);
+        l.add(name);
+        const db = createStore(IndexDBLoader.dbName, IndexDBLoader.storeName);
+        await setMany([
+            [k, modBase64String],
+            [this.modDataIndexDBZipList, JSON.stringify(Array.from(l))],
+        ], db);
+        // await keyval_set(k, modBase64String, db);
+        // await keyval_set(this.modDataIndexDBZipList, JSON.stringify(Array.from(l)), db);
+    }
+
+    static async removeMod(name: string) {
+        let l = await this.listMod() || [];
+        l = l.filter(T => T !== name);
+        const db = createStore(IndexDBLoader.dbName, IndexDBLoader.storeName);
+        const k = this.calcModNameKey(name);
+        await keyval_set(this.modDataIndexDBZipList, JSON.stringify(l), db);
+        await keyval_del(k, db);
+    }
+
+    // get bootJson from zip
+    static async checkModZipFile(modBase64String: string) {
+        try {
+            const zip = await JSZip.loadAsync(modBase64String, {base64: true});
+            const bootJsonFile = zip.file(ModZipReader.modBootFilePath);
+            if (!bootJsonFile) {
+                console.log('ModLoader ====== IndexDBLoader checkModeZipFile() cannot find bootJsonFile:', ModZipReader.modBootFilePath);
+                return `bootJsonFile ${ModZipReader.modBootFilePath} Invalid`;
+            }
+            const bootJson = await bootJsonFile.async('string')
+            const bootJ = JSON.parse(bootJson);
+            if (ModZipReader.validateBootJson(bootJ)) {
+                return bootJ;
+            }
+            return `bootJson Invalid`;
+        } catch (E: any) {
+            console.error('checkModZipFile', E);
+            return Promise.reject(E);
+        }
+    }
+
+}
 
 export class Base64ZipStringLoader extends LoaderBase {
 

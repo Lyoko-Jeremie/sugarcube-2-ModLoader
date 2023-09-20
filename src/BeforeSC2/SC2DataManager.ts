@@ -150,7 +150,12 @@ export class SC2DataManager {
         // keep orginSC2DataInfoCache valid, keep it have the unmodified vanilla data
         this.getSC2DataInfoCache();
 
-        await this.getModLoader().loadMod([ModDataLoadType.Remote, ModDataLoadType.Local, ModDataLoadType.LocalStorage]);
+        await this.getModLoader().loadMod([
+            ModDataLoadType.Remote,
+            ModDataLoadType.Local,
+            ModDataLoadType.IndexDB,
+            ModDataLoadType.LocalStorage,
+        ]);
 
         this.confictResult = this.getModLoader().checkModConfictList();
         console.log('ModLoader ====== mod confictResult', this.confictResult.map(T => {

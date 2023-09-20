@@ -1,7 +1,7 @@
 import {ModBootJson} from "ModLoader";
 import {SC2DataManager} from "SC2DataManager";
 import JSZip from "jszip";
-import {LocalStorageLoader} from "./ModZipReader";
+import {IndexDBLoader, LocalStorageLoader} from "./ModZipReader";
 
 
 export interface LifeTimeCircleHook extends ModLoadControllerCallback {
@@ -51,8 +51,24 @@ export class ModLoadController implements ModLoadControllerCallback {
         return LocalStorageLoader.removeMod(name);
     }
 
-    checkModZipFile(modBase64String: string) {
+    async checkModZipFileLocalStorage(modBase64String: string) {
         return LocalStorageLoader.checkModZipFile(modBase64String);
+    }
+
+    async listModIndexDB() {
+        return IndexDBLoader.listMod() || [];
+    }
+
+    addModIndexDB(name: string, modBase64String: string) {
+        return IndexDBLoader.addMod(name, modBase64String);
+    }
+
+    removeModIndexDB(name: string) {
+        return IndexDBLoader.removeMod(name);
+    }
+
+    async checkModZipFileIndexDB(modBase64String: string) {
+        return IndexDBLoader.checkModZipFile(modBase64String);
     }
 
 

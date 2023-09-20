@@ -70,6 +70,7 @@ export class JsPreloader {
             document.addEventListener(`JsRunner:error:${stage}-${modName}-${name}`, ce);
         });
 
+        console.log(`ModLoader ====== JsRunner ${name} ${modName} ${stage} start`);
         if (pSC2DataManager) {
             // insert before SC2 data rootNode
             pSC2DataManager?.rootNode.before(script);

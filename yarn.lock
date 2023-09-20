@@ -1090,6 +1090,7 @@ __metadata:
     css-loader: ^6.8.1
     fork-ts-checker-webpack-plugin: ^8.0.0
     html-webpack-plugin: ^5.5.3
+    idb-keyval: ^6.2.1
     json5: ^2.2.3
     jszip: ^3.10.1
     lodash: ^4.17.21
@@ -3348,6 +3349,13 @@ __metadata:
   peerDependencies:
     postcss: ^8.1.0
   checksum: 5c324d283552b1269cfc13a503aaaa172a280f914e5b81544f3803bc6f06a3b585fb79f66f7c771a2c052db7982c18bf92d001e3b47282e3abbbb4c4cc488d68
+  languageName: node
+  linkType: hard
+
+"idb-keyval@npm:^6.2.1":
+  version: 6.2.1
+  resolution: "idb-keyval@npm:6.2.1"
+  checksum: 7c0836f832096086e99258167740181132a71dd2694c8b8454a4f5ec69114ba6d70983115153306f0b6de1c8d3bad04f67eed3dff8f50c96815b9985d6d78470
   languageName: node
   linkType: hard
 

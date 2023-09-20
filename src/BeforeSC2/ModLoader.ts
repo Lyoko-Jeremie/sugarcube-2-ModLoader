@@ -1,7 +1,7 @@
 import {every, get, isArray, isString} from 'lodash';
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {simulateMergeSC2DataInfoCache} from "./SimulateMerge";
-import {LocalLoader, LocalStorageLoader, RemoteLoader} from "./ModZipReader";
+import {IndexDBLoader, LocalLoader, LocalStorageLoader, RemoteLoader} from "./ModZipReader";
 import {SC2DataManager} from "./SC2DataManager";
 import {JsPreloader} from 'JsPreloader';
 import {ModLoadControllerCallback} from "./ModLoadController";
@@ -47,6 +47,7 @@ export enum ModDataLoadType {
     'Remote' = 'Remote',
     'Local' = 'Local',
     'LocalStorage' = 'LocalStorage',
+    'IndexDB' = 'IndexDB',
 }
 
 export class ModLoader {
@@ -119,6 +120,7 @@ export class ModLoader {
         return imgFileReplace;
     }
 
+    private modIndexDBLoader?: IndexDBLoader;
     private modLocalStorageLoader?: LocalStorageLoader;
     private modLocalLoader?: LocalLoader;
     private modRemoteLoader?: RemoteLoader;
@@ -146,7 +148,17 @@ export class ModLoader {
                 return mod;
             }
         }
+        if (this.modIndexDBLoader) {
+            const mod = this.modIndexDBLoader.getZipFile(modName);
+            if (mod) {
+                return mod;
+            }
+        }
         return undefined;
+    }
+
+    public getIndexDBLoader() {
+        return this.modIndexDBLoader;
     }
 
     public getLocalStorageLoader() {
@@ -223,6 +235,25 @@ export class ModLoader {
                         console.error(e);
                     }
                     break;
+                case ModDataLoadType.IndexDB:
+                    if (!this.modIndexDBLoader) {
+                        this.modIndexDBLoader = new IndexDBLoader(this.modLoadControllerCallback);
+                    }
+                    try {
+                        ok = await this.modIndexDBLoader.load() || ok;
+                        this.modIndexDBLoader.modList.forEach(T => {
+                            if (T.modInfo) {
+                                const overwrite = !this.addMod(T.modInfo);
+                                if (overwrite) {
+                                    this.modOrder = this.modOrder.filter(T1 => T1 !== T.modInfo!.name);
+                                }
+                                this.modOrder.push(T.modInfo.name);
+                            }
+                        });
+                    } catch (e) {
+                        console.error(e);
+                    }
+                    break;
                 default:
                     console.error('ModLoader loadTranslateData() unknown loadType:', [loadType]);
             }
@@ -240,7 +271,7 @@ export class ModLoader {
                 continue;
             }
             for (const [name, content] of mod.scriptFileList_inject_early) {
-                console.log('ModLoader ====== initModInjectEarlyLoadScript() inject start: ', [name]);
+                console.log('ModLoader ====== initModInjectEarlyLoadScript() inject start: ', [modName], [name]);
                 const script = document.createElement('script');
                 script.innerHTML = content;
                 script.setAttribute('scriptName', (name));
@@ -254,7 +285,7 @@ export class ModLoader {
                     console.warn('ModLoader ====== initModInjectEarlyLoadScript() gSC2DataManager is undefined, insert to head');
                     document.head.appendChild(script);
                 }
-                console.log('ModLoader ====== initModInjectEarlyLoadScript() inject end: ', [name]);
+                console.log('ModLoader ====== initModInjectEarlyLoadScript() inject end: ', [modName], [name]);
             }
         }
     }
@@ -267,15 +298,15 @@ export class ModLoader {
                 continue;
             }
             for (const [name, content] of mod.scriptFileList_earlyload) {
-                console.log('ModLoader ====== initModEarlyLoadScript() excute start: ', [name]);
+                console.log('ModLoader ====== initModEarlyLoadScript() excute start: ', [modName], [name]);
                 try {
                     // const R = await Function(`return ${content}`)();
                     const R = await JsPreloader.JsRunner(content, name, modName, 'EarlyLoadScript', this.gSC2DataManager);
-                    console.log('ModLoader ====== initModEarlyLoadScript() excute result: ', [name], R);
+                    console.log('ModLoader ====== initModEarlyLoadScript() excute result: ', [modName], [name], R);
                 } catch (e) {
-                    console.error('ModLoader ====== initModEarlyLoadScript() excute error: ', [name], e);
+                    console.error('ModLoader ====== initModEarlyLoadScript() excute error: ', [modName], [name], e);
                 }
-                console.log('ModLoader ====== initModEarlyLoadScript() excute end: ', [name]);
+                console.log('ModLoader ====== initModEarlyLoadScript() excute end: ', [modName], [name]);
             }
         }
     }
