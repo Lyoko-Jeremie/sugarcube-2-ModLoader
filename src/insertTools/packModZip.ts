@@ -22,7 +22,6 @@ export interface ModBootJson {
     tweeFileList: string[];
     imgFileList: string[];
     addstionFile: string[];
-    imgFileReplaceList: [string, string][];
 }
 
 export function validateBootJson(bootJ: any): bootJ is ModBootJson {
@@ -41,8 +40,6 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
         && every(get(bootJ, 'tweeFileList'), isString)
         && isArray(get(bootJ, 'imgFileList'))
         && every(get(bootJ, 'imgFileList'), isString)
-        && isArray(get(bootJ, 'imgFileReplaceList'))
-        && every(get(bootJ, 'imgFileReplaceList'), T => isArray(T) && T.length === 2 && isString(T[0]) && isString(T[1]))
         // useless file
         && isArray(get(bootJ, 'addstionFile'))
         && every(get(bootJ, 'addstionFile'), isString)
@@ -81,8 +78,10 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
     // create zip
     var zip = new JSZip();
     for (const imgPath of bootJson.imgFileList) {
-        const imgBase64Url = await img2base64Url(imgPath);
-        zip.file(imgPath, imgBase64Url);
+        // const imgBase64Url = await img2base64Url(imgPath);
+        // zip.file(imgPath, imgBase64Url);
+        const imgFile = await promisify(fs.readFile)(imgPath, {encoding: 'utf-8'});
+        zip.file(imgPath, imgFile);
     }
     for (const tweePath of bootJson.tweeFileList) {
         const tweeFile = await promisify(fs.readFile)(tweePath, {encoding: 'utf-8'});

@@ -4,6 +4,7 @@ import {get as keyval_get, set as keyval_set, del as keyval_del, createStore, Us
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {ModBootJson, ModInfo} from "./ModLoader";
 import {ModLoadControllerCallback} from "./ModLoadController";
+import {extname} from "./extname";
 
 export interface Twee2PassageR {
     name: string;
@@ -67,8 +68,6 @@ export class ModZipReader {
             && every(get(bootJ, 'tweeFileList'), isString)
             && isArray(get(bootJ, 'imgFileList'))
             && every(get(bootJ, 'imgFileList'), isString)
-            && isArray(get(bootJ, 'imgFileReplaceList'))
-            && every(get(bootJ, 'imgFileReplaceList'), T => isArray(T) && T.length === 2 && isString(T[0]) && isString(T[1]))
             // optional
             && (has(bootJ, 'scriptFileList_preload') ?
                 (isArray(get(bootJ, 'scriptFileList_preload')) && every(get(bootJ, 'scriptFileList_preload'), isString)) : true)
@@ -80,10 +79,16 @@ export class ModZipReader {
 
     static modBootFilePath = 'boot.json';
 
-    replaceImgWithBase64String(s: string) {
-        this.modInfo?.imgs.forEach(T => {
-            s = s.replace(T.path, T.data);
-        });
+    // replaceImgWithBase64String(s: string) {
+    //     this.modInfo?.imgs.forEach(T => {
+    //         s = s.replace(T.path, T.data);
+    //     });
+    // }
+
+    imgWrapbase64Url(fileName: string, base64: string) {
+        const ext = extname(fileName);
+        console.log('imgWrapbase64Url', [fileName, ext, base64]);
+        return `data:image/${ext};base64,${base64}`;
     }
 
     async init() {
@@ -132,24 +137,24 @@ export class ModZipReader {
             this.loaderBase.addZipFile(bootJ.name, this);
 
             // load file
-            for (const imgRPath of bootJ.imgFileReplaceList) {
-                const imgFile = this.zip.file(imgRPath[1]);
-                if (imgFile) {
-                    const data = await imgFile.async('string');
-                    this.modInfo.imgFileReplaceList.push([
-                        imgRPath[0],
-                        data,
-                    ]);
-                } else {
-                    console.warn('cannot get imgFileReplaceList file from mod zip:', [this.modInfo.name, imgFile])
-                }
-            }
+            // for (const imgRPath of bootJ.imgFileReplaceList) {
+            //     const imgFile = this.zip.file(imgRPath[1]);
+            //     if (imgFile) {
+            //         const data = await imgFile.async('string');
+            //         this.modInfo.imgFileReplaceList.push([
+            //             imgRPath[0],
+            //             data,
+            //         ]);
+            //     } else {
+            //         console.warn('cannot get imgFileReplaceList file from mod zip:', [this.modInfo.name, imgFile])
+            //     }
+            // }
             for (const imgPath of bootJ.imgFileList) {
                 const imgFile = this.zip.file(imgPath);
                 if (imgFile) {
-                    const data = await imgFile.async('string');
+                    const data = await imgFile.async('base64');
                     this.modInfo.imgs.push({
-                        data,
+                        data: this.imgWrapbase64Url(imgPath, data),
                         path: imgPath,
                     });
                 } else {
@@ -160,7 +165,7 @@ export class ModZipReader {
                 const styleFile = this.zip.file(stylePath);
                 if (styleFile) {
                     const data = await styleFile.async('string');
-                    this.replaceImgWithBase64String(data);
+                    // this.replaceImgWithBase64String(data);
                     this.modInfo.cache.styleFileItems.items.push({
                         name: stylePath,
                         content: data,
@@ -178,7 +183,7 @@ export class ModZipReader {
                     const tp = Twee2Passage(data);
                     // console.log('Twee2Passage', tp, [data]);
                     for (const p of tp) {
-                        this.replaceImgWithBase64String(p.contect);
+                        // this.replaceImgWithBase64String(p.contect);
                         this.modInfo.cache.passageDataItems.items.push({
                             name: p.name,
                             content: p.contect,
@@ -208,7 +213,7 @@ export class ModZipReader {
                 const scFile = this.zip.file(scPath);
                 if (scFile) {
                     const data = await scFile.async('string');
-                    this.replaceImgWithBase64String(data);
+                    // this.replaceImgWithBase64String(data);
                     this.modInfo.cache.scriptFileItems.items.push({
                         name: scPath,
                         content: data,

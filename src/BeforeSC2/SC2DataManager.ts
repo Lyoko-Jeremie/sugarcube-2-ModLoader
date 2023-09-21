@@ -223,17 +223,17 @@ export class SC2DataManager {
         // console.log('orginSC2DataInfoCache scriptFileItems length', orginSC2DataInfoCache.scriptFileItems.items.length);
 
         // replace orgin img
-        for (const imgRPath of this.getModLoader().getModImgFileReplaceList()) {
-            em.passageDataItems.items.forEach(T => {
-                T.content = T.content.replace(imgRPath[0], imgRPath[1]);
-            });
-            em.styleFileItems.items.forEach(T => {
-                T.content = T.content.replace(imgRPath[0], imgRPath[1]);
-            });
-            em.scriptFileItems.items.forEach(T => {
-                T.content = T.content.replace(imgRPath[0], imgRPath[1]);
-            });
-        }
+        // for (const imgRPath of this.getModLoader().getModImgFileReplaceList()) {
+        //     em.passageDataItems.items.forEach(T => {
+        //         T.content = T.content.replace(imgRPath[0], imgRPath[1]);
+        //     });
+        //     em.styleFileItems.items.forEach(T => {
+        //         T.content = T.content.replace(imgRPath[0], imgRPath[1]);
+        //     });
+        //     em.scriptFileItems.items.forEach(T => {
+        //         T.content = T.content.replace(imgRPath[0], imgRPath[1]);
+        //     });
+        // }
 
         // console.log('orginSC2DataInfoCache', orginSC2DataInfoCache.scriptNode[0].innerHTML);
         // console.log('patchModToGame() orginSC2DataInfoCache', structuredClone(orginSC2DataInfoCache.scriptFileItems));

@@ -22,8 +22,6 @@ export interface ModBootJson {
     scriptFileList_inject_early: string[];
     tweeFileList: string[];
     imgFileList: string[];
-    // orgin path, replace path
-    imgFileReplaceList: [string, string][];
     addstionFile: string[];
 }
 
@@ -96,29 +94,29 @@ export class ModLoader {
         });
     }
 
-    getModImgFileReplaceList() {
-        // orgin path, replace
-        const imgFileReplace = new Map<string, string>();
-        for (const modName of this.modOrder) {
-            const mod = this.getMod(modName);
-            if (!mod) {
-                console.error('ModLoader getModImgFileReplaceList() (!mod)');
-                continue;
-            }
-            for (const [orgin, replace] of mod.bootJson.imgFileReplaceList) {
-                if (imgFileReplace.has(orgin)) {
-                    console.warn('ModLoader getModImgFileReplaceList() has duplicate orgin:',
-                        [orgin],
-                        ' on mod ',
-                        [modName],
-                        ' will be overwrite',
-                    );
-                }
-                imgFileReplace.set(orgin, replace);
-            }
-        }
-        return imgFileReplace;
-    }
+    // getModImgFileReplaceList() {
+    //     // orgin path, replace
+    //     const imgFileReplace = new Map<string, string>();
+    //     for (const modName of this.modOrder) {
+    //         const mod = this.getMod(modName);
+    //         if (!mod) {
+    //             console.error('ModLoader getModImgFileReplaceList() (!mod)');
+    //             continue;
+    //         }
+    //         for (const [orgin, replace] of mod.bootJson.imgFileReplaceList) {
+    //             if (imgFileReplace.has(orgin)) {
+    //                 console.warn('ModLoader getModImgFileReplaceList() has duplicate orgin:',
+    //                     [orgin],
+    //                     ' on mod ',
+    //                     [modName],
+    //                     ' will be overwrite',
+    //                 );
+    //             }
+    //             imgFileReplace.set(orgin, replace);
+    //         }
+    //     }
+    //     return imgFileReplace;
+    // }
 
     private modIndexDBLoader?: IndexDBLoader;
     private modLocalStorageLoader?: LocalStorageLoader;
