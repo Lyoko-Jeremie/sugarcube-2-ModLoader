@@ -35,7 +35,7 @@ export interface ModLoadControllerCallback {
 
     logInfo(s: string): void;
 
-    logWarnning(s: string): void;
+    logWarning(s: string): void;
 }
 
 const ModLoadControllerCallback_PatchHook = [
@@ -46,7 +46,7 @@ const ModLoadControllerCallback_PatchHook = [
 ] as const;
 const ModLoadControllerCallback_Log = [
     'logInfo',
-    'logWarnning',
+    'logWarning',
     'logError',
 ] as const;
 const ModLoadControllerCallback_ScriptLoadHook = [
@@ -104,7 +104,7 @@ export class ModLoadController implements ModLoadControllerCallback {
     ReplacePatcher_start!: () => void;
     logError!: (s: string) => void;
     logInfo!: (s: string) => void;
-    logWarnning!: (s: string) => void;
+    logWarning!: (s: string) => void;
 
     canLoadThisMod(bootJson: ModBootJson, zip: JSZip): boolean {
         return this.lifeTimeCircleHookTable.reduce((acc, T) => {
