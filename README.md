@@ -16,30 +16,30 @@
 
 ```json5
 {
-  "name": "MyMod",    // mod名字
-  "version": "1.0.0", // mod版本
-  "styleFileList": [      // css 样式文件
+  "name": "MyMod",    // （必须存在） mod名字
+  "version": "1.0.0", // （必须存在） mod版本
+  "scriptFileList_inject_early": [  // （可选） 提前注入的 js 脚本 ， 会在当前mod加载后立即插入到dom中由浏览器按照script的标注执行方式执行
+    "MyMod_script_inject_early_example.js"
+  ],
+  "scriptFileList_earlyload": [     // （可选） 提前加载的 js 脚本 ， 会在当前mod加载后，inject_early脚本全部插入完成后，由modloader执行并等待异步指令返回，可以在这里读取到未修改的Passage的内容
+    "MyMod_script_earlyload_example.js"
+  ],
+  "scriptFileList_preload": [     // （可选） 预加载的 js 脚本文件 ， 会在引擎初始化前、mod的数据文件全部加载并合并到html的tw-storydata中后，由modloader执行并等待异步指令返回， 可以在此处调用modloader的API读取最新的Passage数据并动态修改覆盖Passage的内容
+    "MyMod_script_preload_example.js"     // 注意 scriptFileList_preload 文件有固定的格式，参见样例 src/insertTools/MyMod/MyMod_script_preload_example.js
+  ],
+  "styleFileList": [      // （必须存在） css 样式文件
     "MyMod_style_1.css",
     "MyMod_style_2.css"
   ],
-  "scriptFileList_inject_early": [  // 提前注入的 js 脚本 ， 会在当前mod加载后立即插入到dom中由浏览器按照script的标注执行方式执行
-    "MyMod_script_inject_early_example.js"
-  ],
-  "scriptFileList_earlyload": [     // 提前加载的 js 脚本 ， 会在当前mod加载后，inject_early脚本全部插入完成后，由modloader执行并等待异步指令返回，可以在这里读取到未修改的Passage的内容
-    "MyMod_script_earlyload_example.js"
-  ],
-  "scriptFileList_preload": [     // 预加载的 js 脚本文件 ， 会在引擎初始化前、mod的数据文件全部加载并合并到html的tw-storydata中后，由modloader执行并等待异步指令返回， 可以在此处调用modloader的API读取最新的Passage数据并动态修改覆盖Passage的内容
-    "MyMod_script_preload_example.js"     // 注意 scriptFileList_preload 文件有固定的格式，参见样例 src/insertTools/MyMod/MyMod_script_preload_example.js
-  ],
-  "scriptFileList": [     // js 脚本文件，这是游戏的一部分
+  "scriptFileList": [     // （必须存在） js 脚本文件，这是游戏的一部分
     "MyMod_script_1.js",
     "MyMod_script_2.js"
   ],
-  "tweeFileList": [       // twee 剧本文件
+  "tweeFileList": [       // （必须存在） twee 剧本文件
     "MyMod_Passage1.twee",
     "MyMod_Passage2.twee"
   ],
-  "imgFileList": [        // 图片文件，尽可能不要用容易与文件中其他字符串混淆的文件路径，否则会意外破坏文件内容
+  "imgFileList": [        // （必须存在） 图片文件，尽可能不要用容易与文件中其他字符串混淆的文件路径，否则会意外破坏文件内容
     "MyMod_Image/typeAImage/111.jpg",
     "MyMod_Image/typeAImage/222.png",
     "MyMod_Image/typeAImage/333.gif",
@@ -47,26 +47,39 @@
     "MyMod_Image/typeBImage/222.png",
     "MyMod_Image/typeBImage/333.gif"
   ],
-  "imgFileReplaceList": [   //  图片文件覆盖列表，指定应覆盖的图片文件，格式为 [ [ "原图片文件路径", "覆盖图片文件路径" ], ... ]
-    [
-      "img/A/base.jpg",
-      "MyMod_Image/typeAImage/111.jpg"
-    ],
-    [
-      "img/B/base.png",
-      "MyMod_Image/typeAImage/222.png"
-    ],
-    [
-      "img/body/base.gif",
-      "MyMod_Image/typeAImage/333.gif"
-    ]
-  ],
-  "addstionFile": [     // 附加文件列表，额外打包到zip中的文件，此列表中的文件不会被加载，仅作为附加文件存在
+  "addstionFile": [     // （必须存在） 附加文件列表，额外打包到zip中的文件，此列表中的文件不会被加载，仅作为附加文件存在
     "readme.txt"
   ]
 }
 
 ```
+
+最小 boot.json 文件样例：
+
+```json
+{
+  "name": "EmptyMod",
+  "version": "1.0.0",
+  "styleFileList": [
+  ],
+  "scriptFileList": [
+  ],
+  "tweeFileList": [
+  ],
+  "imgFileList": [
+  ],
+  "addstionFile": [
+  ]
+}
+```
+
+---
+
+### 变更：
+
+【2023-09-21】 删除 `imgFileReplaceList` ，现在使用新的ImageHookLoader直接拦截图像请求来实现图像替换，因此，与原始图像文件重名的图像会被覆盖
+
+---
 
 
 ### 手动打包方法
@@ -132,14 +145,10 @@ MyMod.mod.zip
 ### 注意：
 1. boot.json 文件内的路径都是相对路径，相对于zip文件根目录的路径，且在打包时也要相对于执行目录的路径。
 2. 图片文件的路径是相对于zip文件根目录的路径，但在打包时要相对于执行目录的路径。
-3. 图片会在mod读取时将所有使用图片（路径）的位置替换为图片的 base64url 。
-4. 若文件中出现了与图片路径极其相似的字符串，该字符串也会被替换为图片的 base64url ，请注意。
-5. 同一个mod内的文件名不能重复，也尽量不要和原游戏或其他mod重复。与原游戏重复的部分会覆盖游戏源文件。（图片例外）
-7. 具体的来说，mod会按照mod列表中的顺序加载，靠后的mod会覆盖靠前的mod的passage同名文件，mod之间的同名css/js文件会直接将内容concat到一起，故不会覆盖css/js/img等同名文件。
-8. 加载时首先计算mod之间的覆盖，然后将计算结果覆盖到原游戏中
-9. 当前版本的mod加载器的工作方式是直接将css/js/twee文件按照原版sc2的格式到html文件中。
-10. ~mod中的twee文件与正常的twee文件不同的是，这里每一个twee文件中有且只能有一个passage，且文件名需要和文件内的passage同名，否则会无法正确加载。~ 此缺陷已解决，现在可以以原版同样的方式工作
-11. 使用imgFileReplaceList时请小心谨慎。
+3. 同一个mod内的文件名不能重复，也尽量不要和原游戏或其他mod重复。与原游戏重复的部分会覆盖游戏源文件。
+4. 具体的来说，mod会按照mod列表中的顺序加载，靠后的mod会覆盖靠前的mod的passage同名文件，mod之间的同名css/js文件会直接将内容concat到一起，故不会覆盖css/js等同名文件。
+5. 加载时首先计算mod之间的覆盖，然后将计算结果覆盖到原游戏中
+6. 当前版本的mod加载器的工作方式是直接将css/js/twee文件按照原版sc2的格式到html文件中。
 
 
 ---
