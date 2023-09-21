@@ -5,6 +5,7 @@ import {SC2DataInfo} from "./SC2DataInfoCache";
 import {ModBootJson, ModInfo} from "./ModLoader";
 import {ModLoadControllerCallback} from "./ModLoadController";
 import {extname} from "./extname";
+import {ReplacePatcher, checkPatchInfo} from "./ReplacePatcher";
 
 export interface Twee2PassageR {
     name: string;
@@ -69,6 +70,8 @@ export class ModZipReader {
             && isArray(get(bootJ, 'imgFileList'))
             && every(get(bootJ, 'imgFileList'), isString)
             // optional
+            && (has(bootJ, 'replacePatch') ?
+                (isArray(get(bootJ, 'replacePatch')) && every(get(bootJ, 'replacePatch'), isString)) : true)
             && (has(bootJ, 'scriptFileList_preload') ?
                 (isArray(get(bootJ, 'scriptFileList_preload')) && every(get(bootJ, 'scriptFileList_preload'), isString)) : true)
             && (has(bootJ, 'scriptFileList_earlyload') ?
@@ -132,6 +135,7 @@ export class ModZipReader {
                 scriptFileList_preload: [],
                 scriptFileList_earlyload: [],
                 scriptFileList_inject_early: [],
+                replacePatcher: [],
                 bootJson: bootJ,
             };
             this.loaderBase.addZipFile(bootJ.name, this);
@@ -149,7 +153,28 @@ export class ModZipReader {
             //         console.warn('cannot get imgFileReplaceList file from mod zip:', [this.modInfo.name, imgFile])
             //     }
             // }
-            for (const imgPath of bootJ.imgFileList) {
+            for (const replacePatchPath of bootJ.replacePatch || []) {
+                const replacePatchFile = this.zip.file(replacePatchPath);
+                if (replacePatchFile) {
+                    const data = await replacePatchFile.async('text');
+                    try {
+                        const d = JSON.parse(data);
+                        if (checkPatchInfo(d)) {
+                            this.modInfo.replacePatcher.push(new ReplacePatcher(
+                                this.modInfo.name,
+                                d,
+                            ));
+                        } else {
+                            console.error('ModLoader ====== ModZipReader init() replacePatchFile Invalid:', [this.modInfo.name, replacePatchPath]);
+                        }
+                    } catch (e) {
+                        console.error('ModLoader ====== ModZipReader init() replacePatchFile Invalid:', [this.modInfo.name, replacePatchPath]);
+                    }
+                } else {
+                    console.warn('cannot get imgFileList file from mod zip:', [this.modInfo.name, replacePatchFile])
+                }
+            }
+            for (const imgPath of bootJ.imgFileList || []) {
                 const imgFile = this.zip.file(imgPath);
                 if (imgFile) {
                     const data = await imgFile.async('base64');
@@ -161,7 +186,7 @@ export class ModZipReader {
                     console.warn('cannot get imgFileList file from mod zip:', [this.modInfo.name, imgPath])
                 }
             }
-            for (const stylePath of bootJ.styleFileList) {
+            for (const stylePath of bootJ.styleFileList || []) {
                 const styleFile = this.zip.file(stylePath);
                 if (styleFile) {
                     const data = await styleFile.async('string');
@@ -176,7 +201,7 @@ export class ModZipReader {
                 }
             }
             this.modInfo.cache.styleFileItems.fillMap();
-            for (const tweePath of bootJ.tweeFileList) {
+            for (const tweePath of bootJ.tweeFileList || []) {
                 const imgFile = this.zip.file(tweePath);
                 if (imgFile) {
                     const data = await imgFile.async('string');
@@ -209,7 +234,7 @@ export class ModZipReader {
                 }
             }
             this.modInfo.cache.passageDataItems.fillMap();
-            for (const scPath of bootJ.scriptFileList) {
+            for (const scPath of bootJ.scriptFileList || []) {
                 const scFile = this.zip.file(scPath);
                 if (scFile) {
                     const data = await scFile.async('string');

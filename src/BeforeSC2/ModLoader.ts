@@ -5,6 +5,7 @@ import {IndexDBLoader, LocalLoader, LocalStorageLoader, RemoteLoader} from "./Mo
 import {SC2DataManager} from "./SC2DataManager";
 import {JsPreloader} from 'JsPreloader';
 import {ModLoadControllerCallback} from "./ModLoadController";
+import {PatchInfoItem, ReplacePatcher} from "./ReplacePatcher";
 
 export interface ModImg {
     // base64
@@ -22,6 +23,7 @@ export interface ModBootJson {
     scriptFileList_inject_early: string[];
     tweeFileList: string[];
     imgFileList: string[];
+    replacePatch: string[];
     addstionFile: string[];
 }
 
@@ -38,6 +40,7 @@ export interface ModInfo {
     scriptFileList_earlyload: [string, string][];
     // file name, file contect
     scriptFileList_inject_early: [string, string][];
+    replacePatcher: ReplacePatcher[];
     bootJson: ModBootJson;
 }
 

@@ -8,6 +8,7 @@ import {
 } from "./MergeSC2DataInfoCache";
 import {SimulateMergeResult} from "./SimulateMerge";
 import {ModLoadController} from "./ModLoadController";
+import {ReplacePatcher} from "./ReplacePatcher";
 
 export class SC2DataManager {
 
@@ -202,6 +203,26 @@ export class SC2DataManager {
         this.getSC2DataInfoAfterPatch();
     }
 
+    applyReplacePatcher(modSC2DataInfoCache: SC2DataInfo) {
+        this.getModLoadController().ReplacePatcher_start();
+
+        const modCache = this.getModLoader().modCache;
+        const modOrder = this.getModLoader().modOrder;
+
+        for (const modName of modOrder) {
+            const mod = modCache.get(modName);
+            if (!mod) {
+                console.error('applyReplacePatcher() (!mod)', [modName]);
+                continue;
+            }
+            for (const rp of mod.replacePatcher) {
+                rp.applyReplacePatcher(modSC2DataInfoCache);
+            }
+        }
+
+        this.getModLoadController().ReplacePatcher_end();
+    }
+
     patchModToGame() {
         this.getModLoadController().PatchModToGame_start();
 
@@ -248,6 +269,8 @@ export class SC2DataManager {
         // console.log('patchModToGame() orginSC2DataInfoCache', orginSC2DataInfoCache);
         // console.log('patchModToGame() modSC2DataInfoCache', modSC2DataInfoCache);
         // console.log('patchModToGame() modSC2DataInfoCache scriptFileItems length', modSC2DataInfoCache.scriptFileItems.items.length);
+
+        this.applyReplacePatcher(modSC2DataInfoCache);
 
         const newScriptNode = this.makeScriptNode(modSC2DataInfoCache);
 

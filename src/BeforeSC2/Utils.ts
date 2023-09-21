@@ -8,7 +8,7 @@ import {replaceMergeSC2DataInfoCache, replaceMergeSC2DataInfoCacheForce} from ".
 
 export class ModUtils {
 
-    version = '1.0.1';
+    version = '1.0.2';
 
     constructor(
         public pSC2DataManager: SC2DataManager,
