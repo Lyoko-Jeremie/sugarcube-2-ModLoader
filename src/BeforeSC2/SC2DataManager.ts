@@ -307,7 +307,8 @@ export class SC2DataManager {
             s.setAttribute('size', T.size);
         }
         // s.innerText = `:: Widgets ${T.name}${T.tags?.length > 0 ? ` [${T.tags.join(' ')}]` : ''}\n${T.content}\n`;
-        s.innerText = T.content;
+        s.textContent = T.content;
+        // s.innerHTML = T.content;
         return s;
     }
 
@@ -320,7 +321,7 @@ export class SC2DataManager {
         newStyleNode.setAttribute('type', 'text/twine-css');
         newStyleNode.setAttribute('role', 'stylesheet');
         newStyleNode.setAttribute('id', 'twine-user-stylesheet');
-        newStyleNode.innerHTML = newStyleNodeContent;
+        newStyleNode.textContent = newStyleNodeContent;
         return newStyleNode;
     }
 
@@ -333,7 +334,7 @@ export class SC2DataManager {
         newScriptNode.setAttribute('type', 'text/twine-javascript');
         newScriptNode.setAttribute('role', 'script');
         newScriptNode.setAttribute('id', 'twine-user-script');
-        newScriptNode.innerHTML = newScriptNodeContent;
+        newScriptNode.textContent = newScriptNodeContent;
         return newScriptNode;
     }
 
