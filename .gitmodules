@@ -4,3 +4,6 @@
 [submodule "mod/ModLoaderGui"]
 	path = mod/ModLoaderGui
 	url = ../sugarcube-2-ModLoaderGui.git
+[submodule "mod/ImageLoaderHook"]
+	path = mod/ImageLoaderHook
+	url = ../sugarcube-2-ModLoader-ImgLoaderHooker.git
