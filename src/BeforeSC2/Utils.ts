@@ -7,6 +7,9 @@ import {SimulateMergeResult} from "./SimulateMerge";
 import {replaceMergeSC2DataInfoCache, replaceMergeSC2DataInfoCacheForce} from "./MergeSC2DataInfoCache";
 
 export class ModUtils {
+
+    version = '1.0.1';
+
     constructor(
         public pSC2DataManager: SC2DataManager,
     ) {
