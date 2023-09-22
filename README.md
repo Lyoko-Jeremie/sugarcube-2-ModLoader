@@ -3,6 +3,31 @@
 
 ---
 
+* [ModLoader](#ModLoader)
+  * [简介](#简介)
+  * [如何制作 Mod.zip 文件](#如何制作-modzip-文件)
+      * [注意事项](#注意事项)
+  * [如何打包Mod](#如何打包mod)
+    * [手动打包方法](#手动打包方法) <========= **最简单的打包Mod方法**， 若没有NodeJs环境，请使用此方法
+    * [自动打包方法](#自动打包方法)
+  * [ModLoader开发及修改方法](#ModLoader开发及修改方法)
+
+---
+
+# 简介
+
+此项目是为 SugarCube-2 引擎编写的Mod加载器，初衷是为 [Degrees-of-Lewdity] 设计一个支持Mod加载和管理的Mod框架，支持加载本地Mod、远程Mod、旁加载Mod（从IndexDB中加载）。
+
+本项目的目的是为了方便制作Mod以及加载Mod，同时也为了方便制作Mod的开发者，提供了一些API来方便读取和修改游戏数据。
+
+本项目由于需要在SC2引擎启动前注入Mod，故对SC2引擎做了部分修改，添加了ModLoader的引导点，以便在引擎启动前完成Mod的各项注入工作。
+
+修改过的 SC2 在此处：[sugarcube-2](https://github.com/Lyoko-Jeremie/sugarcube-2_Vrelnir) ，使用此ModLoader的游戏需要使用此版本的SC2引擎才能引导本ModLoader。
+
+具体有关如何打包一个带有ModLoader的游戏本体的方法，详见 [ModLoader开发及修改方法](#ModLoader开发及修改方法) 。
+
+---
+
 # 如何制作 Mod.zip 文件：
 
 
@@ -69,10 +94,59 @@
   "imgFileList": [
   ],
   "additionFile": [
+    "readme.txt"
   ]
 }
 ```
 
+### 注意事项
+
+1. boot.json 文件内的路径都是相对路径，相对于zip文件根目录的路径。
+2. 图片文件的路径是相对于zip文件根目录的路径。
+3. 同一个mod内的文件名不能重复，也尽量不要和原游戏或其他mod重复。与原游戏重复的部分会覆盖游戏源文件。
+4. 具体的来说，mod会按照mod列表中的顺序加载，靠后的mod会覆盖靠前的mod的passage同名文件，mod之间的同名css/js文件会直接将内容concat到一起，故不会覆盖css/js等同名文件。
+5. 加载时首先计算mod之间的覆盖，（互相覆盖同名passage段落，将同名js/css连接在一起），然后将结果覆盖到原游戏中（覆盖原版游戏的同名passage/js/css）
+6. 当前版本的mod加载器的工作方式是直接将css/js/twee文件按照原版sc2的格式插入到html文件中。
+
+
+---
+
+
+对于一个想要修改passage的mod，有这么4个可以修改的地方
+1. scriptFileList_inject_early ， 这个会在当前mod读取之后，“立即”插入到script脚本由浏览器按照script标签的标准执行，这里可以调用ModLoader的API，可以读取未经修改的SC2 data （包括原始的passage）
+2. scriptFileList_earlyload  ，这个会在当前mod读取之后，inject_early 脚本插入完之后，由modloader执行并等待异步指令返回，这里可以调用ModLoader的API，可以执行异步操作，干一些远程加载之类的活，也可以在这里读取未经修改的SC2 data（包括原始的passage）
+3. tweeFileList ，这个是mod的主体，会在modloader读取所有mod之后，做【1 合并所有mod追加的数据，2 将合并结果覆盖到原始游戏】的过程应用修改到原始游戏SC2 data上
+4. scriptFileList_preload ， 这个会在mod文件全部应用到SC2 data之后由modloader执行并等待异步操作返回，这里可以像earlyload一样做异步工作，也可以读取到mod应用之后的SC2 data
+
+上面的步骤结束之后SC2引擎才会开始启动，读取SC2 data，然后开始游戏，整个步骤都是在加载屏幕（那个转圈圈）完成的。
+
+---
+
+另，由于SC2引擎本身会触发以下的一些事件，故可以使用jQuery监听这些事件来监测游戏的变化
+```
+// 游戏完全启动完毕
+:storyready
+// 一个新的 passage 上下文开始初始化
+:passageinit
+// 一个新的 passage 开始渲染
+:passagestart
+// 一个新的 passage 渲染结束
+:passagerender
+// 一个新的 passage 准备插入到HTML
+:passagedisplay
+// 一个新的 passage 已经处理结束
+:passageend
+```
+
+由于，可以以下方法监听jQuery事件
+```js
+$(document).one(":storyready", () => {
+   // ....... 触发一次
+});
+$(document).on(":storyready", () => {
+   // ....... 触发多次
+});
+```
 ---
 
 ### 变更：
@@ -81,6 +155,7 @@
 
 ---
 
+## 如何打包Mod
 
 ### 手动打包方法
 
@@ -119,7 +194,7 @@
 yarn run webpack:insertTools:w
 ```
 
-切换到 Mod 所在文件夹
+切换到 Mod 所在文件夹，（即boot.json所在文件夹）
 ```shell
 cd src/insertTools/MyMod
 ```
@@ -142,35 +217,24 @@ node "H:\Code\sugarcube-2\ModLoader\dist-insertTools\packModZip.js" "boot.json"
 MyMod.mod.zip
 ```
 
-### 注意：
-1. boot.json 文件内的路径都是相对路径，相对于zip文件根目录的路径，且在打包时也要相对于执行目录的路径。
-2. 图片文件的路径是相对于zip文件根目录的路径，但在打包时要相对于执行目录的路径。
-3. 同一个mod内的文件名不能重复，也尽量不要和原游戏或其他mod重复。与原游戏重复的部分会覆盖游戏源文件。
-4. 具体的来说，mod会按照mod列表中的顺序加载，靠后的mod会覆盖靠前的mod的passage同名文件，mod之间的同名css/js文件会直接将内容concat到一起，故不会覆盖css/js等同名文件。
-5. 加载时首先计算mod之间的覆盖，然后将计算结果覆盖到原游戏中
-6. 当前版本的mod加载器的工作方式是直接将css/js/twee文件按照原版sc2的格式到html文件中。
-
 
 ---
 
+# ModLoader开发及修改方法
 
-对于一个想要修改passage的mod，有这么4个可以修改的地方
-1. scriptFileList_inject_early ， 这个会在当前mod读取之后，“立即”插入到script脚本由浏览器按照script标签的标准执行，这里可以调用ModLoader的API，可以读取未经修改的SC2 data （包括原始的passage）
-2. scriptFileList_earlyload  ，这个会在当前mod读取之后，inject_early 脚本插入完之后，由modloader执行并等待异步指令返回，这里可以调用ModLoader的API，可以执行异步操作，干一些远程加载之类的活，也可以在这里读取未经修改的SC2 data（包括原始的passage）
-3. tweeFileList ，这个是mod的主体，会在modloader读取所有mod之后，做【1 合并所有mod追加的数据，2 将合并结果覆盖到原始游戏】的过程应用修改到原始游戏SC2 data上
-4. scriptFileList_preload ， 这个会在mod文件全部应用到SC2 data之后由modloader执行并等待异步操作返回，这里可以像earlyload一样做异步工作，也可以读取到mod应用之后的SC2 data
-
-上面的步骤结束之后SC2引擎才会开始启动，读取SC2 data，然后开始游戏，整个步骤都是在加载屏幕（那个转圈圈）完成的。
-
-
-
-
-
+**以下是关于如何修改ModLoader本体、如何将ModLoader本体以及插入到游戏中、如何将预装Mod嵌入到Html中的方法。若仅仅制作Mod，仅需按照以上方法[打包Mod](#如何打包mod)即可在Mod管理界面加载zip文件。**
 
 ---
 
-# 开发方法
+本项目由于需要在SC2引擎启动前注入Mod，故对SC2引擎做了部分修改，添加了ModLoader的引导点，以便在引擎启动前完成Mod的各项注入工作。
 
+修改过的 SC2 在此处：[sugarcube-2](https://github.com/Lyoko-Jeremie/sugarcube-2_Vrelnir) ，使用此ModLoader的游戏需要使用此版本的SC2引擎才能引导本ModLoader。
+
+可在SC2游戏引擎项目中执行 `build.js -d -u -b 2` 来编译SC2游戏引擎，编译结果在SC2游戏引擎项目的 `build/twine2/sugarcube-2/format.js` ，
+将其覆盖 [Degrees-of-Lewdity] 游戏的原版 `devTools/tweego/storyFormats/sugarcube-2/format.js` ，编译原版游戏本体获得带有ModLoader引导点的Html游戏文件，
+随后按照下方的方法编译并注入此ModLoader到Html游戏文件，即可使用此ModLoader。
+
+---
 
 编译脚本
 
@@ -180,7 +244,7 @@ yarn run ts:ForSC2:w
 yarn run webpack:insertTools:w
 ```
 
-如何插入Mod加载器以及内嵌到html文件：
+如何插入Mod加载器以及将预装Mod内嵌到html文件：
 
 编写 modList.json 文件，格式如下：
 （样本可参见 src/insertTools/modList.json ）
@@ -214,4 +278,12 @@ Degrees of Lewdity VERSION.html.mod.html
 ```
 打开`Degrees of Lewdity VERSION.html.mod.html`文件， play
 
+
+---
+
+## 附NodeJs及Yarn环境安装方法
+
+1. 从 [NodeJs 官网](https://nodejs.org) 下载NodeJs并安装，例如 [node-v18.18.0-x64.msi](https://nodejs.org/dist/v18.18.0/node-v18.18.0-x64.msi)
+2. 在命令行运行 `corepack enable` 来启用包管理器支持
+3. 结束
 
