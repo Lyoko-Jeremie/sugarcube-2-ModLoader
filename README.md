@@ -48,7 +48,7 @@
     "MyMod_Image/typeBImage/333.gif"
   ],
   "additionFile": [     // （必须存在） 附加文件列表，额外打包到zip中的文件，此列表中的文件不会被加载，仅作为附加文件存在
-    "readme.txt"
+    "readme.txt"      // 第一个以readme(不区分大小写)开头的文件会被作为mod的说明文件，会在mod管理器中显示
   ]
 }
 

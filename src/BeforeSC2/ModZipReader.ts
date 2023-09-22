@@ -139,6 +139,7 @@ export class ModZipReader {
                 bootJson: bootJ,
             };
             this.loaderBase.addZipFile(bootJ.name, this);
+            // console.log('ModLoader ====== ModZipReader init() modInfo', this.modInfo);
 
             // load file
             // for (const imgRPath of bootJ.imgFileReplaceList) {

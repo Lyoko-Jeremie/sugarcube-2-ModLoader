@@ -8,7 +8,7 @@ import {replaceMergeSC2DataInfoCache, replaceMergeSC2DataInfoCacheForce} from ".
 
 export class ModUtils {
 
-    version = '1.0.2';
+    version = '1.0.3';
 
     constructor(
         public pSC2DataManager: SC2DataManager,
@@ -30,6 +30,40 @@ export class ModUtils {
      */
     getMod(name: string) {
         return this.pSC2DataManager.getModLoader().modCache.get(name);
+    }
+
+    /**
+     * 获取指定mod的Zip
+     * @param name ModName
+     * @return ModZipReader[] | undefined
+     */
+    getModZip(modName: string) {
+        const loader = this.pSC2DataManager.getModLoader();
+        if (loader.getIndexDBLoader()) {
+            const mod = loader.getIndexDBLoader()!.getZipFile(modName);
+            if (mod) {
+                return mod;
+            }
+        }
+        if (loader.getLocalStorageLoader()) {
+            const mod = loader.getLocalStorageLoader()!.getZipFile(modName);
+            if (mod) {
+                return mod;
+            }
+        }
+        if (loader.getRemoteLoader()) {
+            const mod = loader.getRemoteLoader()!.getZipFile(modName);
+            if (mod) {
+                return mod;
+            }
+        }
+        if (loader.getLocalLoader()) {
+            const mod = loader.getLocalLoader()!.getZipFile(modName);
+            if (mod) {
+                return mod;
+            }
+        }
+        return undefined;
     }
 
     /**
