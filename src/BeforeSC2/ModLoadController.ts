@@ -27,9 +27,9 @@ export interface ModLoadControllerCallback {
 
     PatchModToGame_end(): void;
 
-    ReplacePatcher_start(): void;
+    ReplacePatcher_start(modName: string, fileName: string): void;
 
-    ReplacePatcher_end(): void;
+    ReplacePatcher_end(modName: string, fileName: string): void;
 
     logError(s: string): void;
 
@@ -41,6 +41,8 @@ export interface ModLoadControllerCallback {
 const ModLoadControllerCallback_PatchHook = [
     'PatchModToGame_start',
     'PatchModToGame_end',
+] as const;
+const ModLoadControllerCallback_ReplacePatch = [
     'ReplacePatcher_start',
     'ReplacePatcher_end',
 ] as const;
@@ -81,6 +83,15 @@ export class ModLoadController implements ModLoadControllerCallback {
                 });
             };
         });
+        ModLoadControllerCallback_ReplacePatch.forEach((T) => {
+            this[T] = (modName: string, fileName: string) => {
+                this.lifeTimeCircleHookTable.forEach((hook) => {
+                    if (hook[T]) {
+                        hook[T]!.apply(hook, [modName, fileName]);
+                    }
+                });
+            };
+        });
         ModLoadControllerCallback_Log.forEach((T) => {
             this[T] = (s: string) => {
                 this.lifeTimeCircleHookTable.forEach((hook) => {
@@ -100,8 +111,8 @@ export class ModLoadController implements ModLoadControllerCallback {
     Load_start!: (modName: string, fileName: string) => void;
     PatchModToGame_end!: () => void;
     PatchModToGame_start!: () => void;
-    ReplacePatcher_end!: () => void;
-    ReplacePatcher_start!: () => void;
+    ReplacePatcher_end!: (modName: string, fileName: string) => void;
+    ReplacePatcher_start!: (modName: string, fileName: string) => void;
     logError!: (s: string) => void;
     logInfo!: (s: string) => void;
     logWarning!: (s: string) => void;

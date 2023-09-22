@@ -163,6 +163,7 @@ export class ModZipReader {
                         if (checkPatchInfo(d)) {
                             this.modInfo.replacePatcher.push(new ReplacePatcher(
                                 this.modInfo.name,
+                                replacePatchPath,
                                 d,
                             ));
                         } else {

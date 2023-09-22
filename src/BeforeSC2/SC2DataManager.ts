@@ -204,7 +204,6 @@ export class SC2DataManager {
     }
 
     applyReplacePatcher(modSC2DataInfoCache: SC2DataInfo) {
-        this.getModLoadController().ReplacePatcher_start();
 
         const modCache = this.getModLoader().modCache;
         const modOrder = this.getModLoader().modOrder;
@@ -216,11 +215,18 @@ export class SC2DataManager {
                 continue;
             }
             for (const rp of mod.replacePatcher) {
-                rp.applyReplacePatcher(modSC2DataInfoCache);
+                console.log('ModLoader ====== applyReplacePatcher() Replace Patch', [modName, rp.patchFileName]);
+                this.getModLoadController().ReplacePatcher_start(modName, rp.patchFileName);
+                try {
+                    rp.applyReplacePatcher(modSC2DataInfoCache);
+                } catch (e) {
+                    console.error('ModLoader ====== applyReplacePatcher() Replace Patch Error: ', e);
+                }
+                this.getModLoadController().ReplacePatcher_end(modName, rp.patchFileName);
+                console.log('ModLoader ====== applyReplacePatcher() Replace Patch', [modName, rp.patchFileName]);
             }
         }
 
-        this.getModLoadController().ReplacePatcher_end();
     }
 
     patchModToGame() {

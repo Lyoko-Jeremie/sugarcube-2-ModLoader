@@ -111,6 +111,7 @@ export class ReplacePatcher {
 
     constructor(
         public modName: string,
+        public patchFileName: string,
         public patchInfo_: any,
     ) {
         if (!checkPatchInfo(patchInfo_)) {
@@ -120,10 +121,39 @@ export class ReplacePatcher {
             this.patchInfo = patchInfo_;
         }
         this.patchInfoMap = {
-            js: this.patchInfo.js ? new Map(this.patchInfo.js.map((T) => [T.fileName, T])) : new Map(),
-            css: this.patchInfo.css ? new Map(this.patchInfo.css.map((T) => [T.fileName, T])) : new Map(),
-            twee: this.patchInfo.twee ? new Map(this.patchInfo.twee.map((T) => [T.passageName, T])) : new Map(),
+            js: new Map(),
+            css: new Map(),
+            twee: new Map(),
         };
+        if (this.patchInfo.js) {
+            for (const T of this.patchInfo.js) {
+                if (!this.patchInfoMap.js.has(T.fileName)) {
+                    this.patchInfoMap.js.set(T.fileName, []);
+                }
+                this.patchInfoMap.js.get(T.fileName)!.push(T);
+            }
+        }
+        if (this.patchInfo.css) {
+            for (const T of this.patchInfo.css) {
+                if (!this.patchInfoMap.css.has(T.fileName)) {
+                    this.patchInfoMap.css.set(T.fileName, []);
+                }
+                this.patchInfoMap.css.get(T.fileName)!.push(T);
+            }
+        }
+        if (this.patchInfo.twee) {
+            for (const T of this.patchInfo.twee) {
+                if (!T.passageName) {
+                    // never go there
+                    console.error('ReplacePatcher() invalid patchInfo.twee passageName', [modName, patchInfo_, T]);
+                    continue;
+                }
+                if (!this.patchInfoMap.twee.has(T.passageName)) {
+                    this.patchInfoMap.twee.set(T.passageName, []);
+                }
+                this.patchInfoMap.twee.get(T.passageName)!.push(T);
+            }
+        }
     }
 
     applyReplacePatcher(modSC2DataInfoCache: SC2DataInfo) {
@@ -139,6 +169,19 @@ export class ReplacePatcher {
                 s = r.r;
                 if (r.positions.length > 1) {
                     console.warn('applyReplacePatcher() js replace multiple: ',
+                        ' in ',
+                        [item.name],
+                        ' of ',
+                        [patchInfoItem.from],
+                        ' to ',
+                        [patchInfoItem.to],
+                        ' positions ',
+                        [r.positions],
+                        ' content ',
+                        [item.content],
+                    );
+                } else if (r.positions.length === 0) {
+                    console.warn('applyReplacePatcher() js replace 0: ',
                         ' in ',
                         [item.name],
                         ' of ',
@@ -177,6 +220,19 @@ export class ReplacePatcher {
                         ' content ',
                         [item.content],
                     );
+                } else if (r.positions.length === 0) {
+                    console.warn('applyReplacePatcher() css replace 0: ',
+                        ' in ',
+                        [item.name],
+                        ' of ',
+                        [patchInfoItem.from],
+                        ' to ',
+                        [patchInfoItem.to],
+                        ' positions ',
+                        [r.positions],
+                        ' content ',
+                        [item.content],
+                    );
                 }
             }
             item.content = s;
@@ -193,6 +249,19 @@ export class ReplacePatcher {
                 s = r.r;
                 if (r.positions.length > 1) {
                     console.warn('applyReplacePatcher() passage replace multiple: ',
+                        ' in ',
+                        [item.name],
+                        ' of ',
+                        [patchInfoItem.from],
+                        ' to ',
+                        [patchInfoItem.to],
+                        ' positions ',
+                        [r.positions],
+                        ' content ',
+                        [item.content],
+                    );
+                } else if (r.positions.length === 0) {
+                    console.warn('applyReplacePatcher() passage replace 0: ',
                         ' in ',
                         [item.name],
                         ' of ',
