@@ -23,7 +23,7 @@ export interface ModBootJson {
     scriptFileList_inject_early: string[];
     tweeFileList: string[];
     imgFileList: string[];
-    replacePatch: string[];
+    replacePatchList: string[];
     additionFile: string[];
 }
 

@@ -4,12 +4,12 @@ import path from 'path';
 import {promisify} from 'util';
 import {every, get, has, isArray, isString} from 'lodash';
 
-export async function img2base64Url(fPath: string) {
-    const img = await promisify(fs.readFile)(fPath);
-    const base64 = img.toString('base64');
-    const ext = path.extname(fPath);
-    return `data:image/${ext};base64,${base64}`;
-}
+// export async function img2base64Url(fPath: string) {
+//     const img = await promisify(fs.readFile)(fPath);
+//     const base64 = img.toString('base64');
+//     const ext = path.extname(fPath);
+//     return `data:image/${ext};base64,${base64}`;
+// }
 
 export interface ModBootJson {
     name: string;
@@ -21,6 +21,7 @@ export interface ModBootJson {
     scriptFileList_inject_early?: string[];
     tweeFileList: string[];
     imgFileList: string[];
+    replacePatchList: string[];
     additionFile: string[];
 }
 
@@ -44,6 +45,8 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
         && isArray(get(bootJ, 'additionFile'))
         && every(get(bootJ, 'additionFile'), isString)
         // optional
+        && (has(bootJ, 'replacePatchList') ?
+            (isArray(get(bootJ, 'replacePatchList')) && every(get(bootJ, 'replacePatchList'), isString)) : true)
         && (has(bootJ, 'scriptFileList_preload') ?
             (isArray(get(bootJ, 'scriptFileList_preload')) && every(get(bootJ, 'scriptFileList_preload'), isString)) : true)
         && (has(bootJ, 'scriptFileList_earlyload') ?
@@ -98,6 +101,12 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
     for (const scriptPath of bootJson.additionFile) {
         const scriptFile = await promisify(fs.readFile)(scriptPath, {encoding: 'utf-8'});
         zip.file(scriptPath, scriptFile);
+    }
+    if (bootJson.replacePatchList) {
+        for (const patchPath of bootJson.replacePatchList) {
+            const patchFile = await promisify(fs.readFile)(patchPath, {encoding: 'utf-8'});
+            zip.file(patchPath, patchFile);
+        }
     }
     if (bootJson.scriptFileList_preload) {
         for (const scriptPath of bootJson.scriptFileList_preload) {

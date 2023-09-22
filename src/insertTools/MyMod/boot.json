@@ -41,7 +41,10 @@
       "MyMod_Image/typeAImage/333.gif"
     ]
   ],
-  "addstionFile": [
+  "replacePatchList": [
+    "replace_patch.json"
+  ],
+  "additionFile": [
     "readme.txt"
   ]
 }

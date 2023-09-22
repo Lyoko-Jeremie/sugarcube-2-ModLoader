@@ -1,0 +1,24 @@
+{
+  "js": [
+    {
+      "from": "<span>Widgets:</span>",
+      "to": "<span>小部件:</span>",
+      "fileName": "debugMenu.js"
+    }
+  ],
+  "css": [
+    {
+      "from": "<span>Widgets:</span>",
+      "to": "<span>小部件:</span>",
+      "fileName": "debugMenu.css"
+    }
+  ],
+  "twee": [
+    {
+      "passageName": "Widgets Lower Clothing",
+      "from": "<span>Widgets:</span>",
+      "to": "<span>小部件:</span>",
+      "fileName": "debugMenu.js"
+    }
+  ]
+}

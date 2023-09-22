@@ -70,8 +70,8 @@ export class ModZipReader {
             && isArray(get(bootJ, 'imgFileList'))
             && every(get(bootJ, 'imgFileList'), isString)
             // optional
-            && (has(bootJ, 'replacePatch') ?
-                (isArray(get(bootJ, 'replacePatch')) && every(get(bootJ, 'replacePatch'), isString)) : true)
+            && (has(bootJ, 'replacePatchList') ?
+                (isArray(get(bootJ, 'replacePatchList')) && every(get(bootJ, 'replacePatchList'), isString)) : true)
             && (has(bootJ, 'scriptFileList_preload') ?
                 (isArray(get(bootJ, 'scriptFileList_preload')) && every(get(bootJ, 'scriptFileList_preload'), isString)) : true)
             && (has(bootJ, 'scriptFileList_earlyload') ?
@@ -154,10 +154,10 @@ export class ModZipReader {
             //         console.warn('cannot get imgFileReplaceList file from mod zip:', [this.modInfo.name, imgFile])
             //     }
             // }
-            for (const replacePatchPath of bootJ.replacePatch || []) {
+            for (const replacePatchPath of bootJ.replacePatchList || []) {
                 const replacePatchFile = this.zip.file(replacePatchPath);
                 if (replacePatchFile) {
-                    const data = await replacePatchFile.async('text');
+                    const data = await replacePatchFile.async('string');
                     try {
                         const d = JSON.parse(data);
                         if (checkPatchInfo(d)) {
