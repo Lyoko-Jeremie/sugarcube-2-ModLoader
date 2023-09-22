@@ -24,7 +24,7 @@ export interface ModBootJson {
     tweeFileList: string[];
     imgFileList: string[];
     replacePatch: string[];
-    addstionFile: string[];
+    additionFile: string[];
 }
 
 export interface ModInfo {

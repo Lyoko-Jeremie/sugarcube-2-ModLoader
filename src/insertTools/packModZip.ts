@@ -21,7 +21,7 @@ export interface ModBootJson {
     scriptFileList_inject_early?: string[];
     tweeFileList: string[];
     imgFileList: string[];
-    addstionFile: string[];
+    additionFile: string[];
 }
 
 export function validateBootJson(bootJ: any): bootJ is ModBootJson {
@@ -41,8 +41,8 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
         && isArray(get(bootJ, 'imgFileList'))
         && every(get(bootJ, 'imgFileList'), isString)
         // useless file
-        && isArray(get(bootJ, 'addstionFile'))
-        && every(get(bootJ, 'addstionFile'), isString)
+        && isArray(get(bootJ, 'additionFile'))
+        && every(get(bootJ, 'additionFile'), isString)
         // optional
         && (has(bootJ, 'scriptFileList_preload') ?
             (isArray(get(bootJ, 'scriptFileList_preload')) && every(get(bootJ, 'scriptFileList_preload'), isString)) : true)
@@ -95,7 +95,7 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
         const scriptFile = await promisify(fs.readFile)(scriptPath, {encoding: 'utf-8'});
         zip.file(scriptPath, scriptFile);
     }
-    for (const scriptPath of bootJson.addstionFile) {
+    for (const scriptPath of bootJson.additionFile) {
         const scriptFile = await promisify(fs.readFile)(scriptPath, {encoding: 'utf-8'});
         zip.file(scriptPath, scriptFile);
     }

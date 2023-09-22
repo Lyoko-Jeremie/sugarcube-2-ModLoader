@@ -47,7 +47,7 @@
     "MyMod_Image/typeBImage/222.png",
     "MyMod_Image/typeBImage/333.gif"
   ],
-  "addstionFile": [     // （必须存在） 附加文件列表，额外打包到zip中的文件，此列表中的文件不会被加载，仅作为附加文件存在
+  "additionFile": [     // （必须存在） 附加文件列表，额外打包到zip中的文件，此列表中的文件不会被加载，仅作为附加文件存在
     "readme.txt"
   ]
 }
@@ -68,7 +68,7 @@
   ],
   "imgFileList": [
   ],
-  "addstionFile": [
+  "additionFile": [
   ]
 }
 ```
