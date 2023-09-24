@@ -2,8 +2,8 @@ import JSZip from "jszip";
 import {every, get, has, isArray, isString} from "lodash";
 import {get as keyval_get, set as keyval_set, del as keyval_del, createStore, UseStore, setMany} from 'idb-keyval';
 import {SC2DataInfo} from "./SC2DataInfoCache";
-import {checkModBootJsonAddonPlugin, ModBootJson, ModInfo} from "./ModLoader";
-import {getLogFromModLoadControllerCallback, ModLoadControllerCallback} from "./ModLoadController";
+import {checkDependenceInfo, checkModBootJsonAddonPlugin, ModBootJson, ModInfo} from "./ModLoader";
+import {getLogFromModLoadControllerCallback, LogWrapper, ModLoadControllerCallback} from "./ModLoadController";
 import {extname} from "./extname";
 import {ReplacePatcher, checkPatchInfo} from "./ReplacePatcher";
 
@@ -36,11 +36,15 @@ export function Twee2Passage(s: string): Twee2PassageR[] {
 
 
 export class ModZipReader {
+
+    public log: LogWrapper;
+
     constructor(
         public zip: JSZip,
         public loaderBase: LoaderBase,
         public modLoadControllerCallback: ModLoadControllerCallback,
     ) {
+        this.log = getLogFromModLoadControllerCallback(modLoadControllerCallback);
     }
 
     modInfo?: ModInfo;
@@ -53,7 +57,7 @@ export class ModZipReader {
         return this.zip;
     }
 
-    static validateBootJson(bootJ: any): bootJ is ModBootJson {
+    static validateBootJson(bootJ: any, log?: LogWrapper): bootJ is ModBootJson {
         let c = bootJ
             && isString(get(bootJ, 'name'))
             && get(bootJ, 'name').length > 0
@@ -70,7 +74,7 @@ export class ModZipReader {
 
         // optional
         if (c && has(bootJ, 'dependenceInfo')) {
-            c = c && (isArray(get(bootJ, 'dependenceInfo')) && every(get(bootJ, 'dependenceInfo'), checkModBootJsonAddonPlugin));
+            c = c && (isArray(get(bootJ, 'dependenceInfo')) && every(get(bootJ, 'dependenceInfo'), checkDependenceInfo));
         }
         if (c && has(bootJ, 'addonPlugin')) {
             c = c && (isArray(get(bootJ, 'addonPlugin')) && every(get(bootJ, 'addonPlugin'), checkModBootJsonAddonPlugin));
@@ -86,6 +90,47 @@ export class ModZipReader {
         }
         if (c && has(bootJ, 'scriptFileList_inject_early')) {
             c = c && (isArray(get(bootJ, 'scriptFileList_inject_early')) && every(get(bootJ, 'scriptFileList_inject_early'), isString));
+        }
+
+        if (!c && log) {
+            log.error('validateBootJson(bootJ) failed. ' + JSON.stringify([
+                isString(get(bootJ, 'name')),
+                get(bootJ, 'name').length > 0,
+                isString(get(bootJ, 'version')),
+                get(bootJ, 'version').length > 0,
+                isArray(get(bootJ, 'styleFileList')),
+                every(get(bootJ, 'styleFileList'), isString),
+                isArray(get(bootJ, 'scriptFileList')),
+                every(get(bootJ, 'scriptFileList'), isString),
+                isArray(get(bootJ, 'tweeFileList')),
+                every(get(bootJ, 'tweeFileList'), isString),
+                isArray(get(bootJ, 'imgFileList')),
+                every(get(bootJ, 'imgFileList'), isString),
+
+                'dependenceInfo',
+                has(bootJ, 'dependenceInfo') &&
+                isArray(get(bootJ, 'dependenceInfo')) ? every(get(bootJ, 'dependenceInfo'), checkDependenceInfo) : true,
+
+                'addonPlugin',
+                has(bootJ, 'addonPlugin') &&
+                isArray(get(bootJ, 'addonPlugin')) ? every(get(bootJ, 'addonPlugin'), checkModBootJsonAddonPlugin) : true,
+
+                'replacePatchList',
+                has(bootJ, 'replacePatchList') &&
+                isArray(get(bootJ, 'replacePatchList')) ? every(get(bootJ, 'replacePatchList'), isString) : true,
+
+                'scriptFileList_preload',
+                has(bootJ, 'scriptFileList_preload') &&
+                isArray(get(bootJ, 'scriptFileList_preload')) ? every(get(bootJ, 'scriptFileList_preload'), isString) : true,
+
+                'scriptFileList_earlyload',
+                has(bootJ, 'scriptFileList_earlyload') &&
+                isArray(get(bootJ, 'scriptFileList_earlyload')) ? every(get(bootJ, 'scriptFileList_earlyload'), isString) : true,
+
+                'scriptFileList_inject_early',
+                has(bootJ, 'scriptFileList_inject_early') &&
+                isArray(get(bootJ, 'scriptFileList_inject_early')) ? every(get(bootJ, 'scriptFileList_inject_early'), isString) : true,
+            ]));
         }
 
         return c;
@@ -132,7 +177,7 @@ export class ModZipReader {
         //     , isArray(get(bootJ, 'imgFileReplaceList'))
         //     , every(get(bootJ, 'imgFileReplaceList'), T => isArray(T) && T.length === 2 && isString(T[0]) && isString(T[1]))
         // ]);
-        if (ModZipReader.validateBootJson(bootJ)) {
+        if (ModZipReader.validateBootJson(bootJ, this.log)) {
             if (!this.modLoadControllerCallback.canLoadThisMod(bootJ, this.zip)) {
                 console.log('ModLoader ====== ModZipReader init() this mod be filted by ModLoadController:', bootJ);
                 return false;

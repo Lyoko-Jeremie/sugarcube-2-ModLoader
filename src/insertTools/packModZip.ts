@@ -41,6 +41,14 @@ export function checkModBootJsonAddonPlugin(v: any): v is ModBootJsonAddonPlugin
     if (c && has(v, 'params')) {
         c = c && (isArray(get(v, 'params')) || isObject(get(v, 'params')));
     }
+    if (!c) {
+        console.error('checkModBootJsonAddonPlugin(v) failed.', v, [
+            isString(get(v, 'modName')),
+            isString(get(v, 'addonName')),
+            isString(get(v, 'modVersion')),
+            has(v, 'params') ? (isArray(get(v, 'params')) || isObject(get(v, 'params'))) : true,
+        ]);
+    }
     return c;
 }
 
@@ -71,10 +79,10 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
 
     // optional
     if (c && has(bootJ, 'dependenceInfo')) {
-        c = c && (isArray(get(bootJ, 'dependenceInfo')) && every(get(bootJ, 'dependenceInfo'), checkModBootJsonAddonPlugin));
+        c = c && (isArray(get(bootJ, 'dependenceInfo')) && every(get(bootJ, 'dependenceInfo'), checkDependenceInfo));
     }
     if (c && has(bootJ, 'addonPlugin')) {
-        c = c && (isArray(get(bootJ, 'addonPlugin')) && every(get(bootJ, 'addonPlugin'), checkDependenceInfo));
+        c = c && (isArray(get(bootJ, 'addonPlugin')) && every(get(bootJ, 'addonPlugin'), checkModBootJsonAddonPlugin));
     }
     if (c && has(bootJ, 'replacePatchList')) {
         c = c && (isArray(get(bootJ, 'replacePatchList')) && every(get(bootJ, 'replacePatchList'), isString));
@@ -87,6 +95,47 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
     }
     if (c && has(bootJ, 'scriptFileList_inject_early')) {
         c = c && (isArray(get(bootJ, 'scriptFileList_inject_early')) && every(get(bootJ, 'scriptFileList_inject_early'), isString));
+    }
+
+    if (!c) {
+        console.error('validateBootJson(bootJ) failed.', [
+            isString(get(bootJ, 'name')),
+            get(bootJ, 'name').length > 0,
+            isString(get(bootJ, 'version')),
+            get(bootJ, 'version').length > 0,
+            isArray(get(bootJ, 'styleFileList')),
+            every(get(bootJ, 'styleFileList'), isString),
+            isArray(get(bootJ, 'scriptFileList')),
+            every(get(bootJ, 'scriptFileList'), isString),
+            isArray(get(bootJ, 'tweeFileList')),
+            every(get(bootJ, 'tweeFileList'), isString),
+            isArray(get(bootJ, 'imgFileList')),
+            every(get(bootJ, 'imgFileList'), isString),
+
+            'dependenceInfo',
+            has(bootJ, 'dependenceInfo') &&
+            isArray(get(bootJ, 'dependenceInfo')) ? every(get(bootJ, 'dependenceInfo'), checkDependenceInfo) : true,
+
+            'addonPlugin',
+            has(bootJ, 'addonPlugin') &&
+            isArray(get(bootJ, 'addonPlugin')) ? every(get(bootJ, 'addonPlugin'), checkModBootJsonAddonPlugin) : true,
+
+            'replacePatchList',
+            has(bootJ, 'replacePatchList') &&
+            isArray(get(bootJ, 'replacePatchList')) ? every(get(bootJ, 'replacePatchList'), isString) : true,
+
+            'scriptFileList_preload',
+            has(bootJ, 'scriptFileList_preload') &&
+            isArray(get(bootJ, 'scriptFileList_preload')) ? every(get(bootJ, 'scriptFileList_preload'), isString) : true,
+
+            'scriptFileList_earlyload',
+            has(bootJ, 'scriptFileList_earlyload') &&
+            isArray(get(bootJ, 'scriptFileList_earlyload')) ? every(get(bootJ, 'scriptFileList_earlyload'), isString) : true,
+
+            'scriptFileList_inject_early',
+            has(bootJ, 'scriptFileList_inject_early') &&
+            isArray(get(bootJ, 'scriptFileList_inject_early')) ? every(get(bootJ, 'scriptFileList_inject_early'), isString) : true,
+        ]);
     }
 
     return c;
