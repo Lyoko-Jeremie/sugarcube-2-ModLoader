@@ -20,7 +20,7 @@ export class JsPreloader {
             }
             for (const T of mod.scriptFileList_preload) {
                 console.log('ModLoader ====== JsPreloader startLoad() excute start: ', [T[0]]);
-                this.pSC2DataManager.getModLoadController().Load_start(modName, T[0]);
+                await this.pSC2DataManager.getModLoadController().Load_start(modName, T[0]);
                 const log = this.pSC2DataManager.getModLoadController().getLog();
                 try {
                     // const R = await Function(`return ${T[1]}`)();
@@ -31,7 +31,7 @@ export class JsPreloader {
                     log.error(`ModLoader ====== JsPreloader startLoad() excute error: [${T[0]} ${e?.message ? e.message : e}]`);
                 }
                 console.log('ModLoader ====== JsPreloader startLoad() excute end: ', [T[0]]);
-                this.pSC2DataManager.getModLoadController().Load_end(modName, T[0]);
+                await this.pSC2DataManager.getModLoadController().Load_end(modName, T[0]);
             }
         }
         console.log('ModLoader ====== JsPreloader startLoad() clean');
@@ -40,7 +40,7 @@ export class JsPreloader {
         this.pSC2DataManager.getPassageTracer().init();
         this.pSC2DataManager.getSc2EventTracer().init();
         this.pSC2DataManager.getModLoadController().logInfo('ModLoader ====== ModLoader Start End. To Start SugarCube2 Engine.....');
-        this.pSC2DataManager.getModLoadController().ModLoaderLoadEnd();
+        await this.pSC2DataManager.getModLoadController().ModLoaderLoadEnd();
     }
 
     static async JsRunner(content: string, name: string, modName: string, stage: string, pSC2DataManager: SC2DataManager) {

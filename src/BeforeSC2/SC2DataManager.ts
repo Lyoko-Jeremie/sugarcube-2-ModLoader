@@ -195,7 +195,7 @@ export class SC2DataManager {
         }));
 
         await this.getAddonPluginManager().triggerHook('beforePatchModToGame');
-        this.patchModToGame();
+        await this.patchModToGame();
         await this.getAddonPluginManager().triggerHook('afterPatchModToGame');
         this.getModLoadController().logInfo('ModLoader ====== SC2DataManager startInit() end. To Start JsPreloader.....');
     }
@@ -233,7 +233,7 @@ export class SC2DataManager {
         this.getSC2DataInfoAfterPatch();
     }
 
-    applyReplacePatcher(modSC2DataInfoCache: SC2DataInfo) {
+    async applyReplacePatcher(modSC2DataInfoCache: SC2DataInfo) {
 
         const modCache = this.getModLoader().modCache;
         const modOrder = this.getModLoader().modOrder;
@@ -246,7 +246,7 @@ export class SC2DataManager {
             }
             for (const rp of mod.replacePatcher) {
                 console.log('ModLoader ====== applyReplacePatcher() Replace Patch', [modName, rp.patchFileName]);
-                this.getModLoadController().ReplacePatcher_start(modName, rp.patchFileName);
+                await this.getModLoadController().ReplacePatcher_start(modName, rp.patchFileName);
                 const log = this.getModLoadController().getLog();
                 try {
                     rp.applyReplacePatcher(modSC2DataInfoCache);
@@ -254,15 +254,15 @@ export class SC2DataManager {
                     console.error('ModLoader ====== applyReplacePatcher() Replace Patch Error: ', e);
                     log.error(`ModLoader ====== applyReplacePatcher() Replace Patch Error: [${e?.message ? e.message : e}]`);
                 }
-                this.getModLoadController().ReplacePatcher_end(modName, rp.patchFileName);
+                await this.getModLoadController().ReplacePatcher_end(modName, rp.patchFileName);
                 console.log('ModLoader ====== applyReplacePatcher() Replace Patch', [modName, rp.patchFileName]);
             }
         }
 
     }
 
-    patchModToGame() {
-        this.getModLoadController().PatchModToGame_start();
+    async patchModToGame() {
+        await this.getModLoadController().PatchModToGame_start();
 
         const modCache = this.getModLoader().modCache;
         const modOrder = this.getModLoader().modOrder;
@@ -308,7 +308,7 @@ export class SC2DataManager {
         // console.log('patchModToGame() modSC2DataInfoCache', modSC2DataInfoCache);
         // console.log('patchModToGame() modSC2DataInfoCache scriptFileItems length', modSC2DataInfoCache.scriptFileItems.items.length);
 
-        this.applyReplacePatcher(modSC2DataInfoCache);
+        await this.applyReplacePatcher(modSC2DataInfoCache);
 
         const newScriptNode = this.makeScriptNode(modSC2DataInfoCache);
 
@@ -350,7 +350,7 @@ export class SC2DataManager {
         // update cache
         this.flushAfterPatchCache();
 
-        this.getModLoadController().PatchModToGame_end();
+        await this.getModLoadController().PatchModToGame_end();
     }
 
     makePassageNode(T: PassageDataItem) {
