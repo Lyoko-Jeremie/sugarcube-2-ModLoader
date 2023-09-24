@@ -46,5 +46,23 @@
   ],
   "additionFile": [
     "readme.txt"
+  ],
+  "addonPlugin": [
+    {
+      "modName": "MyMod2",
+      "addonName": "addon1",
+      "modVersion": "1.0.0",
+      "params": []
+    }
+  ],
+  "dependenceInfo": [
+    {
+      "modName": "ModLoader DoL ImageLoaderHook",
+      "version": "1.0.1"
+    },
+    {
+      "modName": "ModLoaderGui",
+      "version": ">=1.0.3"
+    }
   ]
 }

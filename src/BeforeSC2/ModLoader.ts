@@ -1,11 +1,11 @@
-import {every, get, isArray, isString} from 'lodash';
+import {every, get, has, isArray, isObject, isPlainObject, isString} from 'lodash';
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {simulateMergeSC2DataInfoCache} from "./SimulateMerge";
 import {IndexDBLoader, LocalLoader, LocalStorageLoader, RemoteLoader} from "./ModZipReader";
 import {SC2DataManager} from "./SC2DataManager";
 import {JsPreloader} from 'JsPreloader';
 import {ModLoadControllerCallback} from "./ModLoadController";
-import {PatchInfoItem, ReplacePatcher} from "./ReplacePatcher";
+import {ReplacePatcher} from "./ReplacePatcher";
 
 export interface ModImg {
     // base64
@@ -13,18 +13,47 @@ export interface ModImg {
     path: string;
 }
 
+export interface ModBootJsonAddonPlugin {
+    modName: string;
+    addonName: string;
+    modVersion: string;
+    params?: any[] | { [key: string]: any };
+}
+
+export function checkModBootJsonAddonPlugin(v: any): v is ModBootJsonAddonPlugin {
+    let c: boolean = isString(get(v, 'modName'))
+        && isString(get(v, 'addonName'))
+        && isString(get(v, 'modVersion'));
+    if (c && has(v, 'params')) {
+        c = c && (isArray(get(v, 'params')) || isObject(get(v, 'params')));
+    }
+    return c;
+}
+
+export interface DependenceInfo {
+    modName: string;
+    version: string;
+}
+
+export function checkDependenceInfo(v: any): v is DependenceInfo {
+    return isString(get(v, 'modName'))
+        && isString(get(v, 'version'));
+}
+
 export interface ModBootJson {
     name: string;
     version: string;
     styleFileList: string[];
     scriptFileList: string[];
-    scriptFileList_preload: string[];
-    scriptFileList_earlyload: string[];
-    scriptFileList_inject_early: string[];
+    scriptFileList_preload?: string[];
+    scriptFileList_earlyload?: string[];
+    scriptFileList_inject_early?: string[];
     tweeFileList: string[];
     imgFileList: string[];
-    replacePatchList: string[];
+    replacePatchList?: string[];
     additionFile: string[];
+    addonPlugin?: ModBootJsonAddonPlugin[];
+    dependenceInfo?: DependenceInfo[];
 }
 
 export interface ModInfo {
@@ -131,14 +160,8 @@ export class ModLoader {
     // }
 
     getModZip(modName: string) {
-        if (this.modLocalLoader) {
-            const mod = this.modLocalLoader.getZipFile(modName);
-            if (mod) {
-                return mod;
-            }
-        }
-        if (this.modRemoteLoader) {
-            const mod = this.modRemoteLoader.getZipFile(modName);
+        if (this.modIndexDBLoader) {
+            const mod = this.modIndexDBLoader.getZipFile(modName);
             if (mod) {
                 return mod;
             }
@@ -149,8 +172,14 @@ export class ModLoader {
                 return mod;
             }
         }
-        if (this.modIndexDBLoader) {
-            const mod = this.modIndexDBLoader.getZipFile(modName);
+        if (this.modRemoteLoader) {
+            const mod = this.modRemoteLoader.getZipFile(modName);
+            if (mod) {
+                return mod;
+            }
+        }
+        if (this.modLocalLoader) {
+            const mod = this.modLocalLoader.getZipFile(modName);
             if (mod) {
                 return mod;
             }

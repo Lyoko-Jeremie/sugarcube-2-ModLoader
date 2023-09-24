@@ -2,7 +2,7 @@ import JSZip from 'jszip';
 import fs from 'fs';
 import path from 'path';
 import {promisify} from 'util';
-import {every, get, has, isArray, isString} from 'lodash';
+import {every, get, has, isArray, isObject, isString} from 'lodash';
 
 // export async function img2base64Url(fPath: string) {
 //     const img = await promisify(fs.readFile)(fPath);
@@ -21,12 +21,41 @@ export interface ModBootJson {
     scriptFileList_inject_early?: string[];
     tweeFileList: string[];
     imgFileList: string[];
-    replacePatchList: string[];
+    replacePatchList?: string[];
     additionFile: string[];
+    addonPlugin?: ModBootJsonAddonPlugin[];
+    dependenceInfo?: DependenceInfo[];
+}
+
+export interface ModBootJsonAddonPlugin {
+    modName: string;
+    addonName: string;
+    modVersion: string;
+    params?: any[] | { [key: string]: any };
+}
+
+export function checkModBootJsonAddonPlugin(v: any): v is ModBootJsonAddonPlugin {
+    let c: boolean = isString(get(v, 'modName'))
+        && isString(get(v, 'addonName'))
+        && isString(get(v, 'modVersion'));
+    if (c && has(v, 'params')) {
+        c = c && (isArray(get(v, 'params')) || isObject(get(v, 'params')));
+    }
+    return c;
+}
+
+export interface DependenceInfo {
+    modName: string;
+    version: string;
+}
+
+export function checkDependenceInfo(v: any): v is DependenceInfo {
+    return isString(get(v, 'modName'))
+        && isString(get(v, 'version'));
 }
 
 export function validateBootJson(bootJ: any): bootJ is ModBootJson {
-    return bootJ
+    let c = bootJ
         && isString(get(bootJ, 'name'))
         && get(bootJ, 'name').length > 0
         && isString(get(bootJ, 'version'))
@@ -35,24 +64,32 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
         && every(get(bootJ, 'styleFileList'), isString)
         && isArray(get(bootJ, 'scriptFileList'))
         && every(get(bootJ, 'scriptFileList'), isString)
-        // && isArray(get(bootJ, 'scriptFileList_Postload'))
-        // && every(get(bootJ, 'scriptFileList_Postload'), isString)
         && isArray(get(bootJ, 'tweeFileList'))
         && every(get(bootJ, 'tweeFileList'), isString)
         && isArray(get(bootJ, 'imgFileList'))
-        && every(get(bootJ, 'imgFileList'), isString)
-        // useless file
-        && isArray(get(bootJ, 'additionFile'))
-        && every(get(bootJ, 'additionFile'), isString)
-        // optional
-        && (has(bootJ, 'replacePatchList') ?
-            (isArray(get(bootJ, 'replacePatchList')) && every(get(bootJ, 'replacePatchList'), isString)) : true)
-        && (has(bootJ, 'scriptFileList_preload') ?
-            (isArray(get(bootJ, 'scriptFileList_preload')) && every(get(bootJ, 'scriptFileList_preload'), isString)) : true)
-        && (has(bootJ, 'scriptFileList_earlyload') ?
-            (isArray(get(bootJ, 'scriptFileList_earlyload')) && every(get(bootJ, 'scriptFileList_earlyload'), isString)) : true)
-        && (has(bootJ, 'scriptFileList_inject_early') ?
-            (isArray(get(bootJ, 'scriptFileList_inject_early')) && every(get(bootJ, 'scriptFileList_inject_early'), isString)) : true);
+        && every(get(bootJ, 'imgFileList'), isString);
+
+    // optional
+    if (c && has(bootJ, 'dependenceInfo')) {
+        c = c && (isArray(get(bootJ, 'dependenceInfo')) && every(get(bootJ, 'dependenceInfo'), checkModBootJsonAddonPlugin));
+    }
+    if (c && has(bootJ, 'addonPlugin')) {
+        c = c && (isArray(get(bootJ, 'addonPlugin')) && every(get(bootJ, 'addonPlugin'), checkDependenceInfo));
+    }
+    if (c && has(bootJ, 'replacePatchList')) {
+        c = c && (isArray(get(bootJ, 'replacePatchList')) && every(get(bootJ, 'replacePatchList'), isString));
+    }
+    if (c && has(bootJ, 'scriptFileList_preload')) {
+        c = c && (isArray(get(bootJ, 'scriptFileList_preload')) && every(get(bootJ, 'scriptFileList_preload'), isString));
+    }
+    if (c && has(bootJ, 'scriptFileList_earlyload')) {
+        c = c && (isArray(get(bootJ, 'scriptFileList_earlyload')) && every(get(bootJ, 'scriptFileList_earlyload'), isString));
+    }
+    if (c && has(bootJ, 'scriptFileList_inject_early')) {
+        c = c && (isArray(get(bootJ, 'scriptFileList_inject_early')) && every(get(bootJ, 'scriptFileList_inject_early'), isString));
+    }
+
+    return c;
 }
 
 // NOTE: 同一个 twee 文件只能包含一个 passage ， 文件要以 passage 命名

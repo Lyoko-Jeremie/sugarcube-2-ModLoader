@@ -3,6 +3,11 @@
 
 ---
 
+请从Release下载预编译版：[Release](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/releases)
+
+
+---
+
 * [ModLoader](#ModLoader)
   * [简介](#简介)
   * [如何制作 Mod.zip 文件](#如何制作-modzip-文件)
@@ -152,6 +157,8 @@ $(document).on(":storyready", () => {
 ### 变更：
 
 【2023-09-21】 删除 `imgFileReplaceList` ，现在使用新的ImageHookLoader直接拦截图像请求来实现图像替换，因此，与原始图像文件重名的图像会被覆盖
+【2023-09-23】 添加 `addonPlugin` ，添加 `dependenceInfo`
+
 
 ---
 

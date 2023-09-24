@@ -2,7 +2,7 @@ import JSZip from "jszip";
 import {every, get, has, isArray, isString} from "lodash";
 import {get as keyval_get, set as keyval_set, del as keyval_del, createStore, UseStore, setMany} from 'idb-keyval';
 import {SC2DataInfo} from "./SC2DataInfoCache";
-import {ModBootJson, ModInfo} from "./ModLoader";
+import {checkModBootJsonAddonPlugin, ModBootJson, ModInfo} from "./ModLoader";
 import {ModLoadControllerCallback} from "./ModLoadController";
 import {extname} from "./extname";
 import {ReplacePatcher, checkPatchInfo} from "./ReplacePatcher";
@@ -54,7 +54,7 @@ export class ModZipReader {
     }
 
     static validateBootJson(bootJ: any): bootJ is ModBootJson {
-        return bootJ
+        let c = bootJ
             && isString(get(bootJ, 'name'))
             && get(bootJ, 'name').length > 0
             && isString(get(bootJ, 'version'))
@@ -63,21 +63,32 @@ export class ModZipReader {
             && every(get(bootJ, 'styleFileList'), isString)
             && isArray(get(bootJ, 'scriptFileList'))
             && every(get(bootJ, 'scriptFileList'), isString)
-            // && isArray(get(bootJ, 'scriptFileList_Postload'))
-            // && every(get(bootJ, 'scriptFileList_Postload'), isString)
             && isArray(get(bootJ, 'tweeFileList'))
             && every(get(bootJ, 'tweeFileList'), isString)
             && isArray(get(bootJ, 'imgFileList'))
-            && every(get(bootJ, 'imgFileList'), isString)
-            // optional
-            && (has(bootJ, 'replacePatchList') ?
-                (isArray(get(bootJ, 'replacePatchList')) && every(get(bootJ, 'replacePatchList'), isString)) : true)
-            && (has(bootJ, 'scriptFileList_preload') ?
-                (isArray(get(bootJ, 'scriptFileList_preload')) && every(get(bootJ, 'scriptFileList_preload'), isString)) : true)
-            && (has(bootJ, 'scriptFileList_earlyload') ?
-                (isArray(get(bootJ, 'scriptFileList_earlyload')) && every(get(bootJ, 'scriptFileList_earlyload'), isString)) : true)
-            && (has(bootJ, 'scriptFileList_inject_early') ?
-                (isArray(get(bootJ, 'scriptFileList_inject_early')) && every(get(bootJ, 'scriptFileList_inject_early'), isString)) : true);
+            && every(get(bootJ, 'imgFileList'), isString);
+
+        // optional
+        if (c && has(bootJ, 'dependenceInfo')) {
+            c = c && (isArray(get(bootJ, 'dependenceInfo')) && every(get(bootJ, 'dependenceInfo'), checkModBootJsonAddonPlugin));
+        }
+        if (c && has(bootJ, 'addonPlugin')) {
+            c = c && (isArray(get(bootJ, 'addonPlugin')) && every(get(bootJ, 'addonPlugin'), checkModBootJsonAddonPlugin));
+        }
+        if (c && has(bootJ, 'replacePatchList')) {
+            c = c && (isArray(get(bootJ, 'replacePatchList')) && every(get(bootJ, 'replacePatchList'), isString));
+        }
+        if (c && has(bootJ, 'scriptFileList_preload')) {
+            c = c && (isArray(get(bootJ, 'scriptFileList_preload')) && every(get(bootJ, 'scriptFileList_preload'), isString));
+        }
+        if (c && has(bootJ, 'scriptFileList_earlyload')) {
+            c = c && (isArray(get(bootJ, 'scriptFileList_earlyload')) && every(get(bootJ, 'scriptFileList_earlyload'), isString));
+        }
+        if (c && has(bootJ, 'scriptFileList_inject_early')) {
+            c = c && (isArray(get(bootJ, 'scriptFileList_inject_early')) && every(get(bootJ, 'scriptFileList_inject_early'), isString));
+        }
+
+        return c;
     }
 
     static modBootFilePath = 'boot.json';
@@ -254,7 +265,7 @@ export class ModZipReader {
 
             // optional
             if (has(bootJ, 'scriptFileList_preload')) {
-                for (const scPath of bootJ.scriptFileList_preload) {
+                for (const scPath of bootJ.scriptFileList_preload!) {
                     const scFile = this.zip.file(scPath);
                     if (scFile) {
                         const data = await scFile.async('string');
@@ -265,7 +276,7 @@ export class ModZipReader {
                 }
             }
             if (has(bootJ, 'scriptFileList_earlyload')) {
-                for (const scPath of bootJ.scriptFileList_earlyload) {
+                for (const scPath of bootJ.scriptFileList_earlyload!) {
                     const scFile = this.zip.file(scPath);
                     if (scFile) {
                         const data = await scFile.async('string');
@@ -276,7 +287,7 @@ export class ModZipReader {
                 }
             }
             if (has(bootJ, 'scriptFileList_inject_early')) {
-                for (const scPath of bootJ.scriptFileList_inject_early) {
+                for (const scPath of bootJ.scriptFileList_inject_early!) {
                     const scFile = this.zip.file(scPath);
                     if (scFile) {
                         const data = await scFile.async('string');

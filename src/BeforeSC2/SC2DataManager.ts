@@ -9,6 +9,7 @@ import {
 import {SimulateMergeResult} from "./SimulateMerge";
 import {ModLoadController} from "./ModLoadController";
 import {ReplacePatcher} from "./ReplacePatcher";
+import {AddonPluginManager} from "./AddonPlugin";
 
 export class SC2DataManager {
 
@@ -141,6 +142,12 @@ export class SC2DataManager {
             this.modLoadController = new ModLoadController(this);
         }
         return this.modLoadController;
+    }
+
+    private addonPluginManager = new AddonPluginManager(this.getModLoadController());
+
+    getAddonPluginManager() {
+        return this.addonPluginManager;
     }
 
     private confictResult?: { mod: SC2DataInfo, result: SimulateMergeResult }[];

@@ -169,6 +169,19 @@ export class ModLoadController implements ModLoadControllerCallback {
         return IndexDBLoader.checkModZipFile(modBase64String);
     }
 
+    getLog() {
+        return {
+            log: (s: string) => {
+                this.logInfo(s);
+            },
+            warn: (s: string) => {
+                this.logWarning(s);
+            },
+            error: (s: string) => {
+                this.logError(s);
+            },
+        };
+    }
 
 }
 
