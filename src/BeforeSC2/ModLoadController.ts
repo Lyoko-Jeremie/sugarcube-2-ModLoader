@@ -80,6 +80,13 @@ const ModLoadControllerCallback_ScriptLoadHook = [
     'Load_end',
 ] as const;
 
+/**
+ * ModLoader lifetime circle system,
+ * mod can register hook to this system, to listen to the lifetime circle of MpdLoader and error log.
+ *
+ * ModLoader 生命周期系统，
+ * mod 可以注册 hook 到这个系统，来监听 ModLoader 的生命周期和错误日志。
+ */
 export class ModLoadController implements ModLoadControllerCallback {
 
     constructor(
@@ -145,51 +152,51 @@ export class ModLoadController implements ModLoadControllerCallback {
 
     private lifeTimeCircleHookTable: LifeTimeCircleHook[] = [];
 
-    addLifeTimeCircleHook(hook: LifeTimeCircleHook) {
+    public addLifeTimeCircleHook(hook: LifeTimeCircleHook) {
         this.lifeTimeCircleHookTable.push(hook);
     }
 
-    removeLifeTimeCircleHook(hook: LifeTimeCircleHook) {
+    public removeLifeTimeCircleHook(hook: LifeTimeCircleHook) {
         // TODO
     }
 
-    clearLifeTimeCircleHook() {
+    public clearLifeTimeCircleHook() {
         this.lifeTimeCircleHookTable = [];
     }
 
-    listModLocalStorage() {
+    public listModLocalStorage() {
         return LocalStorageLoader.listMod() || [];
     }
 
-    addModLocalStorage(name: string, modBase64String: string) {
+    public addModLocalStorage(name: string, modBase64String: string) {
         return LocalStorageLoader.addMod(name, modBase64String);
     }
 
-    removeModLocalStorage(name: string) {
+    public removeModLocalStorage(name: string) {
         return LocalStorageLoader.removeMod(name);
     }
 
-    async checkModZipFileLocalStorage(modBase64String: string) {
+    public async checkModZipFileLocalStorage(modBase64String: string) {
         return LocalStorageLoader.checkModZipFile(modBase64String);
     }
 
-    async listModIndexDB() {
+    public async listModIndexDB() {
         return IndexDBLoader.listMod() || [];
     }
 
-    addModIndexDB(name: string, modBase64String: string) {
+    public addModIndexDB(name: string, modBase64String: string) {
         return IndexDBLoader.addMod(name, modBase64String);
     }
 
-    removeModIndexDB(name: string) {
+    public removeModIndexDB(name: string) {
         return IndexDBLoader.removeMod(name);
     }
 
-    async checkModZipFileIndexDB(modBase64String: string) {
+    public async checkModZipFileIndexDB(modBase64String: string) {
         return IndexDBLoader.checkModZipFile(modBase64String);
     }
 
-    getLog(): LogWrapper {
+    public getLog(): LogWrapper {
         return {
             log: (s: string) => {
                 this.logInfo(s);
