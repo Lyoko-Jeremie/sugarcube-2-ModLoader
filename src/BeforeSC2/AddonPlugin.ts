@@ -15,10 +15,10 @@ const AddonPluginHookPoint_KL = [
     'afterInit',
     // 所有 mod 加载后 (这个hook无法拦截到，因为最早可能的hook注入点在InjectEarlyLoad)
     'afterModLoad',
-    // 所有 EarlyInject 脚本插入后
-    'afterInjectEarlyLoad',
     // 所有 Mod 注册到 Addon 后
     'afterRegisterMod2Addon',
+    // 所有 EarlyInject 脚本插入后
+    'afterInjectEarlyLoad',
     // 所有 EarlyLoad 脚本执行后
     'afterEarlyLoad',
     // 所有 mod 数据覆盖到游戏前
@@ -165,7 +165,7 @@ export class AddonPluginManager implements Sc2EventTracerCallback {
     /**
      * call by ModLoader (inner use)
      *
-     * register a mod to addon plugin, after all mod loaded and after InjectEarlyLoad script
+     * register a mod to addon plugin, after all mod loaded and after EarlyLoad executed.
      *
      * @param mod
      * @param modZip

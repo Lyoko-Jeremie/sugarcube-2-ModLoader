@@ -291,10 +291,10 @@ export class ModLoader {
         await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterModLoad');
         this.initModInjectEarlyLoadInDomScript();
         await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterInjectEarlyLoad');
-        await this.registerMod2Addon();
-        await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterRegisterMod2Addon');
         await this.initModEarlyLoadScript();
         await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterEarlyLoad');
+        await this.registerMod2Addon();
+        await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterRegisterMod2Addon');
         return Promise.resolve(ok);
     }
 
