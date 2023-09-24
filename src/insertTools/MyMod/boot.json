@@ -58,11 +58,11 @@
   "dependenceInfo": [
     {
       "modName": "ModLoader DoL ImageLoaderHook",
-      "version": "1.0.1"
+      "version": "1.0.0"
     },
     {
       "modName": "ModLoaderGui",
-      "version": ">=1.0.3"
+      "version": ">=1.0.8"
     }
   ]
 }

@@ -10,6 +10,7 @@ import {SimulateMergeResult} from "./SimulateMerge";
 import {ModLoadController} from "./ModLoadController";
 import {ReplacePatcher} from "./ReplacePatcher";
 import {AddonPluginManager} from "./AddonPlugin";
+import {DependenceChecker} from "./DependenceChecker";
 
 export class SC2DataManager {
 
@@ -166,6 +167,8 @@ export class SC2DataManager {
             ModDataLoadType.IndexDB,
             ModDataLoadType.LocalStorage,
         ]);
+
+        new DependenceChecker(this).check();
 
         this.confictResult = this.getModLoader().checkModConfictList();
         console.log('ModLoader ====== mod confictResult', this.confictResult.map(T => {
