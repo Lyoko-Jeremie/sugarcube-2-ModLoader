@@ -13,3 +13,6 @@
 [submodule "mod/TweeReplacer"]
 	path = mod/TweeReplacer
 	url = ../Degrees-of-Lewdity_Mod_TweeReplacer.git
+[submodule "mod/ReplacePatch"]
+	path = mod/ReplacePatch
+	url = ../Degrees-of-Lewdity_Mod_ReplacePatch.git
