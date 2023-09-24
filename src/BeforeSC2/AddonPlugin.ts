@@ -17,6 +17,8 @@ const AddonPluginHookPoint_KL = [
     'afterModLoad',
     // 所有 EarlyInject 脚本插入后
     'afterInjectEarlyLoad',
+    // 所有 Mod 注册到 Addon 后
+    'afterRegisterMod2Addon',
     // 所有 EarlyLoad 脚本执行后
     'afterEarlyLoad',
     // 所有 mod 数据覆盖到游戏前
@@ -162,17 +164,20 @@ export class AddonPluginManager implements Sc2EventTracerCallback {
 
     /**
      * call by ModLoader (inner use)
+     *
+     * register a mod to addon plugin, after all mod loaded and after InjectEarlyLoad script
+     *
      * @param mod
      * @param modZip
      */
-    async registerMod(mod: ModInfo, modZip: ModZipReader) {
+    async registerMod2Addon(mod: ModInfo, modZip: ModZipReader) {
         if (mod.bootJson.addonPlugin) {
             for (const p of mod.bootJson.addonPlugin) {
                 const ad = this.addonPluginTable.find((a) => {
                     return a.modName === p.modName && a.addonName === p.addonName;
                 });
                 if (!ad) {
-                    console.error('AddonPluginManager.registerMod() not found', [p, mod]);
+                    console.error('ModLoader ====== AddonPluginManager.registerMod() not found', [p, mod]);
                     this.log.error(`AddonPluginManager.registerMod() not found [${p.modName}] [${p.addonName}] on mod[${mod.name}]`);
                     continue;
                 }
@@ -182,7 +187,16 @@ export class AddonPluginManager implements Sc2EventTracerCallback {
                     this.log.error(`AddonPluginManager.registerMod() registerMod invalid [${p.modName}] [${p.addonName}] on mod[${mod.name}]`);
                     continue;
                 }
-                await ad.hookPoint.registerMod(p.addonName, mod, modZip);
+                console.log('ModLoader ====== AddonPluginManager.registerMod() registerMod start', [p, mod]);
+                this.log.log(`AddonPluginManager.registerMod() registerMod start: to addon [${p.modName}] [${p.addonName}] on mod[${mod.name}]`);
+                try {
+                    await ad.hookPoint.registerMod(p.addonName, mod, modZip);
+                } catch (e: any | Error) {
+                    console.error('ModLoader ====== AddonPluginManager.registerMod() registerMod error', [p, mod, e]);
+                    this.log.error(`AddonPluginManager.registerMod() registerMod error: to addon [${p.modName}] [${p.addonName}] on mod[${mod.name}] [${e?.message ? e.message : e}]`);
+                }
+                console.log('ModLoader ====== AddonPluginManager.registerMod() registerMod end', [p, mod]);
+                this.log.log(`AddonPluginManager.registerMod() registerMod end: to addon [${p.modName}] [${p.addonName}] on mod[${mod.name}]`);
             }
         }
     }
@@ -208,12 +222,15 @@ export class AddonPluginManager implements Sc2EventTracerCallback {
         const log = this.gSC2DataManager.getModLoadController().getLog();
         for (const addonPlugin of this.addonPluginTable) {
             if (addonPlugin.hookPoint[hook]) {
+                console.log(`ModLoader ====== AddonPluginManager.triggerHook() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] start`);
                 log.log(`AddonPluginManager.triggerHook() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] start`);
                 try {
                     await addonPlugin.hookPoint[hook]!();
                 } catch (e: any | Error) {
+                    console.error(`ModLoader ====== AddonPluginManager.triggerHook() error [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] `, e);
                     log.error(`AddonPluginManager.triggerHook() error [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] [${e?.message ? e.message : e}]`);
                 }
+                console.log(`ModLoader ====== AddonPluginManager.triggerHook() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] end`);
                 log.log(`AddonPluginManager.triggerHook() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] end`);
             }
         }
@@ -231,18 +248,21 @@ export class AddonPluginManager implements Sc2EventTracerCallback {
     }
 
     /**
-     * register a addon plugin, call by addon plugin
+     * register a addon plugin, call by addon plugin,
+     * this call must be done when InjectEarlyLoad.
      *
-     * 注册一个 addon plugin，由 addon plugin 调用
+     * 注册一个 addon plugin，由 addon plugin 调用，必须在 InjectEarlyLoad 时调用此函数注册 Addon。
      * @param modName    addon plugin's mod name
      * @param addonName  addon plugin's name
      * @param hookPoint  addon plugin's hook point
      */
     public registerAddonPlugin(modName: string, addonName: string, hookPoint: AddonPluginHookPointEx) {
         if (this.checkDuplicate(modName, addonName)) {
-            console.error('AddonPluginManager.registerAddonPlugin() duplicate', [modName, addonName]);
+            console.error('ModLoader ====== AddonPluginManager.registerAddonPlugin() duplicate', [modName, addonName]);
             this.log.error(`AddonPluginManager.registerAddonPlugin() duplicate [${modName}] [${addonName}]`);
         }
+        console.log('ModLoader ====== AddonPluginManager.registerAddonPlugin() ', [modName, addonName]);
+        this.log.log(`AddonPluginManager.registerAddonPlugin() [${modName}] [${addonName}]`);
         this.addonPluginTable.push(new AddonPlugin(modName, addonName, hookPoint));
     }
 

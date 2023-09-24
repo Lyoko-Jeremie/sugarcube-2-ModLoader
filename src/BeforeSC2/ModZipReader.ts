@@ -377,6 +377,8 @@ export class LoaderBase {
 
     addZipFile(name: string, zip: ModZipReader) {
         if (this.modZipList.has(name)) {
+            console.warn('ModLoader ====== LoaderBase addZipFile() [warn!!!] duplicate mod name:', name);
+            this.modLoadControllerCallback.logWarning(`LoaderBase addZipFile() [warn!!!] duplicate mod name: [${name}]`);
             this.modZipList.get(name)!.push(zip);
             return;
         }

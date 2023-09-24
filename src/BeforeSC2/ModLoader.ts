@@ -291,15 +291,38 @@ export class ModLoader {
         await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterModLoad');
         this.initModInjectEarlyLoadInDomScript();
         await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterInjectEarlyLoad');
+        await this.registerMod2Addon();
+        await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterRegisterMod2Addon');
         await this.initModEarlyLoadScript();
         await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterEarlyLoad');
         return Promise.resolve(ok);
+    }
+
+    private async registerMod2Addon() {
+        for (const modName of this.modOrder) {
+            const mod = this.getMod(modName);
+            if (!mod) {
+                // never go there
+                console.error('ModLoader ====== initModInjectEarlyLoadScript() (!mod)');
+                continue;
+            }
+            const zip = this.getModZip(modName);
+            if (!zip) {
+                // never go there
+                console.error('ModLoader ====== initModInjectEarlyLoadScript() (!zip)');
+                continue;
+            }
+            for (const modZipReader of zip) {
+                await this.gSC2DataManager.getAddonPluginManager().registerMod2Addon(mod, modZipReader);
+            }
+        }
     }
 
     private initModInjectEarlyLoadInDomScript() {
         for (const modName of this.modOrder) {
             const mod = this.getMod(modName);
             if (!mod) {
+                // never go there
                 console.error('ModLoader ====== initModInjectEarlyLoadScript() (!mod)');
                 continue;
             }
