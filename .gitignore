@@ -26,4 +26,5 @@ mod
 !mod/i18n
 !mod/ImageLoaderHook
 !mod/ModLoaderGui
+!mod/CheckDoLCompressorDictionaries
 
