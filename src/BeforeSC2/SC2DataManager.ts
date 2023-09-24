@@ -77,6 +77,7 @@ export class SC2DataManager {
 
     createNewSC2DataInfoFromNow(): SC2DataInfo {
         return new SC2DataInfoCache(
+            this.getModLoadController().getLog(),
             'orgin',
             Array.from(this.scriptNode),
             Array.from(this.styleNode),
@@ -114,6 +115,7 @@ export class SC2DataManager {
     getSC2DataInfoCache() {
         if (!this.orginSC2DataInfoCache) {
             this.orginSC2DataInfoCache = new SC2DataInfoCache(
+                this.getModLoadController().getLog(),
                 'orgin',
                 Array.from(this.scriptNode),
                 Array.from(this.styleNode),
@@ -193,6 +195,7 @@ export class SC2DataManager {
         this.getSC2DataInfoCache();
         if (!this.cSC2DataInfoAfterPatchCache) {
             this.cSC2DataInfoAfterPatchCache = new SC2DataInfoCache(
+                this.getModLoadController().getLog(),
                 'orgin',
                 Array.from(this.scriptNode),
                 Array.from(this.styleNode),
@@ -224,10 +227,12 @@ export class SC2DataManager {
             for (const rp of mod.replacePatcher) {
                 console.log('ModLoader ====== applyReplacePatcher() Replace Patch', [modName, rp.patchFileName]);
                 this.getModLoadController().ReplacePatcher_start(modName, rp.patchFileName);
+                const log = this.getModLoadController().getLog();
                 try {
                     rp.applyReplacePatcher(modSC2DataInfoCache);
-                } catch (e) {
+                } catch (e: any | Error) {
                     console.error('ModLoader ====== applyReplacePatcher() Replace Patch Error: ', e);
+                    log.error(`ModLoader ====== applyReplacePatcher() Replace Patch Error: ${e?.message ? e.message : e}`);
                 }
                 this.getModLoadController().ReplacePatcher_end(modName, rp.patchFileName);
                 console.log('ModLoader ====== applyReplacePatcher() Replace Patch', [modName, rp.patchFileName]);
@@ -248,7 +253,8 @@ export class SC2DataManager {
         // concat mod
         console.log('ModLoader ====== patchModToGame() Concat Mod');
         const em = normalMergeSC2DataInfoCache(
-            new SC2DataInfo('EmptyMod'),
+            this.getModLoadController().getLog(),
+            new SC2DataInfo(this.getModLoadController().getLog(), 'EmptyMod'),
             ...modOrder.map(T => modCache.get(T))
                 .filter((T): T is ModInfo => !!T)
                 .map(T => T.cache)
@@ -275,6 +281,7 @@ export class SC2DataManager {
         console.log('ModLoader ====== patchModToGame() Replace Game');
         // then replace orgin
         const modSC2DataInfoCache = replaceMergeSC2DataInfoCache(
+            this.getModLoadController().getLog(),
             orginSC2DataInfoCache.cloneSC2DataInfo(),
             em,
         );
@@ -378,16 +385,19 @@ export class SC2DataManager {
         console.log('rePlacePassage()', toRemovePassageDataNodeList, toAddPassageDataNodeList);
         const rootNode = this.rootNode;
         console.log('rePlacePassage() rootNode', rootNode);
+        const log = this.getModLoadController().getLog();
         for (const node of toRemovePassageDataNodeList) {
             const rn = rootNode.removeChild(node);
             if (!rn) {
                 console.log('rePlacePassage() (!rn)', [node]);
+                log.warn(`rePlacePassage() (!rn) ${node.getAttribute('name')}`);
             }
         }
         for (const node of toAddPassageDataNodeList) {
             const an = rootNode.appendChild(node);
             if (!an) {
                 console.log('rePlacePassage() (!an)', [node]);
+                log.warn(`rePlacePassage() (!an) ${node.getAttribute('name')}`);
             }
         }
     }

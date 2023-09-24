@@ -4,6 +4,12 @@ import JSZip from "jszip";
 import {IndexDBLoader, LocalStorageLoader} from "./ModZipReader";
 
 
+export interface LogWrapper {
+    log: (s: string) => void;
+    warn: (s: string) => void;
+    error: (s: string) => void;
+}
+
 export interface LifeTimeCircleHook extends Partial<ModLoadControllerCallback> {
 
 }
@@ -36,6 +42,20 @@ export interface ModLoadControllerCallback {
     logInfo(s: string): void;
 
     logWarning(s: string): void;
+}
+
+export function getLogFromModLoadControllerCallback(c: ModLoadControllerCallback): LogWrapper {
+    return {
+        log: (s: string) => {
+            c.logInfo(s);
+        },
+        warn: (s: string) => {
+            c.logWarning(s);
+        },
+        error: (s: string) => {
+            c.logError(s);
+        },
+    };
 }
 
 const ModLoadControllerCallback_PatchHook = [
@@ -169,7 +189,7 @@ export class ModLoadController implements ModLoadControllerCallback {
         return IndexDBLoader.checkModZipFile(modBase64String);
     }
 
-    getLog() {
+    getLog(): LogWrapper {
         return {
             log: (s: string) => {
                 this.logInfo(s);
@@ -184,4 +204,3 @@ export class ModLoadController implements ModLoadControllerCallback {
     }
 
 }
-

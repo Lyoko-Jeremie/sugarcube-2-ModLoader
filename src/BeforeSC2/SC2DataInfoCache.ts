@@ -1,3 +1,4 @@
+import {LogWrapper} from "ModLoadController";
 import {cloneDeep, parseInt} from "lodash";
 
 export interface StyleTextFileItem {
@@ -64,7 +65,7 @@ export class CacheRecord<T extends { name: string, content: string }> {
     map: Map<string, T> = new Map<string, T>();
     noName: T[] = [];
 
-    replaceMerge(c: CacheRecord<T>, noWarnning: boolean = false) {
+    replaceMerge(c: CacheRecord<T>, log: LogWrapper, noWarnning: boolean = false) {
         // console.log('CacheRecord.replaceMerge() start this.items', this.items.length);
         // console.log('CacheRecord.replaceMerge() start this.map.size', this.map.size);
         for (const item of c.items) {
@@ -77,6 +78,8 @@ export class CacheRecord<T extends { name: string, content: string }> {
                         c.items,
                         [item.name, item.content],
                     );
+                    log.warn(`CacheRecord.replaceMerge() has duplicate name: ` +
+                        `[${this.cacheRecordName} ${this.dataSource}] [${c.cacheRecordName} ${c.dataSource}] ${item.name}`);
                 }
             }
             this.map.set(item.name, item);
@@ -108,6 +111,7 @@ export class SC2DataInfo {
     passageDataItems: CacheRecord<PassageDataItem> = new CacheRecord<PassageDataItem>(this.dataSource, 'passageDataItems');
 
     constructor(
+        public log: LogWrapper,
         // 'orgin' OR modName
         public dataSource: string,
     ) {
@@ -122,6 +126,7 @@ export class SC2DataInfoCache extends SC2DataInfo {
 
     cloneSC2DataInfo() {
         const r = new SC2DataInfo(
+            this.log,
             this.dataSource,
         );
         r.styleFileItems = cloneDeep(this.styleFileItems);
@@ -131,12 +136,13 @@ export class SC2DataInfoCache extends SC2DataInfo {
     }
 
     constructor(
+        public log: LogWrapper,
         public dataSource: string,
         public scriptNode: HTMLScriptElement[],
         public styleNode: HTMLStyleElement[],
         public passageDataNodes: HTMLElement[],
     ) {
-        super(dataSource);
+        super(log, dataSource);
 
         for (const sn of styleNode) {
             // /* twine-user-stylesheet #1: "error.css" */

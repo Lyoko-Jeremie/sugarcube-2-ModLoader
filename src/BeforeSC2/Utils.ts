@@ -98,15 +98,15 @@ export class ModUtils {
      */
     updatePassageDataMany(pd: PassageDataItem[], replaceForce: boolean = false) {
         const tt = this.pSC2DataManager.getSC2DataInfoAfterPatch();
-        const ti = new SC2DataInfo('temp');
+        const ti = new SC2DataInfo(this.getLogger(), 'temp');
         ti.passageDataItems.items = pd;
         ti.passageDataItems.fillMap();
 
         let nt;
         if (replaceForce) {
-            nt = replaceMergeSC2DataInfoCacheForce(tt, ti);
+            nt = replaceMergeSC2DataInfoCacheForce(this.getModLoadController().getLog(), tt, ti);
         } else {
-            nt = replaceMergeSC2DataInfoCache(tt, ti);
+            nt = replaceMergeSC2DataInfoCache(this.getModLoadController().getLog(), tt, ti);
         }
 
         this.pSC2DataManager.rePlacePassage(
@@ -125,7 +125,7 @@ export class ModUtils {
      * @param replaceForce 强制覆盖而不提示警告
      */
     updatePassageDataManyEarly(pd: PassageDataItem[], oldSC2Data: SC2DataInfoCache) {
-        const ti = new SC2DataInfo('temp');
+        const ti = new SC2DataInfo(this.getLogger(), 'temp');
         ti.passageDataItems.items = pd;
         ti.passageDataItems.fillMap();
 
@@ -350,6 +350,10 @@ export class ModUtils {
 
     getModLoadController() {
         return this.pSC2DataManager.getModLoadController();
+    }
+
+    getLogger() {
+        return this.getModLoadController().getLog();
     }
 
 }

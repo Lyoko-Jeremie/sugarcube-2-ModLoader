@@ -21,12 +21,14 @@ export class JsPreloader {
             for (const T of mod.scriptFileList_preload) {
                 console.log('ModLoader ====== JsPreloader startLoad() excute start: ', [T[0]]);
                 this.pSC2DataManager.getModLoadController().Load_start(modName, T[0]);
+                const log = this.pSC2DataManager.getModLoadController().getLog();
                 try {
                     // const R = await Function(`return ${T[1]}`)();
                     const R = await JsPreloader.JsRunner(T[1], T[0], modName, 'JsPreloader', this.pSC2DataManager);
                     console.log('ModLoader ====== JsPreloader startLoad() excute result: ', [T[0]], R);
-                } catch (e) {
+                } catch (e: any | Error) {
                     console.error('ModLoader ====== JsPreloader startLoad() excute error: ', [T[0]], e);
+                    log.error(`ModLoader ====== JsPreloader startLoad() excute error: ${T[0]} ${e?.message ? e.message : e}`);
                 }
                 console.log('ModLoader ====== JsPreloader startLoad() excute end: ', [T[0]]);
                 this.pSC2DataManager.getModLoadController().Load_end(modName, T[0]);
