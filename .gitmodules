@@ -10,3 +10,6 @@
 [submodule "mod/CheckDoLCompressorDictionaries"]
 	path = mod/CheckDoLCompressorDictionaries
 	url = ../Degrees-of-Lewdity_Mod_CheckDoLCompressorDictionaries.git
+[submodule "mod/TweeReplacer"]
+	path = mod/TweeReplacer
+	url = ../Degrees-of-Lewdity_Mod_TweeReplacer.git
