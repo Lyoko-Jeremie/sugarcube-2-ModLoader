@@ -234,7 +234,7 @@ export class ModZipReader {
                     }
                 } else {
                     console.warn('cannot get replacePatchFile file from mod zip:', [this.modInfo.name, replacePatchFile]);
-                    this.modLoadControllerCallback.logWarning(`cannot get replacePatchFile file from mod zip: ${this.modInfo.name} ${replacePatchFile}`);
+                    this.modLoadControllerCallback.logWarning(`cannot get replacePatchFile file from mod zip: [${this.modInfo.name}] [${replacePatchFile}]`);
                 }
             }
             for (const imgPath of bootJ.imgFileList || []) {
@@ -247,7 +247,7 @@ export class ModZipReader {
                     });
                 } else {
                     console.warn('cannot get imgFileList file from mod zip:', [this.modInfo.name, imgPath]);
-                    this.modLoadControllerCallback.logWarning(`cannot get imgFileList file from mod zip: ${this.modInfo.name} ${imgPath}`);
+                    this.modLoadControllerCallback.logWarning(`cannot get imgFileList file from mod zip: [${this.modInfo.name}] [${imgPath}]`);
                 }
             }
             for (const stylePath of bootJ.styleFileList || []) {
@@ -262,7 +262,7 @@ export class ModZipReader {
                     });
                 } else {
                     console.warn('cannot get styleFileList file from mod zip:', [this.modInfo.name, stylePath]);
-                    this.modLoadControllerCallback.logWarning(`cannot get styleFileList file from mod zip: ${this.modInfo.name} ${stylePath}`);
+                    this.modLoadControllerCallback.logWarning(`cannot get styleFileList file from mod zip: [${this.modInfo.name}] [${stylePath}]`);
                 }
             }
             this.modInfo.cache.styleFileItems.fillMap();
@@ -296,7 +296,7 @@ export class ModZipReader {
                     // }
                 } else {
                     console.warn('cannot get tweeFileList file from mod zip:', [this.modInfo.name, tweePath]);
-                    this.modLoadControllerCallback.logWarning(`cannot get tweeFileList file from mod zip: ${this.modInfo.name} ${tweePath}`);
+                    this.modLoadControllerCallback.logWarning(`cannot get tweeFileList file from mod zip: [${this.modInfo.name}] [${tweePath}]`);
                 }
             }
             this.modInfo.cache.passageDataItems.fillMap();
@@ -312,7 +312,7 @@ export class ModZipReader {
                     });
                 } else {
                     console.warn('cannot get scriptFileList file from mod zip:', [this.modInfo.name, scPath]);
-                    this.modLoadControllerCallback.logWarning(`cannot get scriptFileList file from mod zip: ${this.modInfo.name} ${scPath}`);
+                    this.modLoadControllerCallback.logWarning(`cannot get scriptFileList file from mod zip: [${this.modInfo.name}] [${scPath}]`);
                 }
             }
             this.modInfo.cache.scriptFileItems.fillMap();
@@ -326,7 +326,7 @@ export class ModZipReader {
                         this.modInfo.scriptFileList_preload.push([scPath, data]);
                     } else {
                         console.warn('cannot get scriptFileList_preload file from mod zip:', [this.modInfo.name, scPath]);
-                        this.modLoadControllerCallback.logWarning(`cannot get scriptFileList_preload file from mod zip: ${this.modInfo.name} ${scPath}`);
+                        this.modLoadControllerCallback.logWarning(`cannot get scriptFileList_preload file from mod zip: [${this.modInfo.name}] [${scPath}]`);
                     }
                 }
             }
@@ -338,7 +338,7 @@ export class ModZipReader {
                         this.modInfo.scriptFileList_earlyload.push([scPath, data]);
                     } else {
                         console.warn('cannot get scriptFileList_earlyload file from mod zip:', [this.modInfo.name, scPath]);
-                        this.modLoadControllerCallback.logWarning(`cannot get scriptFileList_earlyload file from mod zip: ${this.modInfo.name} ${scPath}`);
+                        this.modLoadControllerCallback.logWarning(`cannot get scriptFileList_earlyload file from mod zip: [${this.modInfo.name}] [${scPath}]`);
                     }
                 }
             }
@@ -350,7 +350,7 @@ export class ModZipReader {
                         this.modInfo.scriptFileList_inject_early.push([scPath, data]);
                     } else {
                         console.warn('cannot get scriptFileList_earlyload file from mod zip:', [this.modInfo.name, scPath]);
-                        this.modLoadControllerCallback.logWarning(`cannot get scriptFileList_earlyload file from mod zip: ${this.modInfo.name} ${scPath}`);
+                        this.modLoadControllerCallback.logWarning(`cannot get scriptFileList_earlyload file from mod zip: [${this.modInfo.name}] [${scPath}]`);
                     }
                 }
             }

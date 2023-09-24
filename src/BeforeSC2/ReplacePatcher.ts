@@ -183,8 +183,8 @@ export class ReplacePatcher {
                         [item.content],
                     );
                     this.modLoadControllerCallback.logWarning(`applyReplacePatcher() js replace multiple:` +
-                        ` in ${item.name} of ${patchInfoItem.from}` +
-                        ` positions ${r.positions}`);
+                        ` in [${item.name}] of [${patchInfoItem.from}]` +
+                        ` positions [${r.positions}]`);
                 } else if (r.positions.length === 0) {
                     console.warn('applyReplacePatcher() js replace 0: ',
                         ' in ',
@@ -199,8 +199,8 @@ export class ReplacePatcher {
                         [item.content],
                     );
                     this.modLoadControllerCallback.logWarning(`applyReplacePatcher() js replace 0:` +
-                        ` in ${item.name} of ${patchInfoItem.from}` +
-                        ` positions ${r.positions}`);
+                        ` in [${item.name}] of [${patchInfoItem.from}]` +
+                        ` positions [${r.positions}]`);
                 }
             }
             item.content = s;
@@ -229,8 +229,8 @@ export class ReplacePatcher {
                         [item.content],
                     );
                     this.modLoadControllerCallback.logWarning(`applyReplacePatcher() css replace multiple:` +
-                        ` in ${item.name} of ${patchInfoItem.from}` +
-                        ` positions ${r.positions}`);
+                        ` in [${item.name}] of [${patchInfoItem.from}]` +
+                        ` positions [${r.positions}]`);
                 } else if (r.positions.length === 0) {
                     console.warn('applyReplacePatcher() css replace 0: ',
                         ' in ',
@@ -245,8 +245,8 @@ export class ReplacePatcher {
                         [item.content],
                     );
                     this.modLoadControllerCallback.logWarning(`applyReplacePatcher() css replace 0:` +
-                        ` in ${item.name} of ${patchInfoItem.from}` +
-                        ` positions ${r.positions}`);
+                        ` in [${item.name}] of [${patchInfoItem.from}]` +
+                        ` positions [${r.positions}]`);
                 }
             }
             item.content = s;
@@ -275,8 +275,8 @@ export class ReplacePatcher {
                         [item.content],
                     );
                     this.modLoadControllerCallback.logWarning(`applyReplacePatcher() passage replace multiple:` +
-                        ` in ${item.name} of ${patchInfoItem.from}` +
-                        ` positions ${r.positions}`);
+                        ` in [${item.name}] of [${patchInfoItem.from}]` +
+                        ` positions [${r.positions}]`);
                 } else if (r.positions.length === 0) {
                     console.warn('applyReplacePatcher() passage replace 0: ',
                         ' in ',
@@ -291,8 +291,8 @@ export class ReplacePatcher {
                         [item.content],
                     );
                     this.modLoadControllerCallback.logWarning(`applyReplacePatcher() passage replace 0:` +
-                        ` in ${item.name} of ${patchInfoItem.from}` +
-                        ` positions ${r.positions}`);
+                        ` in [${item.name}] of [${patchInfoItem.from}]` +
+                        ` positions [${r.positions}]`);
                 }
             }
             item.content = s;

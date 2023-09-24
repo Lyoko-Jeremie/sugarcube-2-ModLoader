@@ -235,7 +235,7 @@ export class SC2DataManager {
                     rp.applyReplacePatcher(modSC2DataInfoCache);
                 } catch (e: any | Error) {
                     console.error('ModLoader ====== applyReplacePatcher() Replace Patch Error: ', e);
-                    log.error(`ModLoader ====== applyReplacePatcher() Replace Patch Error: ${e?.message ? e.message : e}`);
+                    log.error(`ModLoader ====== applyReplacePatcher() Replace Patch Error: [${e?.message ? e.message : e}]`);
                 }
                 this.getModLoadController().ReplacePatcher_end(modName, rp.patchFileName);
                 console.log('ModLoader ====== applyReplacePatcher() Replace Patch', [modName, rp.patchFileName]);
@@ -391,14 +391,14 @@ export class SC2DataManager {
             const rn = rootNode.removeChild(node);
             if (!rn) {
                 console.log('rePlacePassage() (!rn)', [node]);
-                log.warn(`rePlacePassage() (!rn) ${node.getAttribute('name')}`);
+                log.warn(`rePlacePassage() (!rn) [${node.getAttribute('name')}]`);
             }
         }
         for (const node of toAddPassageDataNodeList) {
             const an = rootNode.appendChild(node);
             if (!an) {
                 console.log('rePlacePassage() (!an)', [node]);
-                log.warn(`rePlacePassage() (!an) ${node.getAttribute('name')}`);
+                log.warn(`rePlacePassage() (!an) [${node.getAttribute('name')}]`);
             }
         }
     }

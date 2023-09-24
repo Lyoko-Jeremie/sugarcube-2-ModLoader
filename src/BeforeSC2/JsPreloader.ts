@@ -28,7 +28,7 @@ export class JsPreloader {
                     console.log('ModLoader ====== JsPreloader startLoad() excute result: ', [T[0]], R);
                 } catch (e: any | Error) {
                     console.error('ModLoader ====== JsPreloader startLoad() excute error: ', [T[0]], e);
-                    log.error(`ModLoader ====== JsPreloader startLoad() excute error: ${T[0]} ${e?.message ? e.message : e}`);
+                    log.error(`ModLoader ====== JsPreloader startLoad() excute error: [${T[0]} ${e?.message ? e.message : e}]`);
                 }
                 console.log('ModLoader ====== JsPreloader startLoad() excute end: ', [T[0]]);
                 this.pSC2DataManager.getModLoadController().Load_end(modName, T[0]);
