@@ -8,10 +8,10 @@ import {SC2DataManager} from "./SC2DataManager";
 type  AddonPluginHookType = () => Promise<any>;
 
 const AddonPluginHookPoint_KL = [
-    // // 当前 mod 加载后
-    // 'afterInit',
-    // // 所有 mod 加载后
-    // 'afterModLoad',
+    // 当前 mod 加载后 (这个hook无法拦截到，因为最早可能的hook注入点在InjectEarlyLoad)
+    'afterInit',
+    // 所有 mod 加载后 (这个hook无法拦截到，因为最早可能的hook注入点在InjectEarlyLoad)
+    'afterModLoad',
     // 所有 EarlyInject 脚本插入后
     'afterInjectEarlyLoad',
     // 所有 EarlyLoad 脚本执行后
