@@ -13,6 +13,7 @@ import {AddonPluginManager} from "./AddonPlugin";
 import {DependenceChecker} from "./DependenceChecker";
 import {PassageTracer} from "./PassageTracer";
 import {Sc2EventTracer} from "./Sc2EventTracer";
+import {SC2JsEvalContext} from "./SC2JsEvalContext";
 
 export class SC2DataManager {
 
@@ -165,6 +166,12 @@ export class SC2DataManager {
 
     getAddonPluginManager() {
         return this.addonPluginManager;
+    }
+
+    private sC2JsEvalContext = new SC2JsEvalContext(this);
+
+    getSC2JsEvalContext() {
+        return this.sC2JsEvalContext;
     }
 
     private conflictResult?: { mod: SC2DataInfo, result: SimulateMergeResult }[];
