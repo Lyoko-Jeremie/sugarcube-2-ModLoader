@@ -14,6 +14,8 @@ import {DependenceChecker} from "./DependenceChecker";
 import {PassageTracer} from "./PassageTracer";
 import {Sc2EventTracer} from "./Sc2EventTracer";
 import {SC2JsEvalContext} from "./SC2JsEvalContext";
+import {ModUtils} from "./Utils";
+import {JsPreloader} from "./JsPreloader";
 
 export class SC2DataManager {
 
@@ -162,6 +164,18 @@ export class SC2DataManager {
         return this.sc2EventTracer;
     }
 
+    private modUtils = new ModUtils(this);
+
+    getModUtils() {
+        return this.modUtils;
+    }
+
+    private jsPreloader = new JsPreloader(this, this.modUtils);
+
+    getJsPreloader() {
+        return this.jsPreloader;
+    }
+
     private addonPluginManager = new AddonPluginManager(this, this.getModLoadController());
 
     getAddonPluginManager() {
@@ -189,7 +203,7 @@ export class SC2DataManager {
             ModDataLoadType.LocalStorage,
         ]);
 
-        new DependenceChecker(this).check();
+        new DependenceChecker(this, this.getModUtils()).check();
 
         this.conflictResult = this.getModLoader().checkModConfictList();
         console.log('ModLoader ====== mod conflictResult', this.conflictResult.map(T => {
