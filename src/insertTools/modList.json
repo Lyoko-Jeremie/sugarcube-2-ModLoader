@@ -1,5 +1,7 @@
 [
   "../../mod/ModLoaderGui/ModLoaderGui.mod.zip",
   "../../mod/ImageLoaderHook/ModLoader DoL ImageLoaderHook.mod.zip",
-  "../../mod/CheckDoLCompressorDictionaries/CheckDoLCompressorDictionaries.mod.zip"
+  "../../mod/CheckDoLCompressorDictionaries/CheckDoLCompressorDictionaries.mod.zip",
+  "../../mod/ReplacePatch/ReplacePatcher.mod.zip",
+  "../../mod/TweeReplacer/TweeReplacer.mod.zip"
 ]
