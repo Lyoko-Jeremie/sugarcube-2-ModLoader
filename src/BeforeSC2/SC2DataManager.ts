@@ -202,7 +202,7 @@ export class SC2DataManager {
      * 此处使用了缓存，如果修改了SC2Data，请调用 flushAfterPatchCache() 来清除缓存，重新从html中读取最新的SC2Data
      */
     getSC2DataInfoAfterPatch() {
-        // keep orginSC2DataInfoCache valid
+        // keep originSC2DataInfoCache valid
         this.getSC2DataInfoCache();
         if (!this.cSC2DataInfoAfterPatchCache) {
             this.cSC2DataInfoAfterPatchCache = new SC2DataInfoCache(
