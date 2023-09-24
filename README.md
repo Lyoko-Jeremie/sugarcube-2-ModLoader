@@ -79,6 +79,24 @@
   ],
   "additionFile": [     // （必须存在） 附加文件列表，额外打包到zip中的文件，此列表中的文件不会被加载，仅作为附加文件存在
     "readme.txt"      // 第一个以readme(不区分大小写)开头的文件会被作为mod的说明文件，会在mod管理器中显示
+  ],
+  "addonPlugin": [      // （可选） 依赖的插件列表，在此声明本mod依赖哪些插件，在此处声明后会调用对应的插件，不满足的依赖会在加载日志中产生警告
+    {           //  需要首先由提供插件的mod在EarlyLoad阶段注册插件，否则会找不到插件
+      "modName": "MyMod2",    // 插件来自哪个mod
+      "addonName": "addon1",   // 在那个mod中的插件名
+      "modVersion": "1.0.0",    // 插件所在mod的版本
+      "params": []              // （可选） 插件参数
+    }
+  ],
+  "dependenceInfo": [     // （可选） 依赖的mod列表，可以在此声明此mod依赖哪些前置mod，不满足的依赖会在加载日志中产生警告
+    {
+      "modName": "ModLoader DoL ImageLoaderHook",   // 依赖的mod名字
+      "version": "1.0.0"                              // 依赖的mod版本
+    },
+    {
+      "modName": "ModLoaderGui",
+      "version": ">=1.0.8"                          // 依赖的mod版本，使用(https://www.npmjs.com/package/semver)检查版本号，符合`语义化版本控制规范` (https://semver.org/lang/zh-CN/)
+    }
   ]
 }
 
@@ -143,7 +161,7 @@
 :passageend
 ```
 
-由于，可以以下方法监听jQuery事件
+可以以下方法监听jQuery事件
 ```js
 $(document).one(":storyready", () => {
    // ....... 触发一次
@@ -157,7 +175,15 @@ $(document).on(":storyready", () => {
 ### 变更：
 
 【2023-09-21】 删除 `imgFileReplaceList` ，现在使用新的ImageHookLoader直接拦截图像请求来实现图像替换，因此，与原始图像文件重名的图像会被覆盖
+
 【2023-09-23】 添加 `addonPlugin` ，添加 `dependenceInfo`
+
+现在可以使用 `dependenceInfo` 来声明依赖的mod，不满足的声明会在加载日志中显示警告
+
+可以使用 `addonPlugin` 来声明依赖的插件，会在 `EarlyLoad` 之后 `PatchModToGame` 之前将所有需要依赖插件的Mod注册给插件，  
+故所有提供插件的`插件Mod`（或者说`lib mod`）需要最迟在 `EarlyLoad` 阶段（喜欢的话也可以在`InjectEarlyLoad`阶段）
+调用 `window.modAddonPluginManager.registerAddonPlugin()` 将自己提供的插件注册到 `AddonPluginManager` 。
+
 
 
 ---
@@ -257,8 +283,8 @@ yarn run webpack:insertTools:w
 （样本可参见 src/insertTools/modList.json ）
 ```json
 [
-  'mod1.zip',
-  'mod2.zip'
+  "mod1.zip",
+  "mod2.zip"
 ]
 ```
 
