@@ -352,6 +352,10 @@ export class ModUtils {
         return this.pSC2DataManager.getModLoadController();
     }
 
+    getAddonPluginManager() {
+        return this.pSC2DataManager.getAddonPluginManager();
+    }
+
     getLogger() {
         return this.getModLoadController().getLog();
     }
