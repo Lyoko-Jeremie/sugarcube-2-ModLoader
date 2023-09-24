@@ -37,6 +37,8 @@ export interface ModLoadControllerCallback {
 
     ReplacePatcher_end(modName: string, fileName: string): void;
 
+    ModLoaderLoadEnd(): void;
+
     logError(s: string): void;
 
     logInfo(s: string): void;
@@ -61,6 +63,9 @@ export function getLogFromModLoadControllerCallback(c: ModLoadControllerCallback
 const ModLoadControllerCallback_PatchHook = [
     'PatchModToGame_start',
     'PatchModToGame_end',
+] as const;
+const ModLoadControllerCallback_ModLoader = [
+    'ModLoaderLoadEnd',
 ] as const;
 const ModLoadControllerCallback_ReplacePatch = [
     'ReplacePatcher_start',
@@ -110,6 +115,15 @@ export class ModLoadController implements ModLoadControllerCallback {
                 });
             };
         });
+        ModLoadControllerCallback_ModLoader.forEach((T) => {
+            this[T] = () => {
+                this.lifeTimeCircleHookTable.forEach((hook) => {
+                    if (hook[T]) {
+                        hook[T]!.apply(hook, []);
+                    }
+                });
+            };
+        });
         ModLoadControllerCallback_ReplacePatch.forEach((T) => {
             this[T] = (modName: string, fileName: string) => {
                 this.lifeTimeCircleHookTable.forEach((hook) => {
@@ -143,6 +157,7 @@ export class ModLoadController implements ModLoadControllerCallback {
     logError!: (s: string) => void;
     logInfo!: (s: string) => void;
     logWarning!: (s: string) => void;
+    ModLoaderLoadEnd!: () => void;
 
     canLoadThisMod(bootJson: ModBootJson, zip: JSZip): boolean {
         return this.lifeTimeCircleHookTable.reduce((acc, T) => {

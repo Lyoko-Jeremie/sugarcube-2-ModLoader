@@ -40,6 +40,7 @@ export class JsPreloader {
         this.pSC2DataManager.getPassageTracer().init();
         this.pSC2DataManager.getSc2EventTracer().init();
         this.pSC2DataManager.getModLoadController().logInfo('ModLoader ====== ModLoader Start End. To Start SugarCube2 Engine.....');
+        this.pSC2DataManager.getModLoadController().ModLoaderLoadEnd();
     }
 
     static async JsRunner(content: string, name: string, modName: string, stage: string, pSC2DataManager: SC2DataManager) {
