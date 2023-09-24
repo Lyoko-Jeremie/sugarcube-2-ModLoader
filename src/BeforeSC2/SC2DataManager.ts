@@ -11,6 +11,7 @@ import {ModLoadController} from "./ModLoadController";
 import {ReplacePatcher} from "./ReplacePatcher";
 import {AddonPluginManager} from "./AddonPlugin";
 import {DependenceChecker} from "./DependenceChecker";
+import {PassageTracer} from "./PassageTracer";
 
 export class SC2DataManager {
 
@@ -147,7 +148,13 @@ export class SC2DataManager {
         return this.modLoadController;
     }
 
-    private addonPluginManager = new AddonPluginManager(this.getModLoadController());
+    private passageTracer = new PassageTracer();
+
+    getPassageTracer() {
+        return this.passageTracer;
+    }
+
+    private addonPluginManager = new AddonPluginManager(this, this.getModLoadController());
 
     getAddonPluginManager() {
         return this.addonPluginManager;
