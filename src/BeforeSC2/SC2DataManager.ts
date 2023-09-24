@@ -92,19 +92,19 @@ export class SC2DataManager {
      * never set it to undefined OR overwrite it
      * @private
      */
-    private orginSC2DataInfoCache?: SC2DataInfoCache;
+    private originSC2DataInfoCache?: SC2DataInfoCache;
 
     earlyResetSC2DataInfoCache() {
-        // keep orginSC2DataInfoCache valid
+        // keep originSC2DataInfoCache valid
         this.getSC2DataInfoCache();
-        // this.orginSC2DataInfoCache = undefined;
+        // this.originSC2DataInfoCache = undefined;
         // this.getSC2DataInfoCache();
         this.flushAfterPatchCache();
     }
 
     cleanAllCacheAfterModLoadEnd() {
-        this.orginSC2DataInfoCache?.clean();
-        this.orginSC2DataInfoCache = undefined;
+        this.originSC2DataInfoCache?.clean();
+        this.originSC2DataInfoCache = undefined;
         this.cSC2DataInfoAfterPatchCache?.clean();
         this.cSC2DataInfoAfterPatchCache = undefined;
     }
@@ -115,18 +115,18 @@ export class SC2DataManager {
      * 特别是合并时不要使用此处的数据作为数据源，而是使用 getSC2DataInfoAfterPatch()，否则会覆盖之前的mod的修改，导致之前的修改无效
      */
     getSC2DataInfoCache() {
-        if (!this.orginSC2DataInfoCache) {
-            this.orginSC2DataInfoCache = new SC2DataInfoCache(
+        if (!this.originSC2DataInfoCache) {
+            this.originSC2DataInfoCache = new SC2DataInfoCache(
                 this.getModLoadController().getLog(),
                 'orgin',
                 Array.from(this.scriptNode),
                 Array.from(this.styleNode),
                 Array.from(this.passageDataNodeList) as HTMLElement[],
             );
-            // console.log('getSC2DataInfoCache() init', this.orginSC2DataInfoCache);
+            // console.log('getSC2DataInfoCache() init', this.originSC2DataInfoCache);
         }
-        // console.log('getSC2DataInfoCache() get', this.orginSC2DataInfoCache);
-        return this.orginSC2DataInfoCache;
+        // console.log('getSC2DataInfoCache() get', this.originSC2DataInfoCache);
+        return this.originSC2DataInfoCache;
     }
 
     private modLoader?: ModLoader;
@@ -165,7 +165,7 @@ export class SC2DataManager {
     async startInit() {
         console.log('ModLoader ====== SC2DataManager startInit() start');
 
-        // keep orginSC2DataInfoCache valid, keep it have the unmodified vanilla data
+        // keep originSC2DataInfoCache valid, keep it have the unmodified vanilla data
         this.getSC2DataInfoCache();
 
         await this.getModLoader().loadMod([
@@ -259,7 +259,7 @@ export class SC2DataManager {
         const modOrder = this.getModLoader().modOrder;
         this.cSC2DataInfoAfterPatchCache = undefined;
         this.flushAfterPatchCache();
-        const orginSC2DataInfoCache = this.getSC2DataInfoAfterPatch();
+        const originSC2DataInfoCache = this.getSC2DataInfoAfterPatch();
 
         // concat mod
         console.log('ModLoader ====== patchModToGame() Concat Mod');
@@ -270,7 +270,7 @@ export class SC2DataManager {
                 .map(T => T.cache)
         );
         // console.log('em scriptFileItems length', em.scriptFileItems.items.length);
-        // console.log('orginSC2DataInfoCache scriptFileItems length', orginSC2DataInfoCache.scriptFileItems.items.length);
+        // console.log('originSC2DataInfoCache scriptFileItems length', originSC2DataInfoCache.scriptFileItems.items.length);
 
         // replace orgin img
         // for (const imgRPath of this.getModLoader().getModImgFileReplaceList()) {
@@ -285,17 +285,17 @@ export class SC2DataManager {
         //     });
         // }
 
-        // console.log('orginSC2DataInfoCache', orginSC2DataInfoCache.scriptNode[0].innerHTML);
-        // console.log('patchModToGame() orginSC2DataInfoCache', structuredClone(orginSC2DataInfoCache.scriptFileItems));
+        // console.log('originSC2DataInfoCache', originSC2DataInfoCache.scriptNode[0].innerHTML);
+        // console.log('patchModToGame() originSC2DataInfoCache', structuredClone(originSC2DataInfoCache.scriptFileItems));
         // console.log('em', em);
         console.log('ModLoader ====== patchModToGame() Replace Game');
-        // then replace orgin
+        // then replace origin
         const modSC2DataInfoCache = replaceMergeSC2DataInfoCache(
-            orginSC2DataInfoCache.cloneSC2DataInfo(),
+            originSC2DataInfoCache.cloneSC2DataInfo(),
             em,
         );
-        // console.log('patchModToGame() orginSC2DataInfoCache', structuredClone(orginSC2DataInfoCache.scriptFileItems));
-        // console.log('patchModToGame() orginSC2DataInfoCache', orginSC2DataInfoCache);
+        // console.log('patchModToGame() originSC2DataInfoCache', structuredClone(originSC2DataInfoCache.scriptFileItems));
+        // console.log('patchModToGame() originSC2DataInfoCache', originSC2DataInfoCache);
         // console.log('patchModToGame() modSC2DataInfoCache', modSC2DataInfoCache);
         // console.log('patchModToGame() modSC2DataInfoCache scriptFileItems length', modSC2DataInfoCache.scriptFileItems.items.length);
 
