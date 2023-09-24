@@ -253,7 +253,6 @@ export class SC2DataManager {
         // concat mod
         console.log('ModLoader ====== patchModToGame() Concat Mod');
         const em = normalMergeSC2DataInfoCache(
-            this.getModLoadController().getLog(),
             new SC2DataInfo(this.getModLoadController().getLog(), 'EmptyMod'),
             ...modOrder.map(T => modCache.get(T))
                 .filter((T): T is ModInfo => !!T)
@@ -281,7 +280,6 @@ export class SC2DataManager {
         console.log('ModLoader ====== patchModToGame() Replace Game');
         // then replace orgin
         const modSC2DataInfoCache = replaceMergeSC2DataInfoCache(
-            this.getModLoadController().getLog(),
             orginSC2DataInfoCache.cloneSC2DataInfo(),
             em,
         );

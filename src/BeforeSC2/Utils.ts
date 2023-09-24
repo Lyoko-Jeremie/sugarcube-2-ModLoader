@@ -104,9 +104,9 @@ export class ModUtils {
 
         let nt;
         if (replaceForce) {
-            nt = replaceMergeSC2DataInfoCacheForce(this.getModLoadController().getLog(), tt, ti);
+            nt = replaceMergeSC2DataInfoCacheForce(tt, ti);
         } else {
-            nt = replaceMergeSC2DataInfoCache(this.getModLoadController().getLog(), tt, ti);
+            nt = replaceMergeSC2DataInfoCache(tt, ti);
         }
 
         this.pSC2DataManager.rePlacePassage(

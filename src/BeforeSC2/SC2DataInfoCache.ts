@@ -29,6 +29,7 @@ export interface PassageDataItem {
 
 export class CacheRecord<T extends { name: string, content: string }> {
     constructor(
+        public log: LogWrapper,
         public dataSource: string,
         public cacheRecordName: string,
     ) {
@@ -65,7 +66,7 @@ export class CacheRecord<T extends { name: string, content: string }> {
     map: Map<string, T> = new Map<string, T>();
     noName: T[] = [];
 
-    replaceMerge(c: CacheRecord<T>, log: LogWrapper, noWarnning: boolean = false) {
+    replaceMerge(c: CacheRecord<T>, noWarnning: boolean = false) {
         // console.log('CacheRecord.replaceMerge() start this.items', this.items.length);
         // console.log('CacheRecord.replaceMerge() start this.map.size', this.map.size);
         for (const item of c.items) {
@@ -78,7 +79,7 @@ export class CacheRecord<T extends { name: string, content: string }> {
                         c.items,
                         [item.name, item.content],
                     );
-                    log.warn(`CacheRecord.replaceMerge() has duplicate name: ` +
+                    this.log.warn(`CacheRecord.replaceMerge() has duplicate name: ` +
                         `[${this.cacheRecordName} ${this.dataSource}] [${c.cacheRecordName} ${c.dataSource}] ${item.name}`);
                 }
             }
@@ -106,9 +107,9 @@ export class CacheRecord<T extends { name: string, content: string }> {
 }
 
 export class SC2DataInfo {
-    styleFileItems: CacheRecord<StyleTextFileItem> = new CacheRecord<StyleTextFileItem>(this.dataSource, 'styleFileItems');
-    scriptFileItems: CacheRecord<ScriptTextFileItem> = new CacheRecord<ScriptTextFileItem>(this.dataSource, 'scriptFileItems');
-    passageDataItems: CacheRecord<PassageDataItem> = new CacheRecord<PassageDataItem>(this.dataSource, 'passageDataItems');
+    styleFileItems: CacheRecord<StyleTextFileItem> = new CacheRecord<StyleTextFileItem>(this.log, this.dataSource, 'styleFileItems');
+    scriptFileItems: CacheRecord<ScriptTextFileItem> = new CacheRecord<ScriptTextFileItem>(this.log, this.dataSource, 'scriptFileItems');
+    passageDataItems: CacheRecord<PassageDataItem> = new CacheRecord<PassageDataItem>(this.log, this.dataSource, 'passageDataItems');
 
     constructor(
         public log: LogWrapper,
