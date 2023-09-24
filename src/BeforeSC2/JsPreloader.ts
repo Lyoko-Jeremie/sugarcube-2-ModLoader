@@ -37,6 +37,9 @@ export class JsPreloader {
         console.log('ModLoader ====== JsPreloader startLoad() clean');
         this.pSC2DataManager.cleanAllCacheAfterModLoadEnd();
         console.log('ModLoader ====== JsPreloader startLoad() end');
+        this.pSC2DataManager.getPassageTracer().init();
+        this.pSC2DataManager.getSc2EventTracer().init();
+        this.pSC2DataManager.getModLoadController().logInfo('ModLoader ====== ModLoader Start End. To Start SugarCube2 Engine.....');
     }
 
     static async JsRunner(content: string, name: string, modName: string, stage: string, pSC2DataManager: SC2DataManager) {

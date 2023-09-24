@@ -4,6 +4,9 @@ import {ModZipReader} from "./ModZipReader";
 import {LogWrapper, ModLoadController} from 'ModLoadController';
 import JSZip from 'jszip';
 import {SC2DataManager} from "./SC2DataManager";
+import {PassageTracer} from "./PassageTracer";
+import {Sc2EventTracer, Sc2EventTracerCallback} from "./Sc2EventTracer";
+import {Passage} from "./SugarCube2";
 
 type  AddonPluginHookType = () => Promise<any>;
 
@@ -16,6 +19,8 @@ const AddonPluginHookPoint_KL = [
     'afterInjectEarlyLoad',
     // 所有 EarlyLoad 脚本执行后
     'afterEarlyLoad',
+    // 所有 mod 数据覆盖到游戏前
+    'beforePatchModToGame',
     // 所有 mod 数据覆盖到游戏后
     'afterPatchModToGame',
     // 所有 Preload 脚本执行后
@@ -88,16 +93,71 @@ export class AddonPlugin {
     }
 }
 
-export class AddonPluginManager {
+export class AddonPluginManager implements Sc2EventTracerCallback {
     private addonPluginTable: AddonPlugin[] = [];
 
     private log: LogWrapper;
+    private passageTracer: PassageTracer;
+    private sc2EventTracer: Sc2EventTracer;
 
     constructor(
         public gSC2DataManager: SC2DataManager,
         public gModLoadController: ModLoadController,
     ) {
         this.log = gModLoadController.getLog();
+        this.passageTracer = this.gSC2DataManager.getPassageTracer();
+        // this.passageTracer.addCallback((passageName) => {
+        //     switch (passageName) {
+        //         case 'Start':
+        //             break;
+        //         default:
+        //             break;
+        //     }
+        // });
+        this.sc2EventTracer = this.gSC2DataManager.getSc2EventTracer();
+        this.sc2EventTracer.addCallback(this);
+    }
+
+    /**
+     * inner use
+     */
+    async whenSC2StoryReady(): Promise<any> {
+        await this.triggerHook('whenSC2StoryReady');
+    }
+
+    /**
+     * inner use
+     */
+    async whenSC2PassageInit(passage: Passage): Promise<any> {
+        await this.triggerHook('whenSC2PassageInit');
+    }
+
+    /**
+     * inner use
+     */
+    async whenSC2PassageStart(passage: Passage, content: HTMLDivElement): Promise<any> {
+        await this.triggerHook('whenSC2PassageStart');
+    }
+
+    /**
+     * inner use
+     */
+    async whenSC2PassageRender(passage: Passage, content: HTMLDivElement): Promise<any> {
+        await this.triggerHook('whenSC2PassageRender');
+    }
+
+    /**
+     * inner use
+     */
+    async whenSC2PassageDisplay(passage: Passage, content: HTMLDivElement): Promise<any> {
+        await this.triggerHook('whenSC2PassageDisplay');
+    }
+
+    /**
+     * inner use
+     */
+    async whenSC2PassageEnd(passage: Passage, content: HTMLDivElement): Promise<any> {
+        await this.triggerHook('whenSC2PassageEnd');
     }
 
     /**
@@ -145,9 +205,16 @@ export class AddonPluginManager {
      * @param hook
      */
     async triggerHook(hook: AddonPluginHookPoint_K) {
+        const log = this.gSC2DataManager.getModLoadController().getLog();
         for (const addonPlugin of this.addonPluginTable) {
             if (addonPlugin.hookPoint[hook]) {
-                await addonPlugin.hookPoint[hook]!();
+                log.log(`AddonPluginManager.triggerHook() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] start`);
+                try {
+                    await addonPlugin.hookPoint[hook]!();
+                } catch (e: any | Error) {
+                    log.error(`AddonPluginManager.triggerHook() error [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] [${e?.message ? e.message : e}]`);
+                }
+                log.log(`AddonPluginManager.triggerHook() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] end`);
             }
         }
     }

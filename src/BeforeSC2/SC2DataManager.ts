@@ -12,6 +12,7 @@ import {ReplacePatcher} from "./ReplacePatcher";
 import {AddonPluginManager} from "./AddonPlugin";
 import {DependenceChecker} from "./DependenceChecker";
 import {PassageTracer} from "./PassageTracer";
+import {Sc2EventTracer} from "./Sc2EventTracer";
 
 export class SC2DataManager {
 
@@ -154,6 +155,12 @@ export class SC2DataManager {
         return this.passageTracer;
     }
 
+    private sc2EventTracer = new Sc2EventTracer();
+
+    getSc2EventTracer() {
+        return this.sc2EventTracer;
+    }
+
     private addonPluginManager = new AddonPluginManager(this, this.getModLoadController());
 
     getAddonPluginManager() {
@@ -177,7 +184,6 @@ export class SC2DataManager {
 
         new DependenceChecker(this).check();
 
-
         this.conflictResult = this.getModLoader().checkModConfictList();
         console.log('ModLoader ====== mod conflictResult', this.conflictResult.map(T => {
             return {
@@ -188,7 +194,10 @@ export class SC2DataManager {
             };
         }));
 
+        await this.getAddonPluginManager().triggerHook('beforePatchModToGame');
         this.patchModToGame();
+        await this.getAddonPluginManager().triggerHook('afterPatchModToGame');
+        this.getModLoadController().logInfo('ModLoader ====== SC2DataManager startInit() end. To Start JsPreloader.....');
     }
 
     getConflictResult() {

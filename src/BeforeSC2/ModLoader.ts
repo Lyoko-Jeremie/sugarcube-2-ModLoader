@@ -288,8 +288,11 @@ export class ModLoader {
                     console.error('ModLoader loadTranslateData() unknown loadType:', [loadType]);
             }
         }
+        await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterModLoad');
         this.initModInjectEarlyLoadInDomScript();
+        await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterInjectEarlyLoad');
         await this.initModEarlyLoadScript();
+        await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterEarlyLoad');
         return Promise.resolve(ok);
     }
 
