@@ -153,7 +153,7 @@ export class SC2DataManager {
         return this.addonPluginManager;
     }
 
-    private confictResult?: { mod: SC2DataInfo, result: SimulateMergeResult }[];
+    private conflictResult?: { mod: SC2DataInfo, result: SimulateMergeResult }[];
 
     async startInit() {
         console.log('ModLoader ====== SC2DataManager startInit() start');
@@ -170,8 +170,9 @@ export class SC2DataManager {
 
         new DependenceChecker(this).check();
 
-        this.confictResult = this.getModLoader().checkModConfictList();
-        console.log('ModLoader ====== mod confictResult', this.confictResult.map(T => {
+
+        this.conflictResult = this.getModLoader().checkModConfictList();
+        console.log('ModLoader ====== mod conflictResult', this.conflictResult.map(T => {
             return {
                 name: T.mod.dataSource,
                 style: Array.from(T.result.styleFileItems.conflict),
@@ -183,8 +184,8 @@ export class SC2DataManager {
         this.patchModToGame();
     }
 
-    getConfictResult() {
-        return this.confictResult;
+    getConflictResult() {
+        return this.conflictResult;
     }
 
     private cSC2DataInfoAfterPatchCache?: SC2DataInfoCache;

@@ -230,8 +230,8 @@ export class ModUtils {
      *              mod    mod添加的内容，其中 dataSource 是 modName
      *              result 覆盖结果，其中的 ResultItem[conflict] (Set<string>) 就是互相覆盖的部分的名字（passageName或js/css文件名）
      */
-    getModConfictInfo(): { mod: SC2DataInfo, result: SimulateMergeResult }[] {
-        return this.pSC2DataManager.getConfictResult() || [];
+    getModConflictInfo(): { mod: SC2DataInfo, result: SimulateMergeResult }[] {
+        return this.pSC2DataManager.getConflictResult() || [];
     }
 
     /**
