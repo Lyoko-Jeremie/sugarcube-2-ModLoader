@@ -7,7 +7,12 @@
     "ts:BeforeSC2:w": "tsc -w -p ./src/BeforeSC2/tsconfig.json",
     "webpack:BeforeSC2:w": "webpack -w -c ./webpack.config.js",
     "ts:ForSC2:w": "tsc -w -p ./src/ForSC2/tsconfig.json",
-    "webpack:insertTools:w": "webpack -w -c ./webpack-insertTools.config.js"
+    "webpack:insertTools:w": "webpack -w -c ./webpack-insertTools.config.js",
+    "======================": "",
+    "ts:BeforeSC2": "tsc -p ./src/BeforeSC2/tsconfig.json",
+    "webpack:BeforeSC2": "webpack -c ./webpack.config.js",
+    "ts:ForSC2": "tsc -p ./src/ForSC2/tsconfig.json",
+    "webpack:insertTools": "webpack -c ./webpack-insertTools.config.js"
   },
   "packageManager": "yarn@3.4.1",
   "dependencies": {
