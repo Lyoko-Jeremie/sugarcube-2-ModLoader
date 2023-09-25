@@ -144,9 +144,12 @@ export class ModZipReader {
     //     });
     // }
 
-    imgWrapbase64Url(fileName: string, base64: string) {
-        const ext = extname(fileName);
-        console.log('imgWrapbase64Url', [fileName, ext, base64]);
+    imgWrapBase64Url(fileName: string, base64: string) {
+        let ext = extname(fileName);
+        if (ext.startsWith('.')) {
+            ext = ext.substring(1);
+        }
+        console.log('imgWrapBase64Url', [fileName, ext, base64]);
         return `data:image/${ext};base64,${base64}`;
     }
 
@@ -242,7 +245,7 @@ export class ModZipReader {
                 if (imgFile) {
                     const data = await imgFile.async('base64');
                     this.modInfo.imgs.push({
-                        data: this.imgWrapbase64Url(imgPath, data),
+                        data: this.imgWrapBase64Url(imgPath, data),
                         path: imgPath,
                     });
                 } else {
