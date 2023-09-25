@@ -54,6 +54,7 @@ jobs:
 
       - name: Build ModLoader
         run: |
+          yarn
           yarn run ts:BeforeSC2
           yarn run webpack:BeforeSC2
           yarn run ts:ForSC2
@@ -62,6 +63,7 @@ jobs:
       - name: Build ModLoaderGui
         run: |
           cd ${{ github.workspace }}/mod/ModLoaderGui
+          yarn
           yarn run ts
           yarn run webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
@@ -74,6 +76,7 @@ jobs:
       - name: Build ImageLoaderHook
         run: |
           cd ${{ github.workspace }}/mod/ImageLoaderHook
+          yarn
           yarn run ts
           yarn run webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
@@ -86,6 +89,7 @@ jobs:
       - name: Build ReplacePatch
         run: |
           cd ${{ github.workspace }}/mod/ReplacePatch
+          yarn
           yarn run ts
           yarn run webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
@@ -98,6 +102,7 @@ jobs:
       - name: Build TweeReplacer
         run: |
           cd ${{ github.workspace }}/mod/TweeReplacer
+          yarn
           yarn run ts
           yarn run webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
@@ -110,6 +115,7 @@ jobs:
       - name: Build CheckDoLCompressorDictionaries
         run: |
           cd ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries
+          yarn
           yarn run ts
           yarn run webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
