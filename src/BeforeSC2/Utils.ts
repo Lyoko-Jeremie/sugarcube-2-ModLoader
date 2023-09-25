@@ -1,5 +1,5 @@
 import {SC2DataManager} from "./SC2DataManager";
-import {isSafeInteger} from "lodash";
+import {isInteger, isString} from "lodash";
 import _ from "lodash";
 import {Twee2Passage, Twee2PassageR} from "./ModZipReader";
 import {PassageDataItem, SC2DataInfo, SC2DataInfoCache} from "./SC2DataInfoCache";
@@ -8,7 +8,7 @@ import {replaceMergeSC2DataInfoCache, replaceMergeSC2DataInfoCacheForce} from ".
 
 export class ModUtils {
 
-    version = '1.0.7';
+    version = '1.1.0';
 
     constructor(
         public pSC2DataManager: SC2DataManager,
@@ -165,6 +165,7 @@ export class ModUtils {
 
         // console.log('replaceFollowSC2DataInfo() newScriptNode', newScriptNode);
         // console.log('replaceFollowSC2DataInfo() newStyleNode', newStyleNode);
+        // console.log('replaceFollowSC2DataInfo() newPassageDataNode', newPassageDataNode);
 
         // add new
         rootNode.appendChild(newScriptNode);
@@ -201,7 +202,7 @@ export class ModUtils {
         passageDataNodeList.find(T => T.getAttribute('name') === name)?.remove();
 
         const node = document.createElement('tw-passagedata');
-        if (pid && isSafeInteger(pid) && pid > 0) {
+        if (pid && ((isInteger(pid) && pid > 0) || isString(pid))) {
             node.setAttribute('pid', '' + pid);
         }
         node.setAttribute('name', name);
