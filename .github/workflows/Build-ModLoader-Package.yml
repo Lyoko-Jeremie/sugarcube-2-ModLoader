@@ -1,0 +1,151 @@
+
+name: Build ModLoader Package
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      fail-fast: false
+
+      # Set up a matrix to run the following 3 configurations:
+      # 1. <Windows, Release, latest MSVC compiler toolchain on the default runner image, default generator>
+      # 2. <Linux, Release, latest GCC compiler toolchain on the default runner image, default generator>
+      # 3. <Linux, Release, latest Clang compiler toolchain on the default runner image, default generator>
+      #
+      # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
+      matrix:
+        # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
+        os: [ ubuntu-latest ]
+        #os: [ ubuntu-latest, windows-latest ]
+        #build_type: [ Release ]
+        #c_compiler: [ gcc, cl ]
+        #ssl_type: [ StaticSSL, DynamicSSL ]
+        #build_mode: [ Normal, ProxyHandshakeAuth, MINI_BUILD_MODE ]
+        node-version: [ 18.x ]
+        #include:
+        #  - os: windows-latest
+        #    c_compiler: cl
+        #    cpp_compiler: cl
+        #    toolset: msvc
+        #    version: 2022
+        #  - os: ubuntu-latest
+        #    c_compiler: gcc
+        #    cpp_compiler: g++
+        #    toolset: gcc
+        #    version: 22.04
+        #    gcc: 12
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Build ModLoader
+        run: |
+          yarn run ts:BeforeSC2
+          yarn run webpack:BeforeSC2
+          yarn run ts:ForSC2
+          yarn run webpack:insertTools
+
+      - name: Build ModLoaderGui
+        run: |
+          cd ${{ github.workspace }}/mod/ModLoaderGui
+          yarn run ts
+          yarn run webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Copy ModLoaderGui
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/ModLoaderGui/ModLoaderGui.mod.zip
+          target: ${{ github.workspace }}/out
+
+      - name: Build ImageLoaderHook
+        run: |
+          cd ${{ github.workspace }}/mod/ImageLoaderHook
+          yarn run ts
+          yarn run webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Copy ImageLoaderHook
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/ImageLoaderHook/ModLoader DoL ImageLoaderHook.mod.zip
+          target: ${{ github.workspace }}/out
+
+      - name: Build ReplacePatch
+        run: |
+          cd ${{ github.workspace }}/mod/ReplacePatch
+          yarn run ts
+          yarn run webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Copy ReplacePatch
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/ReplacePatch/ReplacePatcher.mod.zip
+          target: ${{ github.workspace }}/out
+
+      - name: Build TweeReplacer
+        run: |
+          cd ${{ github.workspace }}/mod/TweeReplacer
+          yarn run ts
+          yarn run webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Copy TweeReplacer
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/TweeReplacer/TweeReplacer.mod.zip
+          target: ${{ github.workspace }}/out
+
+      - name: Build CheckDoLCompressorDictionaries
+        run: |
+          cd ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries
+          yarn run ts
+          yarn run webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Copy CheckDoLCompressorDictionaries
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries/CheckDoLCompressorDictionaries.mod.zip
+          target: ${{ github.workspace }}/out
+
+      - name: Copy dist-BeforeSC2
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/dist-BeforeSC2/**/*
+          target: ${{ github.workspace }}/out/dist-BeforeSC2/
+      - name: Copy dist-ForSC2
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/dist-ForSC2/**/*
+          target: ${{ github.workspace }}/out/dist-ForSC2/
+      - name: Copy dist-insertTools
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/dist-insertTools/**/*
+          target: ${{ github.workspace }}/out/dist-insertTools/
+
+      - name: Copy README.md
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/README.md
+          target: ${{ github.workspace }}/out
+
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: ModLoader Package
+          path: ${{ github.workspace }}/out
+
+
+
