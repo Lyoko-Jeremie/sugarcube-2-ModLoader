@@ -76,8 +76,8 @@ jobs:
       - name: Build ModLoaderGui
         run: |
           cd ${{ github.workspace }}/mod/ModLoaderGui
-          npm start build:ts
-          npm start build:webpack
+          yarn run build:ts
+          yarn run build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy ModLoaderGui
         uses: Lyoko-Jeremie/js-copy-github-action@master
@@ -88,8 +88,8 @@ jobs:
       - name: Build ImageLoaderHook
         run: |
           cd ${{ github.workspace }}/mod/ImageLoaderHook
-          npm start build:ts
-          npm start build:webpack
+          yarn run build:ts
+          yarn run build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy ImageLoaderHook
         uses: Lyoko-Jeremie/js-copy-github-action@master
@@ -100,8 +100,8 @@ jobs:
       - name: Build ReplacePatch
         run: |
           cd ${{ github.workspace }}/mod/ReplacePatch
-          npm start build:ts
-          npm start build:webpack
+          yarn run build:ts
+          yarn run build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy ReplacePatch
         uses: Lyoko-Jeremie/js-copy-github-action@master
@@ -112,8 +112,8 @@ jobs:
       - name: Build TweeReplacer
         run: |
           cd ${{ github.workspace }}/mod/TweeReplacer
-          npm start build:ts
-          npm start build:webpack
+          yarn run build:ts
+          yarn run build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy TweeReplacer
         uses: Lyoko-Jeremie/js-copy-github-action@master
@@ -124,8 +124,8 @@ jobs:
       - name: Build CheckDoLCompressorDictionaries
         run: |
           cd ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries
-          npm start build:ts
-          npm start build:webpack
+          yarn run build:ts
+          yarn run build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy CheckDoLCompressorDictionaries
         uses: Lyoko-Jeremie/js-copy-github-action@master
