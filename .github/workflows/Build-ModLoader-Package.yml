@@ -64,8 +64,8 @@ jobs:
         run: |
           cd ${{ github.workspace }}/mod/ModLoaderGui
           yarn
-          yarn run build:ts
-          yarn run build:webpack
+          npm start build:ts
+          npm start build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy ModLoaderGui
         uses: Lyoko-Jeremie/js-copy-github-action@master
@@ -77,8 +77,8 @@ jobs:
         run: |
           cd ${{ github.workspace }}/mod/ImageLoaderHook
           yarn
-          yarn run build:ts
-          yarn run build:webpack
+          npm start build:ts
+          npm start build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy ImageLoaderHook
         uses: Lyoko-Jeremie/js-copy-github-action@master
@@ -90,8 +90,8 @@ jobs:
         run: |
           cd ${{ github.workspace }}/mod/ReplacePatch
           yarn
-          yarn run build:ts
-          yarn run build:webpack
+          npm start build:ts
+          npm start build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy ReplacePatch
         uses: Lyoko-Jeremie/js-copy-github-action@master
@@ -103,8 +103,8 @@ jobs:
         run: |
           cd ${{ github.workspace }}/mod/TweeReplacer
           yarn
-          yarn run build:ts
-          yarn run build:webpack
+          npm start build:ts
+          npm start build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy TweeReplacer
         uses: Lyoko-Jeremie/js-copy-github-action@master
@@ -116,8 +116,8 @@ jobs:
         run: |
           cd ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries
           yarn
-          yarn run build:ts
-          yarn run build:webpack
+          npm start build:ts
+          npm start build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy CheckDoLCompressorDictionaries
         uses: Lyoko-Jeremie/js-copy-github-action@master
