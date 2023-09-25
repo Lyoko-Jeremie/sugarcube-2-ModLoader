@@ -44,6 +44,8 @@ export interface ModLoadControllerCallback {
     logInfo(s: string): void;
 
     logWarning(s: string): void;
+
+    exportDataZip(zip: JSZip): Promise<JSZip>;
 }
 
 export function getLogFromModLoadControllerCallback(c: ModLoadControllerCallback): LogWrapper {
@@ -99,47 +101,72 @@ export class ModLoadController implements ModLoadControllerCallback {
     ) {
         ModLoadControllerCallback_ScriptLoadHook.forEach((T) => {
             this[T] = async (modName: string, fileName: string) => {
-                for (const hook of this.lifeTimeCircleHookTable) {
+                for (const [id, hook] of this.lifeTimeCircleHookTable) {
                     if (hook[T]) {
-                        await hook[T]!.apply(hook, [modName, fileName]);
+                        try {
+                            await hook[T]!.apply(hook, [modName, fileName]);
+                        } catch (e: any | Error) {
+                            console.error('ModLoadController', [T, id, e]);
+                            this.logError(`ModLoadController ${T} ${id} ${e?.message ? e.message : e}`);
+                        }
                     }
                 }
             };
         });
         ModLoadControllerCallback_PatchHook.forEach((T) => {
             this[T] = async () => {
-                for (const hook of this.lifeTimeCircleHookTable) {
+                for (const [id, hook] of this.lifeTimeCircleHookTable) {
                     if (hook[T]) {
-                        await hook[T]!.apply(hook, []);
+                        try {
+                            await hook[T]!.apply(hook, []);
+                        } catch (e: any | Error) {
+                            console.error('ModLoadController', [T, id, e]);
+                            this.logError(`ModLoadController ${T} ${id} ${e?.message ? e.message : e}`);
+                        }
                     }
                 }
             };
         });
         ModLoadControllerCallback_ModLoader.forEach((T) => {
             this[T] = async () => {
-                for (const hook of this.lifeTimeCircleHookTable) {
+                for (const [id, hook] of this.lifeTimeCircleHookTable) {
                     if (hook[T]) {
-                        await hook[T]!.apply(hook, []);
+                        try {
+                            await hook[T]!.apply(hook, []);
+                        } catch (e: any | Error) {
+                            console.error('ModLoadController', [T, id, e]);
+                            this.logError(`ModLoadController ${T} ${id} ${e?.message ? e.message : e}`);
+                        }
                     }
                 }
             };
         });
         ModLoadControllerCallback_ReplacePatch.forEach((T) => {
             this[T] = async (modName: string, fileName: string) => {
-                for (const hook of this.lifeTimeCircleHookTable) {
+                for (const [id, hook] of this.lifeTimeCircleHookTable) {
                     if (hook[T]) {
-                        await hook[T]!.apply(hook, [modName, fileName]);
+                        try {
+                            await hook[T]!.apply(hook, [modName, fileName]);
+                        } catch (e: any | Error) {
+                            console.error('ModLoadController', [T, id, e]);
+                            this.logError(`ModLoadController ${T} ${id} ${e?.message ? e.message : e}`);
+                        }
                     }
                 }
             };
         });
         ModLoadControllerCallback_Log.forEach((T) => {
             this[T] = (s: string) => {
-                this.lifeTimeCircleHookTable.forEach((hook) => {
+                for (const [id, hook] of this.lifeTimeCircleHookTable) {
                     if (hook[T]) {
-                        hook[T]!.apply(hook, [s]);
+                        try {
+                            hook[T]!.apply(hook, [s]);
+                        } catch (e: any | Error) {
+                            // must never throw error
+                            console.error('ModLoadController', [T, id, e]);
+                        }
                     }
-                });
+                }
             };
         });
     }
@@ -160,15 +187,39 @@ export class ModLoadController implements ModLoadControllerCallback {
     ModLoaderLoadEnd!: () => Promise<any>;
 
     canLoadThisMod(bootJson: ModBootJson, zip: JSZip): boolean {
-        return this.lifeTimeCircleHookTable.reduce((acc, T) => {
-            return acc && (T.canLoadThisMod ? T.canLoadThisMod(bootJson, zip) : true);
-        }, true);
+        for (const [id, hook] of this.lifeTimeCircleHookTable) {
+            if (hook.canLoadThisMod) {
+                const r = hook.canLoadThisMod(bootJson, zip);
+                if (!r) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
-    private lifeTimeCircleHookTable: LifeTimeCircleHook[] = [];
+    async exportDataZip(zip: JSZip): Promise<JSZip> {
+        for (const [id, hook] of this.lifeTimeCircleHookTable) {
+            try {
+                if (hook.exportDataZip) {
+                    await hook.exportDataZip(zip);
+                }
+            } catch (e: any | Error) {
+                console.error('ModLoadController exportDataZip()', e);
+                this.logError(`ModLoadController exportDataZip() ${e?.message ? e.message : e}`);
+            }
+        }
+        return zip;
+    }
 
-    public addLifeTimeCircleHook(hook: LifeTimeCircleHook) {
-        this.lifeTimeCircleHookTable.push(hook);
+    private lifeTimeCircleHookTable: Map<string, LifeTimeCircleHook> = new Map<string, LifeTimeCircleHook>();
+
+    public addLifeTimeCircleHook(id: string, hook: LifeTimeCircleHook) {
+        if (this.lifeTimeCircleHookTable.has(id)) {
+            console.warn(`ModLoadController addLifeTimeCircleHook() id ${id} already exists.`);
+            this.logWarning(`ModLoadController addLifeTimeCircleHook() id ${id} already exists.`);
+        }
+        this.lifeTimeCircleHookTable.set(id, hook);
     }
 
     public removeLifeTimeCircleHook(hook: LifeTimeCircleHook) {
@@ -176,7 +227,7 @@ export class ModLoadController implements ModLoadControllerCallback {
     }
 
     public clearLifeTimeCircleHook() {
-        this.lifeTimeCircleHookTable = [];
+        this.lifeTimeCircleHookTable.clear();
     }
 
     public listModLocalStorage() {
