@@ -16,6 +16,7 @@
     * [手动打包方法](#手动打包方法) <========= **最简单的打包Mod方法**， 若没有NodeJs环境，请使用此方法
     * [自动打包方法](#自动打包方法)
   * [ModLoader开发及修改方法](#ModLoader开发及修改方法)
+  * [有关SC2注入点](#有关SC2注入点)
 
 ---
 
@@ -320,3 +321,46 @@ Degrees of Lewdity VERSION.html.mod.html
 2. 在命令行运行 `corepack enable` 来启用包管理器支持
 3. 结束
 
+
+---
+
+## 有关SC2注入点
+
+ModLoader所需的唯一一个注入点是 [sugarcube.js](https://github.com/Lyoko-Jeremie/sugarcube-2_Vrelnir/blob/TS/src/sugarcube.js) 文件中的jQuery启动处
+
+```js
+/* eslint-enable no-unused-vars */
+
+/*
+	Global `SugarCube` object.  Allows scripts to detect if they're running in SugarCube by
+	testing for the object (e.g. `"SugarCube" in window`) and contains exported identifiers
+	for debugging purposes.
+*/
+window.SugarCube = {};
+
+/*
+	Main function, entry point for the story.
+*/
+jQuery(() => {
+	'use strict';
+
+	const mainStart = () => {
+	    // 原来的 `jQuery(() => {}) `的内容
+	};
+
+	// inject ModLoader on there
+	if (typeof window.modSC2DataManager !== 'undefined') {
+		window.modSC2DataManager.startInit()
+			.then(() => window.jsPreloader.startLoad())
+			.then(() => mainStart())
+			.catch(err => {
+				console.error(err);
+			});
+	}
+	else {
+		mainStart();
+	}
+});
+```
+
+需要使用异步等待的方式，让原本的引擎启动逻辑等待ModLoader的初始化完毕，并等待ModLoader完成加载所有mod、执行mod注入脚本等待等的工作，之后才能执行原本的引擎启动逻辑。
