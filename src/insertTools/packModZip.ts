@@ -169,7 +169,7 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
     for (const imgPath of bootJson.imgFileList) {
         // const imgBase64Url = await img2base64Url(imgPath);
         // zip.file(imgPath, imgBase64Url);
-        const imgFile = await promisify(fs.readFile)(imgPath, {encoding: 'utf-8'});
+        const imgFile = await promisify(fs.readFile)(imgPath);
         zip.file(imgPath, imgFile);
     }
     for (const tweePath of bootJson.tweeFileList) {
