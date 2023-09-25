@@ -52,30 +52,18 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: install node_modules
-        run: |
-          yarn
-          cd ${{ github.workspace }}/mod/ModLoaderGui
-          yarn
-          cd ${{ github.workspace }}/mod/ImageLoaderHook
-          yarn
-          cd ${{ github.workspace }}/mod/ReplacePatch
-          yarn
-          cd ${{ github.workspace }}/mod/TweeReplacer
-          yarn
-          cd ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries
-          yarn
-
       - name: Build ModLoader
         run: |
+          yarn
           yarn run ts:BeforeSC2
           yarn run webpack:BeforeSC2
           yarn run ts:ForSC2
           yarn run webpack:insertTools
 
       - name: Build ModLoaderGui
+        working-directory: ${{ github.workspace }}/mod/ModLoaderGui
         run: |
-          cd ${{ github.workspace }}/mod/ModLoaderGui
+          yarn
           yarn run build:ts
           yarn run build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
@@ -86,8 +74,9 @@ jobs:
           target: ${{ github.workspace }}/out
 
       - name: Build ImageLoaderHook
+        working-directory: ${{ github.workspace }}/mod/ImageLoaderHook
         run: |
-          cd ${{ github.workspace }}/mod/ImageLoaderHook
+          yarn
           yarn run build:ts
           yarn run build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
@@ -98,8 +87,9 @@ jobs:
           target: ${{ github.workspace }}/out
 
       - name: Build ReplacePatch
+        working-directory: ${{ github.workspace }}/mod/ReplacePatch
         run: |
-          cd ${{ github.workspace }}/mod/ReplacePatch
+          yarn
           yarn run build:ts
           yarn run build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
@@ -110,8 +100,9 @@ jobs:
           target: ${{ github.workspace }}/out
 
       - name: Build TweeReplacer
+        working-directory: ${{ github.workspace }}/mod/TweeReplacer
         run: |
-          cd ${{ github.workspace }}/mod/TweeReplacer
+          yarn
           yarn run build:ts
           yarn run build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
@@ -122,8 +113,9 @@ jobs:
           target: ${{ github.workspace }}/out
 
       - name: Build CheckDoLCompressorDictionaries
+        working-directory: ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries
         run: |
-          cd ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries
+          yarn
           yarn run build:ts
           yarn run build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
