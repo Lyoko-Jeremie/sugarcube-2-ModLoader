@@ -24,7 +24,7 @@ jobs:
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
         # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
-        os: [ windows-latest ]
+        os: [ ubuntu-latest, windows-latest ]
         #os: [ ubuntu-latest, windows-latest ]
         #build_type: [ Release ]
         #c_compiler: [ gcc, cl ]
@@ -52,9 +52,22 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Build ModLoader
+      - name: install node_modules
         run: |
           yarn
+          cd ${{ github.workspace }}/mod/ModLoaderGui
+          yarn
+          cd ${{ github.workspace }}/mod/ImageLoaderHook
+          yarn
+          cd ${{ github.workspace }}/mod/ReplacePatch
+          yarn
+          cd ${{ github.workspace }}/mod/TweeReplacer
+          yarn
+          cd ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries
+          yarn
+
+      - name: Build ModLoader
+        run: |
           yarn run ts:BeforeSC2
           yarn run webpack:BeforeSC2
           yarn run ts:ForSC2
@@ -63,7 +76,6 @@ jobs:
       - name: Build ModLoaderGui
         run: |
           cd ${{ github.workspace }}/mod/ModLoaderGui
-          yarn
           npm start build:ts
           npm start build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
@@ -76,7 +88,6 @@ jobs:
       - name: Build ImageLoaderHook
         run: |
           cd ${{ github.workspace }}/mod/ImageLoaderHook
-          yarn
           npm start build:ts
           npm start build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
@@ -89,7 +100,6 @@ jobs:
       - name: Build ReplacePatch
         run: |
           cd ${{ github.workspace }}/mod/ReplacePatch
-          yarn
           npm start build:ts
           npm start build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
@@ -102,7 +112,6 @@ jobs:
       - name: Build TweeReplacer
         run: |
           cd ${{ github.workspace }}/mod/TweeReplacer
-          yarn
           npm start build:ts
           npm start build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
@@ -115,7 +124,6 @@ jobs:
       - name: Build CheckDoLCompressorDictionaries
         run: |
           cd ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries
-          yarn
           npm start build:ts
           npm start build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
