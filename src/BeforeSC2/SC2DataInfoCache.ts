@@ -63,6 +63,10 @@ export class CacheRecord<T extends { name: string, content: string }> {
         }
     }
 
+    back2Array() {
+        this.items = Array.from(this.map.values()).concat(this.noName);
+    }
+
     map: Map<string, T> = new Map<string, T>();
     noName: T[] = [];
 
