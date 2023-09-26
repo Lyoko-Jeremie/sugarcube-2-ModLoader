@@ -364,3 +364,89 @@ jQuery(() => {
 ```
 
 需要使用异步等待的方式，让原本的引擎启动逻辑等待ModLoader的初始化完毕，并等待ModLoader完成加载所有mod、执行mod注入脚本等待等的工作，之后才能执行原本的引擎启动逻辑。
+
+
+
+---
+
+## 技术说明
+
+### 加载顺序
+
+
+ModLoader会从4个地方加载mod
+1. html文件内嵌的【local】
+2. 远程web服务器【remote】 （如果是使用web服务器打开并且能读取到服务器上的modList.json）
+3. localStorage旁加载，上传文件（限制大小，所以现在没有使用）【localStorage】
+4. IndexDB旁加载，上传文件（现在用的）【IndexDB】
+
+按照1234的顺序加载Mod，如果有同名Mod，后加载的会替代先加载的
+
+### Mod、ModLoader、引擎、游戏 三者的结构
+
+ModLoader和游戏的关系大约是 `((sc2引擎 + 游戏本体)[游戏] + (ModLoader + Mod)[Mod框架])` 这个结构
+
+其中的 `Mod框架` 又细分为 `((ModLoader + (ModLoaderGui[Mod管理器界面] + Addon[扩展插件])[预置Mod])[植入到html] + 其他Mod[上传或者远程加载] )`
+
+要使用ModLoader玩游戏，需要使用经过修改的SC2引擎，例如 [这里](https://github.com/Lyoko-Jeremie/sugarcube-2_Vrelnir)，  
+其中最关键的部分就是上方的[SC2注入点](#有关SC2注入点)，ModLoader需要这个注入点才能实现在引擎启动前修改和注入Mod的工作
+
+因为关系较为复杂，这里使用了GithubAction来实现自动编译
+
+预编译版的[修改版的SC2引擎](https://github.com/Lyoko-Jeremie/sugarcube-2_Vrelnir/actions) 其中注入了ModLoader的引导点
+预编译好的[ModLoader以及Mod打包器（packModZip.js）和注入器（insert2html.js）和几个Addon](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/actions)
+自动打包的[包含ModLoader和Addon的原版DoL游戏](https://github.com/Lyoko-Jeremie/DoLModLoaderBuild/actions)
+
+
+##### 打包后的结构
+
+```
+((定制sc2引擎 + 原版游戏) + ModLoader)
+```
+
+因为ModLoader需要在sc2引擎启动之前把事情全部做完，但是引擎的启动事件是挂在jq的页面onLoaded事件上的，这个没法正常推迟，
+所以最直接的解决办法就是把sc2引擎的启动代码单独放到一个函数里面，然后让ModLoader在jq的事件里面先启动，等启动完再调用原来的启动sc2引擎的代码
+
+使得本来是 `jq → sc2` 的过程，变成 `jq → ModLoader → SC2`
+
+
+
+##### 如果需要手动打包，需要按照下面的步骤进行
+
+1. 构建 `修改版的SC2引擎` 获得 format.js ，
+2. 覆盖到游戏项目的 devTools\tweego\storyFormats\sugarcube-2\format.js ，再编译游戏就可以生成带修改版的SC2引擎的游戏
+3. 用ModLoader的注入器(insert2html.js)将ModLoader注入到游戏的html里。
+
+以上的第三步在注入时会将 `modList.json` 中列出的Mod作为【Local】类型的Mod作为预置Mod一起注入到html中，默认情况下 `modList.json` 中会包含ModLoaderGui和一些Addon
+
+### 有关Addon
+
+由于将所有功能都实现在ModLoader中既不现实也不合理，特别是，有关特定游戏的功能更不应该实现在与SC2引擎绑定的ModLoader中，故ModLoader提供了Addon的功能。
+
+Addon是一种特殊的Mod，作为一种功能扩展的形式存在，通过将常用功能集中在一个Mod中供其他ModLoader调用，这样的Mod就可以成为Addon。
+
+例如在RimWorld中的 `身体扩展`、`战斗扩展`、`发饰扩展` 等等，这些Mod作为一种中间层，通过直接注入和修改游戏并扩展出新功能来供其他Mod调用，以此来方便其他mod的编写。
+
+例如项目中的 [ImageLoaderHook](mod、ImageLoaderHook) 就是一个Addon，
+这个Mod通过挂钩DoL游戏中的[图片加载器](Renderer.ImageLoader)，实现了把Mod中的图片加载到游戏中的功能，游戏在加载图片时就会去读取Mod中的图片。
+
+项目中的 [CheckDoLCompressorDictionaries](mod/CheckDoLCompressorDictionaries) 是另一个不同功能的Addon，
+这个Mod仅仅检查DoLCompressorDictionaries数据结构，并在发现数据结构变化后发出警示，来提示Mod开发者和使用者避免修改DoLCompressorDictionaries，以避免影响存档有效性。
+
+项目中的 [ReplacePatch](mod/ReplacePatch) 和 [TweeReplacer](mod/TweeReplacer) 则实现Passage和JS/CSS的字符串替换功能，
+大部分需要修改游戏逻辑的Mod就不需要自己编写修改的代码，可以直接使用这两个Mod来实现字符串替换功能，
+将这个功能独立出来，避免ModLoader过于臃肿的同时，也方便了对替换功能的快速更新和升级，在必要时Mod作者可以自行folk来实现更复杂的替换功能而不需要修改ModLoader的代码。
+
+
+
+---
+
+## TODO
+
+[ ] 安全模式   
+[ ] Mod排序(ModLoaderGUI)   
+
+
+
+
+
