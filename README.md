@@ -386,16 +386,28 @@ ModLoader会从4个地方加载mod
 
 ModLoader和游戏的关系大约是 `((sc2引擎 + 游戏本体)[游戏] + (ModLoader + Mod)[Mod框架])` 这个结构
 
-其中的 `Mod框架` 又细分为 `((ModLoader + (ModLoaderGui[Mod管理器界面] + Addon[扩展插件])[预置Mod])[植入到html] + 其他Mod[上传或者远程加载] )`
+其中的 `Mod框架` 又细分为
+
+```
+(  
+    (
+        ModLoader + 
+        (
+            ModLoaderGui[Mod管理器界面] +
+            Addon[扩展插件]
+        )[预置Mod]
+    )[植入到html] +  其他Mod[上传或者远程加载] 
+ )
+```
 
 要使用ModLoader玩游戏，需要使用经过修改的SC2引擎，例如 [这里](https://github.com/Lyoko-Jeremie/sugarcube-2_Vrelnir)，  
 其中最关键的部分就是上方的[SC2注入点](#有关SC2注入点)，ModLoader需要这个注入点才能实现在引擎启动前修改和注入Mod的工作
 
 因为关系较为复杂，这里使用了GithubAction来实现自动编译
 
-预编译版的[修改版的SC2引擎](https://github.com/Lyoko-Jeremie/sugarcube-2_Vrelnir/actions) 其中注入了ModLoader的引导点
-预编译好的[ModLoader以及Mod打包器（packModZip.js）和注入器（insert2html.js）和几个Addon](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/actions)
-自动打包的[包含ModLoader和Addon的原版DoL游戏](https://github.com/Lyoko-Jeremie/DoLModLoaderBuild/actions)
+预编译版的[修改版的SC2引擎](https://github.com/Lyoko-Jeremie/sugarcube-2_Vrelnir/actions) 其中注入了ModLoader的引导点   
+预编译好的[ModLoader以及Mod打包器（packModZip.js）和注入器（insert2html.js）和几个Addon](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/actions)   
+自动打包的[包含ModLoader和Addon的原版DoL游戏](https://github.com/Lyoko-Jeremie/DoLModLoaderBuild/actions)   
 
 
 ##### 打包后的结构
