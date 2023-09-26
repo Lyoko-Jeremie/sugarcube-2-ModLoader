@@ -25,14 +25,17 @@ export async function loadFileAsBase64(fPath: string) {
     console.log('jsPath', jsPath);
     if (!htmlPath) {
         console.error('no htmlPath');
+        process.exit(1);
         return;
     }
     if (!jsonPath) {
         console.error('no jsonPath');
+        process.exit(1);
         return;
     }
     if (!jsPath) {
         console.error('no jsPath');
+        process.exit(1);
         return;
     }
     const htmlF = await promisify(fs.readFile)(htmlPath, {encoding: 'utf-8'});
@@ -43,6 +46,7 @@ export async function loadFileAsBase64(fPath: string) {
     // data: path[]
     if (!(data && isArray(data) && data.every(isString))) {
         console.error('(!(data && isArray(data) && data.every(isString))), json format invalid.');
+        process.exit(1);
         return;
     }
     const firstScriptIndex = htmlF.indexOf('<script');
@@ -66,6 +70,7 @@ export async function loadFileAsBase64(fPath: string) {
 
 })().catch((e) => {
     console.error(e);
+    process.exit(1);
 });
 
 

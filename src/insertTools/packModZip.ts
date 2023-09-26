@@ -151,6 +151,7 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
     console.log('bootJsonFilePath', bootJsonFilePath);
     if (!bootJsonFilePath) {
         console.error('no bootJsonFilePath');
+        process.exit(1);
         return;
     }
     const bootJsonF = await promisify(fs.readFile)(bootJsonFilePath, {encoding: 'utf-8'});
@@ -159,6 +160,7 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
 
     if (!validateBootJson(bootJson)) {
         console.error('(!validateBootJson(bootJsonF)), json format invalid.');
+        process.exit(1);
         return;
     }
 
@@ -221,4 +223,7 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
 
     await promisify(fs.writeFile)(bootJson.name + '.mod.zip', zipBase64, {encoding: 'utf-8'});
 
-})();
+})().catch((e) => {
+    console.error(e);
+    process.exit(1);
+});
