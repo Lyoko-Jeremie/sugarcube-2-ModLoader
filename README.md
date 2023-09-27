@@ -3,8 +3,10 @@
 
 ---
 
-请从Release下载预编译版：[Release](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/releases)
-
+请从Release下载预编译版：[Release](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/releases)   
+或下载自动构建版：[DoLModLoaderBuild](https://github.com/Lyoko-Jeremie/DoLModLoaderBuild/actions)   
+Please download the precompiled version from the Release：[Release](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/releases)   
+Or download the automatic build version：[DoLModLoaderBuild](https://github.com/Lyoko-Jeremie/DoLModLoaderBuild/actions)
 
 ---
 
@@ -22,28 +24,45 @@
 
 # 简介
 
-此项目是为 SugarCube-2 引擎编写的Mod加载器，初衷是为 [Degrees-of-Lewdity] 设计一个支持Mod加载和管理的Mod框架，支持加载本地Mod、远程Mod、旁加载Mod（从IndexDB中加载）。
+此项目是为 SugarCube-2 引擎编写的Mod加载器，初衷是为 [Degrees-of-Lewdity] 设计一个支持Mod加载和管理的Mod框架，支持加载本地Mod、远程Mod、旁加载Mod（从IndexDB中加载）。  
+This project is a ModLoader written for the SugarCube-2 engine.
+The original intention was to design a mod framework that supports mod loading and management for [Degrees-of-Lewdity],
+which includes support for loading local mods, remote mods, and side-loaded mods (load from IndexDB).
 
-本项目的目的是为了方便制作Mod以及加载Mod，同时也为了方便制作Mod的开发者，提供了一些API来方便读取和修改游戏数据。
+本项目的目的是为了方便制作Mod以及加载Mod，同时也为了方便制作Mod的开发者，提供了一些API来方便读取和修改游戏数据。   
+The purpose of this project is to facilitate the creation and loading of mods, as well as to provide convenience for mod developers.
+It includes some APIs to easily access and modify game data.
 
-本项目由于需要在SC2引擎启动前注入Mod，故对SC2引擎做了部分修改，添加了ModLoader的引导点，以便在引擎启动前完成Mod的各项注入工作。
+本项目由于需要在SC2引擎启动前注入Mod，故对SC2引擎做了部分修改，添加了ModLoader的引导点，以便在引擎启动前完成Mod的各项注入工作。   
+This project has made some modifications to the SC2 engine because it needs to inject mods before the SC2 engine starts.
+It has added entry points for the ModLoader to ensure that all mod injection tasks are completed before the engine starts.
 
-修改过的 SC2 在此处：[sugarcube-2](https://github.com/Lyoko-Jeremie/sugarcube-2_Vrelnir) ，使用此ModLoader的游戏需要使用此版本的SC2引擎才能引导本ModLoader。
+修改过的 SC2 在此处：[sugarcube-2](https://github.com/Lyoko-Jeremie/sugarcube-2_Vrelnir) ，使用此ModLoader的游戏需要使用此版本的SC2引擎才能引导本ModLoader。   
+The modified SC2 engine can be found here: [sugarcube-2](https://github.com/Lyoko-Jeremie/sugarcube-2_Vrelnir).
+To use this ModLoader for games, you need to use this version of the SC2 engine in order to properly load the ModLoader.
 
-具体有关如何打包一个带有ModLoader的游戏本体的方法，详见 [ModLoader开发及修改方法](#ModLoader开发及修改方法) 。
+具体有关如何打包一个带有ModLoader的游戏本体的方法，详见 [ModLoader开发及修改方法](#ModLoader开发及修改方法) 。   
+For specific instructions on how to package a game with the ModLoader,
+please refer to the details provided in the section titled "ModLoader Development and Modification Methods"
+under [ModLoader Development and Modification Methods](#ModLoader开发及修改方法).
 
 ---
 
-# 如何制作 Mod.zip 文件：
+# 如何制作 Mod.zip 文件：  
+How to create a Mod.zip file:
 
+给自己的mod命名  
+Name your own mod.
 
-给自己的mod命名
+以mod名字组织自己的mod  
+Organize your mod with the mod's name.
 
-以mod名字组织自己的mod
+编写mod的引导描述文件 boot.json 文件  
+Write the boot description file boot.json for your mod.
 
-编写mod的引导描述文件 boot.json 文件
+格式如下（样例 src/insertTools/MyMod/boot.json）：  
+The format is as follows (sample src/insertTools/MyMod/boot.json):
 
-格式如下（样例 src/insertTools/MyMod/boot.json）：
 
 ```json5
 {
@@ -103,7 +122,8 @@
 
 ```
 
-最小 boot.json 文件样例：
+最小 boot.json 文件样例：  
+Minimum boot.json file example:
 
 ```json
 {
@@ -132,6 +152,14 @@
 5. 加载时首先计算mod之间的覆盖，（互相覆盖同名passage段落，将同名js/css连接在一起），然后将结果覆盖到原游戏中（覆盖原版游戏的同名passage/js/css）
 6. 当前版本的mod加载器的工作方式是直接将css/js/twee文件按照原版sc2的格式插入到html文件中。
 
+..
+
+1. Paths in the boot.json file are all relative paths, relative to the root directory of the zip file.
+2. The paths to image files are relative to the root directory of the zip file.
+3. File names within the same mod must not be duplicated, and it's advisable to avoid naming conflicts with the original game or other mods. Parts that overlap with the original game will overwrite game source files.
+4. Specifically, mods are loaded in the order they appear in the mod list. Mods further down the list will overwrite passage files with the same name from mods higher up the list. Files with the same name in CSS and JS between mods will have their contents concatenated, so they won't overwrite each other.
+5. During loading, mod overlaps are calculated first (overlapping passage paragraphs from different mods, concatenating same-named js/css), and the result is overlaid onto the original game (overwriting same-named passage/js/css of the original game).
+6. The current version of the mod loader works by directly inserting CSS/JS/Twee files into the HTML file in the original SC2 format.
 
 ---
 
@@ -144,9 +172,19 @@
 
 上面的步骤结束之后SC2引擎才会开始启动，读取SC2 data，然后开始游戏，整个步骤都是在加载屏幕（那个转圈圈）完成的。
 
+For a mod that wants to modify passages, there are four places you can make modifications:
+1. `scriptFileList_inject_early`: This is inserted "immediately" after the current mod is loaded. It is executed by the browser following the standard of script tags. You can call the ModLoader's API here and read unmodified SC2 data, including the original passages.
+2. `scriptFileList_earlyload`: This is executed after the current mod is loaded and `inject_early` scripts are inserted. ModLoader executes this and waits for asynchronous instructions to return. You can call the ModLoader's API here, perform asynchronous operations, such as remote loading, and also read unmodified SC2 data, including the original passages.
+3. `tweeFileList`: This is the main part of the mod and is applied to the original SC2 data by ModLoader after it reads all mods. It goes through a process of combining all appended data from mods and then overlaying the combined result onto the original game's SC2 data. This is where you apply modifications to the original passages.
+4. `scriptFileList_preload`: This is executed by ModLoader after all mod files have been applied to the SC2 data. It waits for asynchronous operations to return. Here, you can perform asynchronous tasks similar to `earlyload` and read the SC2 data after mod application.
+
+After these steps are completed, the SC2 engine starts, reads the SC2 data, and begins the game. The entire process takes place during the loading screen (the spinning wheel).
+
 ---
 
-另，由于SC2引擎本身会触发以下的一些事件，故可以使用jQuery监听这些事件来监测游戏的变化
+另，由于SC2引擎本身会触发以下的一些事件，故可以使用jQuery监听这些事件来监测游戏的变化  
+Additionally, since the SC2 engine itself triggers certain events, you can use jQuery to listen to these events to monitor changes in the game.
+
 ```
 // 游戏完全启动完毕
 :storyready
@@ -186,35 +224,54 @@ $(document).on(":storyready", () => {
 调用 `window.modAddonPluginManager.registerAddonPlugin()` 将自己提供的插件注册到 `AddonPluginManager` 。
 
 
+【2023-09-21】 Delete `imgFileReplaceList`. Now, use the new ImageHookLoader to intercept image requests directly for image replacement. Therefore, images with the same name as the original image files will be overwritten.
+
+【2023-09-23】 Add `addonPlugin`. Add `dependenceInfo`.
+
+You can now use `dependenceInfo` to declare dependencies on mods. Declarations that are not met will display warnings in the loading log.  
+You can use `addonPlugin` to declare dependencies on plugins. All mods that need to depend on plugins will be registered with the plugin after `EarlyLoad` but before `PatchModToGame`.
+Therefore, all mods that provide plugins (or "lib mods") should call `window.modAddonPluginManager.registerAddonPlugin()` to register their provided plugins with the `AddonPluginManager` no later than in the `EarlyLoad` phase (or optionally in the `InjectEarlyLoad` phase).
+
 
 ---
 
-## 如何打包Mod
+## 如何打包Mod  
+how to pack mod
 
-### 手动打包方法
+### 手动打包方法  
+Manual Packaging Method
 
-这个方法只需要有一个可以压缩Zip压缩包的压缩工具，和细心的心。
 
-1. 使用你喜爱的编辑器，编辑好boot.json文件
+这个方法只需要有一个可以压缩Zip压缩包的压缩工具，和细心的心。  
+This method only requires a compression tool capable of creating Zip archives and attention to detail.
 
-2. 在boot.json文件根目录使用压缩工具（例如如下例子中使用的 [7-Zip](7-zip.org/)，其他软件方法类似），**仔细选择 boot.json 以及在其中引用的文件打包成zip文件**
+1. 使用你喜爱的编辑器，编辑好boot.json文件  
+Use your preferred text editor to edit the boot.json file.
+
+2. 在boot.json文件根目录使用压缩工具（例如如下例子中使用的 [7-Zip](7-zip.org/)，其他软件方法类似），**仔细选择 boot.json 以及在其中引用的文件打包成zip文件**  
+Using a compression tool in the root directory of the boot.json file (for example, as demonstrated below using [7-Zip](7-zip.org/)), **carefully select boot.json and the referenced files within it to create a Zip archive**.
 
 ![](https://raw.githubusercontent.com/wiki/Lyoko-Jeremie/sugarcube-2-ModLoader/fast/step1.png)
 
-3. 设置压缩参数（**格式Zip，算法Deflate，压缩等级越大越好，没有密码**）
+3. 设置压缩参数（**格式Zip，算法Deflate，压缩等级越大越好，没有密码**）   
+Configure the compression parameters as follows: **Zip format, Deflate algorithm, maximum compression level, and no password.**
 
 ![](https://raw.githubusercontent.com/wiki/Lyoko-Jeremie/sugarcube-2-ModLoader/fast/step2.png)
 
-4. 点击确定，等待压缩完成
+4. 点击确定，等待压缩完成  
+Click "OK" and wait for the compression to complete.
 
-5. 压缩后请打开压缩文件再次检查：（**boot.json 文件在根目录**，boot.json中编写的文件路径和压缩完毕之后的结构**一模一样**，任何一个文件的压缩算法只能是**Store或Deflate**）
+5. 压缩后请打开压缩文件再次检查：（**boot.json 文件在根目录**，boot.json中编写的文件路径和压缩完毕之后的结构**一模一样**，任何一个文件的压缩算法只能是**Store或Deflate**）  
+After compression, please open the compressed file and double-check that: ( **The boot.json file is in the root directory**. The file paths written in boot.json **match** the structure after compression exactly. The compression algorithm for any file should be either **Store or Deflate**. )
 
 ![](https://raw.githubusercontent.com/wiki/Lyoko-Jeremie/sugarcube-2-ModLoader/fast/step3.png)
 
 
-6. 重命名压缩包为 mod名字.mod.zip  （这一步**可选**）
+6. 重命名压缩包为 mod名字.mod.zip  （这一步**可选**）  
+Rename the compressed package to `modname.mod.zip`. (This step is **optional**.)
 
-7. 使用Mod管理器加载Mod
+7. 使用Mod管理器加载Mod  
+Load the Mod using the Mod manager.
 
 ### 自动打包方法
 
@@ -455,9 +512,9 @@ Addon是一种特殊的Mod，作为一种功能扩展的形式存在，通过将
 
 ## TODO
 
-[ ] 安全模式   
-[ ] Mod排序(ModLoaderGUI)   
-[ ] 修改其他Mod(Mod i18n pack(eg. english a cn mod))   
+[ ] 安全模式 Safe Mode   
+[ ] Mod排序(ModLoaderGUI) Mod sorting    
+[ ] 修改其他Mod(Mod i18n pack(eg. english a cn mod))  Modify other mods   
 
 
 
