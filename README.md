@@ -457,7 +457,7 @@ Addon是一种特殊的Mod，作为一种功能扩展的形式存在，通过将
 
 [ ] 安全模式   
 [ ] Mod排序(ModLoaderGUI)   
-
+[ ] 修改其他Mod(Mod i18n pack(eg. english a cn mod))   
 
 
 
