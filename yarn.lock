@@ -723,12 +723,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jquery@npm:^3.5.19":
-  version: 3.5.19
-  resolution: "@types/jquery@npm:3.5.19"
+"@types/jquery@npm:^3.5.20":
+  version: 3.5.20
+  resolution: "@types/jquery@npm:3.5.20"
   dependencies:
     "@types/sizzle": "*"
-  checksum: 0298e53a353089e2abae4be2f660b5f2bfb4797464623701c5c2f2c911317b554f1887c2c3d587d0f724d70a3fb5e31907bf7fa5d96df33af07e2842660ef52a
+  checksum: 9bd69faea3d60f52d3029a87b890003042a9dcf4f538c23ac2c11b3bd0e0ccd86b281d5ba3028d1b02df67c69266b8dc0ef0a35696ae174515ecf34523a0287b
   languageName: node
   linkType: hard
 
@@ -1107,7 +1107,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "SC2-mod-loader-framework@workspace:."
   dependencies:
-    "@types/jquery": ^3.5.19
+    "@types/jquery": ^3.5.20
     "@types/lodash": ^4.14.198
     "@types/node": ^20.6.0
     "@types/semver": ^7.5.2
@@ -1116,6 +1116,7 @@ __metadata:
     fork-ts-checker-webpack-plugin: ^8.0.0
     html-webpack-plugin: ^5.5.3
     idb-keyval: ^6.2.1
+    jquery: ^3.7.1
     json5: ^2.2.3
     jszip: ^3.10.1
     lodash: ^4.17.21
@@ -3780,6 +3781,13 @@ __metadata:
     merge-stream: ^2.0.0
     supports-color: ^8.0.0
   checksum: 98cd68b696781caed61c983a3ee30bf880b5bd021c01d98f47b143d4362b85d0737f8523761e2713d45e18b4f9a2b98af1eaee77afade4111bb65c77d6f7c980
+  languageName: node
+  linkType: hard
+
+"jquery@npm:^3.7.1":
+  version: 3.7.1
+  resolution: "jquery@npm:3.7.1"
+  checksum: 4370b8139d6ae82867eb6f7f21d1edccf1d1bdf41c0840920ea80d366c2cd5dbe1ceebb110ee9772aa839b04400faa1572c5c560b507c688ed7b61cea26c0e27
   languageName: node
   linkType: hard
 
