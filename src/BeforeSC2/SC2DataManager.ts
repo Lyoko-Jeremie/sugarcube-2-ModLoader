@@ -195,7 +195,15 @@ export class SC2DataManager {
 
     private conflictResult?: { mod: SC2DataInfo, result: SimulateMergeResult }[];
 
+    startInitOk = false;
+
     async startInit() {
+        if (this.startInitOk) {
+            console.log('ModLoader ====== SC2DataManager startInit() already start');
+            return;
+        }
+        this.startInitOk = true;
+
         console.log('ModLoader ====== SC2DataManager startInit() start');
 
         // keep originSC2DataInfoCache valid, keep it have the unmodified vanilla data

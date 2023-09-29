@@ -9,7 +9,14 @@ export class JsPreloader {
     ) {
     }
 
+    startLoadCalled = false;
+
     async startLoad(): Promise<any> {
+        if (this.startLoadCalled) {
+            console.warn('ModLoader ====== JsPreloader startLoad() already called');
+            return;
+        }
+        this.startLoadCalled = true;
         console.log('ModLoader ====== JsPreloader startLoad() start');
         // keep originSC2DataInfoCache valid, keep it have the unmodified vanilla data
         this.pSC2DataManager.getSC2DataInfoCache();

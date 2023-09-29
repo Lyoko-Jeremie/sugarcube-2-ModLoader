@@ -16,6 +16,10 @@ export class ModUtils {
     ) {
     }
 
+    getThisWindow() {
+        return this.thisWin;
+    }
+
     /**
      * 获取所有mod的名字
      * 以mod加载顺序为序
