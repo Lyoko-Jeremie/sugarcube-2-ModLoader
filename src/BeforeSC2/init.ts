@@ -1,5 +1,5 @@
 import {SC2DataManager} from "./SC2DataManager";
-import {Inject4Jquery} from "./JqueryInjector";
+// import {Inject4Jquery} from "./JqueryInjector";
 
 
 // @ts-ignore
@@ -15,5 +15,5 @@ window.modAddonPluginManager = window.modSC2DataManager.getAddonPluginManager();
 // @ts-ignore
 window.modSC2JsEvalContext = window.modSC2DataManager.getSC2JsEvalContext();
 
-Inject4Jquery(window);
+// Inject4Jquery(window);
 

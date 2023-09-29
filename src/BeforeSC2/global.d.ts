@@ -1,5 +1,8 @@
 import type JQueryStatic from 'jquery/JQueryStatic';
 
+// declare var $: JQueryStatic;
+// declare var jQuery: JQueryStatic;
+
 declare global {
     interface Window {
         jQuery: JQueryStatic;
