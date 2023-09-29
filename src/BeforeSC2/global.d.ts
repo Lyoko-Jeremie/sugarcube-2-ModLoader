@@ -3,6 +3,7 @@ import type JQueryStatic from 'jquery/JQueryStatic';
 declare global {
     interface Window {
         jQuery: JQueryStatic;
+        $: JQueryStatic;
 
         modSC2DataManager: SC2DataManager;
         modUtils: ModUtils;

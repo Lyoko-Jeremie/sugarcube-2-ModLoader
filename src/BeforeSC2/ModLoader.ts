@@ -85,6 +85,7 @@ export class ModLoader {
     constructor(
         public gSC2DataManager: SC2DataManager,
         public modLoadControllerCallback: ModLoadControllerCallback,
+        public thisWin: Window,
     ) {
     }
 
@@ -105,7 +106,7 @@ export class ModLoader {
 
     modOrder: string[] = [];
 
-    checkModConfict2Root(modName: string) {
+    checkModConflict2Root(modName: string) {
         const mod = this.getMod(modName);
         if (!mod) {
             console.error('ModLoader checkModConfictOne() (!mod)');
@@ -114,7 +115,7 @@ export class ModLoader {
         return simulateMergeSC2DataInfoCache(this.gSC2DataManager.getSC2DataInfoAfterPatch(), mod.cache)[0];
     }
 
-    checkModConfictList() {
+    checkModConflictList() {
         const ml = this.modOrder.map(T => this.modCache.get(T))
             .filter((T): T is ModInfo => !!T)
             .map(T => T.cache);
@@ -229,7 +230,7 @@ export class ModLoader {
                     break;
                 case ModDataLoadType.Local:
                     if (!this.modLocalLoader) {
-                        this.modLocalLoader = new LocalLoader(this.modLoadControllerCallback);
+                        this.modLocalLoader = new LocalLoader(this.modLoadControllerCallback, this.thisWin);
                     }
                     try {
                         ok = await this.modLocalLoader.load() || ok;
@@ -329,7 +330,7 @@ export class ModLoader {
             for (const [name, content] of mod.scriptFileList_inject_early) {
                 console.log('ModLoader ====== initModInjectEarlyLoadScript() inject start: ', [modName], [name]);
                 await this.gSC2DataManager.getModLoadController().InjectEarlyLoad_start(modName, name);
-                const script = document.createElement('script');
+                const script = this.thisWin.document.createElement('script');
                 script.innerHTML = content;
                 script.setAttribute('scriptName', (name));
                 script.setAttribute('modName', (modName));
@@ -340,7 +341,7 @@ export class ModLoader {
                 } else {
                     // or insert to head
                     console.warn('ModLoader ====== initModInjectEarlyLoadScript() gSC2DataManager is undefined, insert to head');
-                    document.head.appendChild(script);
+                    this.thisWin.document.head.appendChild(script);
                 }
                 console.log('ModLoader ====== initModInjectEarlyLoadScript() inject end: ', [modName], [name]);
                 await this.gSC2DataManager.getModLoadController().InjectEarlyLoad_end(modName, name);
@@ -360,7 +361,14 @@ export class ModLoader {
                 await this.gSC2DataManager.getModLoadController().EarlyLoad_start(modName, name);
                 try {
                     // const R = await Function(`return ${content}`)();
-                    const R = await JsPreloader.JsRunner(content, name, modName, 'EarlyLoadScript', this.gSC2DataManager);
+                    const R = await JsPreloader.JsRunner(
+                        content,
+                        name,
+                        modName,
+                        'EarlyLoadScript',
+                        this.gSC2DataManager,
+                        this.thisWin,
+                    );
                     console.log('ModLoader ====== initModEarlyLoadScript() excute result: ', [modName], [name], R);
                 } catch (e) {
                     console.error('ModLoader ====== initModEarlyLoadScript() excute error: ', [modName], [name], e);

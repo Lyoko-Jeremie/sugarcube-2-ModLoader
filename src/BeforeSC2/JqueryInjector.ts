@@ -3,6 +3,7 @@ import jq from 'jquery';
 
 export function Inject4Jquery(thisWin: Window) {
     thisWin.jQuery = jq;
+    thisWin.$ = jq;
 
     thisWin.jQuery(async () => {
         try {

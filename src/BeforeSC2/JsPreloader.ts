@@ -5,6 +5,7 @@ export class JsPreloader {
     constructor(
         public pSC2DataManager: SC2DataManager,
         public modUtils: ModUtils,
+        public thisWin: Window,
     ) {
     }
 
@@ -24,7 +25,14 @@ export class JsPreloader {
                 const log = this.pSC2DataManager.getModLoadController().getLog();
                 try {
                     // const R = await Function(`return ${T[1]}`)();
-                    const R = await JsPreloader.JsRunner(T[1], T[0], modName, 'JsPreloader', this.pSC2DataManager);
+                    const R = await JsPreloader.JsRunner(
+                        T[1],
+                        T[0],
+                        modName,
+                        'JsPreloader',
+                        this.pSC2DataManager,
+                        this.thisWin,
+                    );
                     console.log('ModLoader ====== JsPreloader startLoad() excute result: ', [T[0]], R);
                 } catch (e: any | Error) {
                     console.error('ModLoader ====== JsPreloader startLoad() excute error: ', [T[0]], e);
@@ -43,8 +51,8 @@ export class JsPreloader {
         await this.pSC2DataManager.getModLoadController().ModLoaderLoadEnd();
     }
 
-    static async JsRunner(content: string, name: string, modName: string, stage: string, pSC2DataManager: SC2DataManager) {
-        const script = document.createElement('script');
+    static async JsRunner(content: string, name: string, modName: string, stage: string, pSC2DataManager: SC2DataManager, thisWin: Window) {
+        const script = thisWin.document.createElement('script');
 
         script.innerHTML = `(async () => {return ${content}\n})()
         .then((R)=>{
@@ -64,18 +72,18 @@ export class JsPreloader {
         const p = new Promise<any>((resolve, reject) => {
             const co = (EV: any) => {
                 // console.log('ModLoader ====== JsRunner ${name} ${modName} ${stage} ok', EV);
-                document.removeEventListener(`JsRunner:ok:${stage}-${modName}-${name}`, co);
-                document.removeEventListener(`JsRunner:error:${stage}-${modName}-${name}`, ce);
+                thisWin.document.removeEventListener(`JsRunner:ok:${stage}-${modName}-${name}`, co);
+                thisWin.document.removeEventListener(`JsRunner:error:${stage}-${modName}-${name}`, ce);
                 resolve(EV.detail.R);
             };
             const ce = (EV: any) => {
                 // console.log('ModLoader ====== JsRunner ${name} ${modName} ${stage} error', EV);
-                document.removeEventListener(`JsRunner:ok:${stage}-${modName}-${name}`, co);
-                document.removeEventListener(`JsRunner:error:${stage}-${modName}-${name}`, ce);
+                thisWin.document.removeEventListener(`JsRunner:ok:${stage}-${modName}-${name}`, co);
+                thisWin.document.removeEventListener(`JsRunner:error:${stage}-${modName}-${name}`, ce);
                 reject(EV.detail.E);
             };
-            document.addEventListener(`JsRunner:ok:${stage}-${modName}-${name}`, co);
-            document.addEventListener(`JsRunner:error:${stage}-${modName}-${name}`, ce);
+            thisWin.document.addEventListener(`JsRunner:ok:${stage}-${modName}-${name}`, co);
+            thisWin.document.addEventListener(`JsRunner:error:${stage}-${modName}-${name}`, ce);
         });
 
         console.log(`ModLoader ====== JsRunner ${name} ${modName} ${stage} start`);
@@ -85,7 +93,7 @@ export class JsPreloader {
         } else {
             // or insert to head
             console.warn('ModLoader ====== JsRunner() pSC2DataManager is undefined, insert to head');
-            document.head.appendChild(script);
+            thisWin.document.head.appendChild(script);
         }
 
         return p;

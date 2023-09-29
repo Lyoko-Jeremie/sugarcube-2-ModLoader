@@ -659,12 +659,19 @@ export class Base64ZipStringLoader extends LoaderBase {
 export class LocalLoader extends LoaderBase {
     modDataValueZipListPath = 'modDataValueZipList';
 
+    constructor(
+        public modLoadControllerCallback: ModLoadControllerCallback,
+        public thisWin: Window,
+    ) {
+        super(modLoadControllerCallback);
+    }
+
 
     async load(): Promise<boolean> {
-        if ((window as any)[this.modDataValueZipListPath]) {
-            console.log('ModLoader ====== LocalLoader load() DataValueZip', [(window as any)[this.modDataValueZipListPath]]);
+        if ((this.thisWin as any)[this.modDataValueZipListPath]) {
+            console.log('ModLoader ====== LocalLoader load() DataValueZip', [(this.thisWin as any)[this.modDataValueZipListPath]]);
 
-            const modDataValueZipList: undefined | string[] = (window as any)[this.modDataValueZipListPath];
+            const modDataValueZipList: undefined | string[] = (this.thisWin as any)[this.modDataValueZipListPath];
             if (modDataValueZipList && isArray(modDataValueZipList) && modDataValueZipList.every(isString)) {
 
                 // modDataValueZipList: base64[]

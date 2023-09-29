@@ -12,6 +12,7 @@ export class ModUtils {
 
     constructor(
         public pSC2DataManager: SC2DataManager,
+        public thisWin: Window,
     ) {
     }
 
@@ -201,7 +202,7 @@ export class ModUtils {
         // remove old
         passageDataNodeList.find(T => T.getAttribute('name') === name)?.remove();
 
-        const node = document.createElement('tw-passagedata');
+        const node = this.thisWin.document.createElement('tw-passagedata');
         if (pid && ((isInteger(pid) && pid > 0) || isString(pid))) {
             node.setAttribute('pid', '' + pid);
         }

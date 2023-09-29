@@ -16,13 +16,13 @@ export interface Sc2EventTracerCallback {
 }
 
 export class Sc2EventTracer {
-    constructor() {
+    constructor(public thisWin: Window) {
     }
 
     callback: Sc2EventTracerCallback[] = [];
 
     init() {
-        window.jQuery(document).on(":storyready", async (event: Event | any) => {
+        this.thisWin.jQuery(this.thisWin.document).on(":storyready", async (event: Event | any) => {
             for (const x of this.callback) {
                 if (x.whenSC2StoryReady) {
                     try {
@@ -33,7 +33,7 @@ export class Sc2EventTracer {
                 }
             }
         });
-        window.jQuery(document).on(":passageinit", async (event: Event | any) => {
+        this.thisWin.jQuery(this.thisWin.document).on(":passageinit", async (event: Event | any) => {
             const passage: Passage = event.passage;
             for (const x of this.callback) {
                 if (x.whenSC2PassageInit) {
@@ -45,7 +45,7 @@ export class Sc2EventTracer {
                 }
             }
         });
-        window.jQuery(document).on(":passagestart", async (event: Event | any) => {
+        this.thisWin.jQuery(this.thisWin.document).on(":passagestart", async (event: Event | any) => {
             const passage: Passage = event.passage;
             const content: HTMLDivElement = event.content;
             for (const x of this.callback) {
@@ -58,7 +58,7 @@ export class Sc2EventTracer {
                 }
             }
         });
-        window.jQuery(document).on(":passagerender", async (event: Event | any) => {
+        this.thisWin.jQuery(this.thisWin.document).on(":passagerender", async (event: Event | any) => {
             const passage: Passage = event.passage;
             const content: HTMLDivElement = event.content;
             for (const x of this.callback) {
@@ -71,7 +71,7 @@ export class Sc2EventTracer {
                 }
             }
         });
-        window.jQuery(document).on(":passagedisplay", async (event: Event | any) => {
+        this.thisWin.jQuery(this.thisWin.document).on(":passagedisplay", async (event: Event | any) => {
             const passage: Passage = event.passage;
             const content: HTMLDivElement = event.content;
             for (const x of this.callback) {
@@ -84,7 +84,7 @@ export class Sc2EventTracer {
                 }
             }
         });
-        window.jQuery(document).on(":passageend", async (event: Event | any) => {
+        this.thisWin.jQuery(this.thisWin.document).on(":passageend", async (event: Event | any) => {
             const passage: Passage = event.passage;
             const content: HTMLDivElement = event.content;
             for (const x of this.callback) {

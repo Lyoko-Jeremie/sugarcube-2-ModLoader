@@ -3,7 +3,7 @@ import {Inject4Jquery} from "./JqueryInjector";
 
 
 // @ts-ignore
-window.modSC2DataManager = new SC2DataManager();
+window.modSC2DataManager = new SC2DataManager(window);
 // @ts-ignore
 window.modUtils = window.modSC2DataManager.getModUtils();
 // @ts-ignore

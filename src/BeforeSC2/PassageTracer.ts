@@ -1,11 +1,11 @@
 type whenPassageCome = (passageName: string) => void;
 
 export class PassageTracer {
-    constructor() {
+    constructor(public thisWin: Window) {
     }
 
     init() {
-        window.jQuery(document).on(":passageend", () => {
+        this.thisWin.jQuery(this.thisWin.document).on(":passageend", () => {
             this.newPassageCome();
         });
     }
@@ -17,7 +17,7 @@ export class PassageTracer {
     }
 
     newPassageCome() {
-        const pe = Array.from(document.getElementsByClassName('passage'));
+        const pe = Array.from(this.thisWin.document.getElementsByClassName('passage'));
         if (pe.length !== 1) {
             console.log('newPassageCome() (pe.length !== 0)', pe);
             return;

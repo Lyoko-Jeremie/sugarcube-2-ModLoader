@@ -19,8 +19,13 @@ import {JsPreloader} from "./JsPreloader";
 
 export class SC2DataManager {
 
+    constructor(
+        public thisWin: Window,
+    ) {
+    }
+
     get rootNode() {
-        return document.getElementsByTagName('tw-storydata')[0];
+        return this.thisWin.document.getElementsByTagName('tw-storydata')[0];
     }
 
     get styleNode() {
@@ -36,7 +41,7 @@ export class SC2DataManager {
     }
 
     checkSC2Data() {
-        const rNodes = document.getElementsByTagName('tw-storydata');
+        const rNodes = this.thisWin.document.getElementsByTagName('tw-storydata');
         if (!rNodes) {
             console.error('checkSC2Data() (!rNodes)');
             return false;
@@ -138,7 +143,7 @@ export class SC2DataManager {
     getModLoader() {
         if (!this.modLoader) {
             console.log('this.modLoadControllerCallback', this.getModLoadController());
-            this.modLoader = new ModLoader(this, this.getModLoadController());
+            this.modLoader = new ModLoader(this, this.getModLoadController(), this.thisWin);
         }
         return this.modLoader;
     }
@@ -152,25 +157,25 @@ export class SC2DataManager {
         return this.modLoadController;
     }
 
-    private passageTracer = new PassageTracer();
+    private passageTracer = new PassageTracer(this.thisWin);
 
     getPassageTracer() {
         return this.passageTracer;
     }
 
-    private sc2EventTracer = new Sc2EventTracer();
+    private sc2EventTracer = new Sc2EventTracer(this.thisWin);
 
     getSc2EventTracer() {
         return this.sc2EventTracer;
     }
 
-    private modUtils = new ModUtils(this);
+    private modUtils = new ModUtils(this, this.thisWin);
 
     getModUtils() {
         return this.modUtils;
     }
 
-    private jsPreloader = new JsPreloader(this, this.modUtils);
+    private jsPreloader = new JsPreloader(this, this.modUtils, this.thisWin);
 
     getJsPreloader() {
         return this.jsPreloader;
@@ -205,7 +210,7 @@ export class SC2DataManager {
 
         new DependenceChecker(this, this.getModUtils()).check();
 
-        this.conflictResult = this.getModLoader().checkModConfictList();
+        this.conflictResult = this.getModLoader().checkModConflictList();
         console.log('ModLoader ====== mod conflictResult', this.conflictResult.map(T => {
             return {
                 name: T.mod.dataSource,
@@ -375,7 +380,7 @@ export class SC2DataManager {
     }
 
     makePassageNode(T: PassageDataItem) {
-        const s = document.createElement('tw-passagedata');
+        const s = this.thisWin.document.createElement('tw-passagedata');
         if (T.id && T.id > 0) {
             s.setAttribute('pid', '' + T.id);
         }
@@ -399,7 +404,7 @@ export class SC2DataManager {
             return acc + `/* twine-user-stylesheet #${T.id}: "${T.name}" */${T.content}\n`;
         }, '');
         // console.log('makeStyleNode', newStyleNodeContent);
-        const newStyleNode = document.createElement('style');
+        const newStyleNode = this.thisWin.document.createElement('style');
         newStyleNode.setAttribute('type', 'text/twine-css');
         newStyleNode.setAttribute('role', 'stylesheet');
         newStyleNode.setAttribute('id', 'twine-user-stylesheet');
@@ -412,7 +417,7 @@ export class SC2DataManager {
             return acc + `/* twine-user-script #${T.id}: "${T.name}" */${T.content}\n`;
         }, '');
         // console.log('makeScriptNode', newScriptNodeContent);
-        const newScriptNode = document.createElement('script');
+        const newScriptNode = this.thisWin.document.createElement('script');
         newScriptNode.setAttribute('type', 'text/twine-javascript');
         newScriptNode.setAttribute('role', 'script');
         newScriptNode.setAttribute('id', 'twine-user-script');
