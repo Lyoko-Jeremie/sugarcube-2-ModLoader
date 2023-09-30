@@ -282,7 +282,7 @@ Load the Mod using the Mod manager.
 编译脚本
 
 ```shell
-yarn run webpack:insertTools:w
+yarn run webpack:insertTools
 ```
 
 切换到 Mod 所在文件夹，（即boot.json所在文件夹）
@@ -330,9 +330,9 @@ MyMod.mod.zip
 编译脚本
 
 ```shell
-yarn run webpack:BeforeSC2:w
-yarn run ts:ForSC2:w
-yarn run webpack:insertTools:w
+yarn run webpack:BeforeSC2
+yarn run ts:ForSC2
+yarn run webpack:insertTools
 ```
 
 如何插入Mod加载器以及将预装Mod内嵌到html文件：
