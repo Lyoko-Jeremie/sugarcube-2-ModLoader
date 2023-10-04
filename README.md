@@ -512,9 +512,14 @@ Addon是一种特殊的Mod，作为一种功能扩展的形式存在，通过将
 
 ## TODO
 
-[ ] 安全模式 Safe Mode   
-[ ] Mod排序(ModLoaderGUI) Mod sorting    
-[ ] 修改其他Mod(Mod i18n pack(eg. english a cn mod))  Modify other mods   
+- [ ] 安全模式 Safe Mode   
+- [ ] Mod排序(ModLoaderGUI) Mod sorting    
+- [ ] 修改其他Mod(Mod i18n pack(eg. english a cn mod))  Modify other mods   
+- [ ] 在线编辑passage   
+- [ ] 查看Diff   
+- [ ] 游戏内Mod设置界面   
+- [ ] Mod禁用启用(可选加载)   
+- [ ] Mod-游戏版本兼容性检查   
 
 
 
