@@ -1,6 +1,6 @@
 import {PassageDataItem, SC2DataInfo, SC2DataInfoCache} from './SC2DataInfoCache';
 import {ModDataLoadType, ModInfo, ModLoader} from "./ModLoader";
-import {cloneDeep} from "lodash";
+import {cloneDeep, isSafeInteger} from "lodash";
 import {
     concatMergeSC2DataInfoCache,
     normalMergeSC2DataInfoCache,
@@ -421,6 +421,26 @@ export class SC2DataManager {
     }
 
     makeScriptNode(sc: SC2DataInfo) {
+        sc.scriptFileItems.items = sc.scriptFileItems.items.sort((a, b) => {
+            if (isSafeInteger(a.id) && isSafeInteger(b.id)) {
+                if (a.id < b.id) {
+                    return -1;
+                }
+                if (a.id === b.id) {
+                    return 0;
+                }
+                if (a.id > b.id) {
+                    return 1;
+                }
+            }
+            if (isSafeInteger(a.id)) {
+                return -1;
+            }
+            if (isSafeInteger(b.id)) {
+                return 1;
+            }
+            return 0;
+        });
         const newScriptNodeContent = sc.scriptFileItems.items.reduce((acc, T) => {
             return acc + `/* twine-user-script #${T.id}: "${T.name}" */${T.content}\n`;
         }, '');
