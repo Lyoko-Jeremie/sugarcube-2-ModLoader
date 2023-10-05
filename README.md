@@ -520,6 +520,9 @@ Addon是一种特殊的Mod，作为一种功能扩展的形式存在，通过将
 - [ ] 游戏内Mod设置界面   
 - [ ] Mod禁用启用(可选加载)   
 - [ ] Mod-游戏版本兼容性检查   
+- [ ] 使用Wikify执行script来注入游戏上下文，注入和拦截js函数和对象   
+- [ ] 提供Passage Prefix/Postfix Addon来实现前后缀模式(可以使用注入script函数并添加一行前后缀标签的方式实现)   
+- [ ] 提供PostPassage Addon来访问输出后的html node   
 
 
 
