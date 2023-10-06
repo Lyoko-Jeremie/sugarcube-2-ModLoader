@@ -73,6 +73,10 @@ export async function loadFileAsBase64(fPath: string) {
     process.exit(1);
 });
 
+// TODO remove
+// <meta
+//   http-equiv="Content-Security-Policy"
+//   content="default-src 'self' 'unsafe-eval' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:"/>
 
-
-
+// content="default-src 'self' 'unsafe-eval' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:"
+// content="default-src 'self' 'unsafe-eval' 'unsafe-inline' *; img-src 'self' data:; font-src 'self' data:"
