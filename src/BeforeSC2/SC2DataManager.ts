@@ -105,7 +105,7 @@ export class SC2DataManager {
 
     earlyResetSC2DataInfoCache() {
         // keep originSC2DataInfoCache valid
-        this.getSC2DataInfoCache();
+        this.initSC2DataInfoCache();
         // this.originSC2DataInfoCache = undefined;
         // this.getSC2DataInfoCache();
         this.flushAfterPatchCache();
@@ -118,12 +118,7 @@ export class SC2DataManager {
         this.cSC2DataInfoAfterPatchCache = undefined;
     }
 
-    /**
-     * 读取原始的没有被修改过的SC2Data，
-     * 对于mod来说，如无必要不要使用这里的数据，
-     * 特别是合并时不要使用此处的数据作为数据源，而是使用 getSC2DataInfoAfterPatch()，否则会覆盖之前的mod的修改，导致之前的修改无效
-     */
-    getSC2DataInfoCache() {
+    initSC2DataInfoCache() {
         if (!this.originSC2DataInfoCache) {
             this.originSC2DataInfoCache = new SC2DataInfoCache(
                 this.getModLoadController().getLog(),
@@ -134,7 +129,17 @@ export class SC2DataManager {
             );
             // console.log('getSC2DataInfoCache() init', this.originSC2DataInfoCache);
         }
+    }
+
+    /**
+     * 读取原始的没有被修改过的SC2Data，
+     * 对于mod来说，如无必要不要使用这里的数据，
+     * 特别是合并时不要使用此处的数据作为数据源，而是使用 getSC2DataInfoAfterPatch()，否则会覆盖之前的mod的修改，导致之前的修改无效
+     */
+    getSC2DataInfoCache() {
+        this.initSC2DataInfoCache();
         // console.log('getSC2DataInfoCache() get', this.originSC2DataInfoCache);
+        // TODO a immutable clone
         return this.originSC2DataInfoCache;
     }
 
@@ -207,7 +212,7 @@ export class SC2DataManager {
         console.log('ModLoader ====== SC2DataManager startInit() start');
 
         // keep originSC2DataInfoCache valid, keep it have the unmodified vanilla data
-        this.getSC2DataInfoCache();
+        this.initSC2DataInfoCache();
 
         await this.getModLoader().loadMod([
             ModDataLoadType.Remote,
@@ -246,7 +251,7 @@ export class SC2DataManager {
      */
     getSC2DataInfoAfterPatch() {
         // keep originSC2DataInfoCache valid
-        this.getSC2DataInfoCache();
+        this.initSC2DataInfoCache();
         if (!this.cSC2DataInfoAfterPatchCache) {
             this.cSC2DataInfoAfterPatchCache = new SC2DataInfoCache(
                 this.getModLoadController().getLog(),

@@ -19,7 +19,7 @@ export class JsPreloader {
         this.startLoadCalled = true;
         console.log('ModLoader ====== JsPreloader startLoad() start');
         // keep originSC2DataInfoCache valid, keep it have the unmodified vanilla data
-        this.pSC2DataManager.getSC2DataInfoCache();
+        this.pSC2DataManager.initSC2DataInfoCache();
         for (const modName of this.modUtils.getModListName()) {
             const mod = this.modUtils.getMod(modName);
             if (!mod) {
