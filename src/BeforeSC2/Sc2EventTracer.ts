@@ -2,17 +2,17 @@ import type {Passage} from "./SugarCube2";
 
 export interface Sc2EventTracerCallback {
     // SugarCube2 引擎触发 StoryReady 事件后
-    whenSC2StoryReady?: () => Promise<any>;
+    whenSC2StoryReady?: () => any;
     // SugarCube2 引擎触发 PassageInit 事件后
-    whenSC2PassageInit?: (passage: Passage) => Promise<any>;
+    whenSC2PassageInit?: (passage: Passage) => any;
     // SugarCube2 引擎触发 PassageStart 事件后
-    whenSC2PassageStart?: (passage: Passage, content: HTMLDivElement) => Promise<any>;
+    whenSC2PassageStart?: (passage: Passage, content: HTMLDivElement) => any;
     // SugarCube2 引擎触发 PassageRender 事件后
-    whenSC2PassageRender?: (passage: Passage, content: HTMLDivElement) => Promise<any>;
+    whenSC2PassageRender?: (passage: Passage, content: HTMLDivElement) => any;
     // SugarCube2 引擎触发 PassageDisplay 事件后
-    whenSC2PassageDisplay?: (passage: Passage, content: HTMLDivElement) => Promise<any>;
+    whenSC2PassageDisplay?: (passage: Passage, content: HTMLDivElement) => any;
     // SugarCube2 引擎触发 PassageReady 事件后
-    whenSC2PassageEnd?: (passage: Passage, content: HTMLDivElement) => Promise<any>;
+    whenSC2PassageEnd?: (passage: Passage, content: HTMLDivElement) => any;
 }
 
 export class Sc2EventTracer {
