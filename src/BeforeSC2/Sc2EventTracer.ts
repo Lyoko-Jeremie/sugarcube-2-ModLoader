@@ -22,75 +22,75 @@ export class Sc2EventTracer {
     callback: Sc2EventTracerCallback[] = [];
 
     init() {
-        this.thisWin.jQuery(this.thisWin.document).on(":storyready", async (event: Event | any) => {
+        this.thisWin.jQuery(this.thisWin.document).on(":storyready", (event: Event | any) => {
             for (const x of this.callback) {
                 if (x.whenSC2StoryReady) {
                     try {
-                        await x.whenSC2StoryReady();
+                        x.whenSC2StoryReady();
                     } catch (e) {
                         console.error(e);
                     }
                 }
             }
         });
-        this.thisWin.jQuery(this.thisWin.document).on(":passageinit", async (event: Event | any) => {
+        this.thisWin.jQuery(this.thisWin.document).on(":passageinit", (event: Event | any) => {
             const passage: Passage = event.passage;
             for (const x of this.callback) {
                 if (x.whenSC2PassageInit) {
                     try {
-                        await x.whenSC2PassageInit(passage);
+                        x.whenSC2PassageInit(passage);
                     } catch (e) {
                         console.error(e);
                     }
                 }
             }
         });
-        this.thisWin.jQuery(this.thisWin.document).on(":passagestart", async (event: Event | any) => {
+        this.thisWin.jQuery(this.thisWin.document).on(":passagestart", (event: Event | any) => {
             const passage: Passage = event.passage;
             const content: HTMLDivElement = event.content;
             for (const x of this.callback) {
                 if (x.whenSC2PassageStart) {
                     try {
-                        await x.whenSC2PassageStart(passage, content);
+                        x.whenSC2PassageStart(passage, content);
                     } catch (e) {
                         console.error(e);
                     }
                 }
             }
         });
-        this.thisWin.jQuery(this.thisWin.document).on(":passagerender", async (event: Event | any) => {
+        this.thisWin.jQuery(this.thisWin.document).on(":passagerender", (event: Event | any) => {
             const passage: Passage = event.passage;
             const content: HTMLDivElement = event.content;
             for (const x of this.callback) {
                 if (x.whenSC2PassageRender) {
                     try {
-                        await x.whenSC2PassageRender(passage, content);
+                        x.whenSC2PassageRender(passage, content);
                     } catch (e) {
                         console.error(e);
                     }
                 }
             }
         });
-        this.thisWin.jQuery(this.thisWin.document).on(":passagedisplay", async (event: Event | any) => {
+        this.thisWin.jQuery(this.thisWin.document).on(":passagedisplay", (event: Event | any) => {
             const passage: Passage = event.passage;
             const content: HTMLDivElement = event.content;
             for (const x of this.callback) {
                 if (x.whenSC2PassageDisplay) {
                     try {
-                        await x.whenSC2PassageDisplay(passage, content);
+                        x.whenSC2PassageDisplay(passage, content);
                     } catch (e) {
                         console.error(e);
                     }
                 }
             }
         });
-        this.thisWin.jQuery(this.thisWin.document).on(":passageend", async (event: Event | any) => {
+        this.thisWin.jQuery(this.thisWin.document).on(":passageend", (event: Event | any) => {
             const passage: Passage = event.passage;
             const content: HTMLDivElement = event.content;
             for (const x of this.callback) {
                 if (x.whenSC2PassageEnd) {
                     try {
-                        await x.whenSC2PassageEnd(passage, content);
+                        x.whenSC2PassageEnd(passage, content);
                     } catch (e) {
                         console.error(e);
                     }
