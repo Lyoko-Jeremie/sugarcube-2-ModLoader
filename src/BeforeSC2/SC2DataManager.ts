@@ -428,6 +428,18 @@ export class SC2DataManager {
     makeScriptNode(sc: SC2DataInfo) {
         sc.scriptFileItems.items = sc.scriptFileItems.items.sort((a, b) => {
             if (isSafeInteger(a.id) && isSafeInteger(b.id)) {
+                if (a.id === 0 || b.id === 0) {
+                    // o always in last
+                    if (a.id === 0 && b.id !== 0) {
+                        return 1;
+                    }
+                    if (a.id !== 0 && b.id === 0) {
+                        return -1;
+                    }
+                    if (a.id === 0 && b.id === 0) {
+                        return 0;
+                    }
+                }
                 if (a.id < b.id) {
                     return -1;
                 }
