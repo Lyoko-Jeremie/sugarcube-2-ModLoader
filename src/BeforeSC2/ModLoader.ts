@@ -4,7 +4,7 @@ import {simulateMergeSC2DataInfoCache} from "./SimulateMerge";
 import {IndexDBLoader, LocalLoader, LocalStorageLoader, RemoteLoader} from "./ModZipReader";
 import {SC2DataManager} from "./SC2DataManager";
 import {JsPreloader} from 'JsPreloader';
-import {ModLoadControllerCallback} from "./ModLoadController";
+import {LogWrapper, ModLoadControllerCallback} from "./ModLoadController";
 import {ReplacePatcher} from "./ReplacePatcher";
 
 export interface ModImg {
@@ -81,12 +81,14 @@ export enum ModDataLoadType {
 }
 
 export class ModLoader {
+    logger: LogWrapper;
 
     constructor(
         public gSC2DataManager: SC2DataManager,
         public modLoadControllerCallback: ModLoadControllerCallback,
         public thisWin: Window,
     ) {
+        this.logger = this.gSC2DataManager.getModUtils().getLogger();
     }
 
     modCache: Map<string, ModInfo> = new Map<string, ModInfo>();
@@ -375,6 +377,7 @@ export class ModLoader {
                 }
                 console.log('ModLoader ====== initModEarlyLoadScript() excute end: ', [modName], [name]);
                 await this.gSC2DataManager.getModLoadController().EarlyLoad_end(modName, name);
+                this.logger.log(`ModLoader ========= version: [${this.gSC2DataManager.getModUtils().version}]`);
             }
         }
     }

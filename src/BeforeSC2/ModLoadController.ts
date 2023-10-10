@@ -169,6 +169,8 @@ export class ModLoadController implements ModLoadControllerCallback {
                 }
             };
         });
+
+        this.logInfo(`ModLoader ========= version: [${gSC2DataManager.getModUtils().version}]`);
     }
 
     EarlyLoad_end!: (modName: string, fileName: string) => Promise<any>;
