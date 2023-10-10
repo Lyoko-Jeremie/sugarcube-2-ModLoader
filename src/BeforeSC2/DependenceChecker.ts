@@ -1,5 +1,5 @@
 import {SC2DataManager} from "SC2DataManager";
-import {satisfies, major} from 'semver';
+import {satisfies} from 'semver';
 import {ModUtils} from "./Utils";
 
 
@@ -36,12 +36,6 @@ export class DependenceChecker {
                     if (!satisfies(mod2.bootJson.version, d.version)) {
                         console.error('DependenceChecker.check() not satisfies', [mod.bootJson.name, d, mod2.bootJson]);
                         log.error(`DependenceChecker.check() not satisfies: mod[${mod.bootJson.name}] need mod[${d.modName}] version[${d.version}] but find version[${mod2.bootJson.version}].`);
-                        allOk = false;
-                        continue;
-                    }
-                    if (major(mod2.bootJson.version) !== major(d.version)) {
-                        console.warn('DependenceChecker.check() not in same major', [mod.bootJson.name, d, mod2.bootJson]);
-                        log.warn(`DependenceChecker.check() not in same major: mod[${mod.bootJson.name}] need mod[${d.modName}] version[${d.version}] but find version[${mod2.bootJson.version}].`);
                         allOk = false;
                         continue;
                     }
