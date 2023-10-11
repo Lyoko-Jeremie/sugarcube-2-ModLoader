@@ -56,15 +56,24 @@ export async function loadFileAsBase64(fPath: string) {
         const fb = await loadFileAsBase64(modPath);
         modListStringObj.push(fb);
     }
+    // remove CSP limit
+    // CSP modify for mod update and other use-case
+    const csp_findString = `content="default-src 'self' 'unsafe-eval' 'unsafe-inline'`;
+    const csp_replaceString = `content="default-src 'self' 'unsafe-eval' 'unsafe-inline' *`;
+    if (htmlF.indexOf(csp_findString) === -1) {
+        console.error('csp_findString not found');
+        process.exit(1);
+    }
+    const newHtmlF2 = htmlF.replace(csp_findString, csp_replaceString);
 
     const insertContent = `<script type="text/javascript">window.modDataValueZipList = ${JSON.stringify(modListStringObj)};</script>`;
     const insertJSContent = `<script type="text/javascript">${jsF}</script>`;
 
     const newHtmlF =
-        htmlF.slice(0, firstScriptIndex) +
+        newHtmlF2.slice(0, firstScriptIndex) +
         '\n' + insertContent +
         '\n' + insertJSContent +
-        '\n' + htmlF.slice(firstScriptIndex);
+        '\n' + newHtmlF2.slice(firstScriptIndex);
 
     await promisify(fs.writeFile)(htmlPath + '.mod.html', newHtmlF, {encoding: 'utf-8'});
 
@@ -73,7 +82,7 @@ export async function loadFileAsBase64(fPath: string) {
     process.exit(1);
 });
 
-// TODO remove
+// remove CSP limit
 // <meta
 //   http-equiv="Content-Security-Policy"
 //   content="default-src 'self' 'unsafe-eval' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:"/>
