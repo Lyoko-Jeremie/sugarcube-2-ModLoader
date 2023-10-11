@@ -249,8 +249,8 @@ export class ModZipReader {
                         path: imgPath,
                     });
                 } else {
-                    console.warn('cannot get imgFileList file from mod zip:', [this.modInfo.name, imgPath]);
-                    this.modLoadControllerCallback.logWarning(`cannot get imgFileList file from mod zip: [${this.modInfo.name}] [${imgPath}]`);
+                    console.error('cannot get imgFileList file from mod zip:', [this.modInfo.name, imgPath]);
+                    this.modLoadControllerCallback.logError(`cannot get imgFileList file from mod zip: [${this.modInfo.name}] [${imgPath}]`);
                 }
             }
             for (const stylePath of bootJ.styleFileList || []) {
