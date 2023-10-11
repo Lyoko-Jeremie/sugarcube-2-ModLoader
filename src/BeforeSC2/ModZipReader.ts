@@ -149,7 +149,7 @@ export class ModZipReader {
         if (ext.startsWith('.')) {
             ext = ext.substring(1);
         }
-        console.log('imgWrapBase64Url', [fileName, ext, base64]);
+        // console.log('imgWrapBase64Url', [fileName, ext, base64]);
         return `data:image/${ext};base64,${base64}`;
     }
 
