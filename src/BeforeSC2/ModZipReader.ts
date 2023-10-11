@@ -181,7 +181,7 @@ export class ModZipReader {
         //     , every(get(bootJ, 'imgFileReplaceList'), T => isArray(T) && T.length === 2 && isString(T[0]) && isString(T[1]))
         // ]);
         if (ModZipReader.validateBootJson(bootJ, this.log)) {
-            if (!this.modLoadControllerCallback.canLoadThisMod(bootJ, this.zip)) {
+            if (!await this.modLoadControllerCallback.canLoadThisMod(bootJ, this.zip)) {
                 console.log('ModLoader ====== ModZipReader init() this mod be filted by ModLoadController:', bootJ);
                 return false;
             }

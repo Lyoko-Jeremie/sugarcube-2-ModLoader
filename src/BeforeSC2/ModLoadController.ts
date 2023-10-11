@@ -15,7 +15,7 @@ export interface LifeTimeCircleHook extends Partial<ModLoadControllerCallback> {
 }
 
 export interface ModLoadControllerCallback {
-    canLoadThisMod(bootJson: ModBootJson, zip: JSZip): boolean;
+    canLoadThisMod(bootJson: ModBootJson, zip: JSZip): Promise<boolean>;
 
     InjectEarlyLoad_start(modName: string, fileName: string): Promise<any>;
 
@@ -188,10 +188,10 @@ export class ModLoadController implements ModLoadControllerCallback {
     logWarning!: (s: string) => void;
     ModLoaderLoadEnd!: () => Promise<any>;
 
-    canLoadThisMod(bootJson: ModBootJson, zip: JSZip): boolean {
+    async canLoadThisMod(bootJson: ModBootJson, zip: JSZip): Promise<boolean> {
         for (const [id, hook] of this.lifeTimeCircleHookTable) {
             if (hook.canLoadThisMod) {
-                const r = hook.canLoadThisMod(bootJson, zip);
+                const r = await hook.canLoadThisMod(bootJson, zip);
                 if (!r) {
                     return false;
                 }
