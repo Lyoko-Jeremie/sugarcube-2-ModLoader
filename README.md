@@ -111,11 +111,15 @@ The format is as follows (sample src/insertTools/MyMod/boot.json):
   "dependenceInfo": [     // （可选） 依赖的mod列表，可以在此声明此mod依赖哪些前置mod，不满足的依赖会在加载日志中产生警告
     {
       "modName": "ModLoader DoL ImageLoaderHook",   // 依赖的mod名字
-      "version": "1.0.0"                              // 依赖的mod版本
+      "version": "^2.0.0"                              // 依赖的mod版本
     },
     {
       "modName": "ModLoaderGui",
-      "version": ">=1.0.8"                          // 依赖的mod版本，使用(https://www.npmjs.com/package/semver)检查版本号，符合`语义化版本控制规范` (https://semver.org/lang/zh-CN/)
+      "version": "^1.0.8"                          // 依赖的mod版本，使用(https://www.npmjs.com/package/semver)检查版本号，符合`语义化版本控制规范` (https://semver.org/lang/zh-CN/)
+    },
+    {
+      "modName": "ModLoader",
+      "version": "^1.3.1"
     }
   ]
 }
