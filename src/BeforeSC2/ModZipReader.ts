@@ -358,6 +358,8 @@ export class ModZipReader {
                 }
             }
 
+            await this.modLoadControllerCallback.afterModLoad(bootJ, this.zip, this.modInfo);
+
             console.log('ModLoader ====== ModZipReader init() modInfo', this.modInfo);
             return true;
         }
