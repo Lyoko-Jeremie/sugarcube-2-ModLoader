@@ -1,7 +1,7 @@
 import {every, get, has, isArray, isObject, isPlainObject, isString} from 'lodash';
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {simulateMergeSC2DataInfoCache} from "./SimulateMerge";
-import {IndexDBLoader, LocalLoader, LocalStorageLoader, RemoteLoader} from "./ModZipReader";
+import {IndexDBLoader, LocalLoader, LocalStorageLoader, ModZipReader, RemoteLoader} from "./ModZipReader";
 import {SC2DataManager} from "./SC2DataManager";
 import {JsPreloader} from 'JsPreloader';
 import {LogWrapper, ModLoadControllerCallback} from "./ModLoadController";
@@ -209,6 +209,16 @@ export class ModLoader {
     public async loadMod(loadOrder: ModDataLoadType[]): Promise<boolean> {
         let ok = false;
         this.modOrder = [];
+        const addModeZip = (T: ModZipReader) => {
+            if (T.modInfo) {
+                const overwrite = !this.addMod(T.modInfo);
+                if (overwrite) {
+                    this.modOrder = this.modOrder.filter(T1 => T1 !== T.modInfo!.name);
+                }
+                this.gSC2DataManager.getDependenceChecker().checkFor(T.modInfo);
+                this.modOrder.push(T.modInfo.name);
+            }
+        };
         for (const loadType of loadOrder) {
             switch (loadType) {
                 case ModDataLoadType.Remote:
@@ -217,15 +227,7 @@ export class ModLoader {
                     }
                     try {
                         ok = await this.modRemoteLoader.load() || ok;
-                        this.modRemoteLoader.modList.forEach(T => {
-                            if (T.modInfo) {
-                                const overwrite = !this.addMod(T.modInfo);
-                                if (overwrite) {
-                                    this.modOrder = this.modOrder.filter(T1 => T1 !== T.modInfo!.name);
-                                }
-                                this.modOrder.push(T.modInfo.name);
-                            }
-                        });
+                        this.modRemoteLoader.modList.forEach(T => addModeZip(T));
                     } catch (e) {
                         console.error(e);
                     }
@@ -236,15 +238,7 @@ export class ModLoader {
                     }
                     try {
                         ok = await this.modLocalLoader.load() || ok;
-                        this.modLocalLoader.modList.forEach(T => {
-                            if (T.modInfo) {
-                                const overwrite = !this.addMod(T.modInfo);
-                                if (overwrite) {
-                                    this.modOrder = this.modOrder.filter(T1 => T1 !== T.modInfo!.name);
-                                }
-                                this.modOrder.push(T.modInfo.name);
-                            }
-                        });
+                        this.modLocalLoader.modList.forEach(T => addModeZip(T));
                     } catch (e) {
                         console.error(e);
                     }
@@ -255,15 +249,7 @@ export class ModLoader {
                     }
                     try {
                         ok = await this.modLocalStorageLoader.load() || ok;
-                        this.modLocalStorageLoader.modList.forEach(T => {
-                            if (T.modInfo) {
-                                const overwrite = !this.addMod(T.modInfo);
-                                if (overwrite) {
-                                    this.modOrder = this.modOrder.filter(T1 => T1 !== T.modInfo!.name);
-                                }
-                                this.modOrder.push(T.modInfo.name);
-                            }
-                        });
+                        this.modLocalStorageLoader.modList.forEach(T => addModeZip(T));
                     } catch (e) {
                         console.error(e);
                     }
@@ -274,15 +260,7 @@ export class ModLoader {
                     }
                     try {
                         ok = await this.modIndexDBLoader.load() || ok;
-                        this.modIndexDBLoader.modList.forEach(T => {
-                            if (T.modInfo) {
-                                const overwrite = !this.addMod(T.modInfo);
-                                if (overwrite) {
-                                    this.modOrder = this.modOrder.filter(T1 => T1 !== T.modInfo!.name);
-                                }
-                                this.modOrder.push(T.modInfo.name);
-                            }
-                        });
+                        this.modIndexDBLoader.modList.forEach(T => addModeZip(T));
                     } catch (e) {
                         console.error(e);
                     }

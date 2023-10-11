@@ -198,6 +198,12 @@ export class SC2DataManager {
         return this.sC2JsEvalContext;
     }
 
+    private dependenceChecker = new DependenceChecker(this, this.getModUtils());
+
+    getDependenceChecker() {
+        return this.dependenceChecker;
+    }
+
     private conflictResult?: { mod: SC2DataInfo, result: SimulateMergeResult }[];
 
     startInitOk = false;
@@ -221,7 +227,7 @@ export class SC2DataManager {
             ModDataLoadType.LocalStorage,
         ]);
 
-        new DependenceChecker(this, this.getModUtils()).check();
+        this.getDependenceChecker().check();
 
         this.conflictResult = this.getModLoader().checkModConflictList();
         console.log('ModLoader ====== mod conflictResult', this.conflictResult.map(T => {
