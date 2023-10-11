@@ -739,6 +739,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/libsodium-wrappers@npm:^0.7.11":
+  version: 0.7.11
+  resolution: "@types/libsodium-wrappers@npm:0.7.11"
+  checksum: e3c3acdfc178a466a04d81c030ba1b748abc9335b1d66421125eb55b32cbaf6a9076e32a98744fcb84ba2fa2af342203ff29054262dcc465c12c4feddddb64ac
+  languageName: node
+  linkType: hard
+
 "@types/lodash@npm:^4.14.198":
   version: 4.14.198
   resolution: "@types/lodash@npm:4.14.198"
@@ -1108,6 +1115,7 @@ __metadata:
   resolution: "SC2-mod-loader-framework@workspace:."
   dependencies:
     "@types/jquery": ^3.5.20
+    "@types/libsodium-wrappers": ^0.7.11
     "@types/lodash": ^4.14.198
     "@types/node": ^20.6.0
     "@types/semver": ^7.5.2
@@ -1120,6 +1128,7 @@ __metadata:
     jquery: ^3.7.1
     json5: ^2.2.3
     jszip: ^3.10.1
+    libsodium-wrappers: ^0.7.13
     lodash: ^4.17.21
     nodemon: ^3.0.1
     sass: ^1.66.1
@@ -3924,6 +3933,22 @@ __metadata:
     picocolors: ^1.0.0
     shell-quote: ^1.7.3
   checksum: 48e4230643e8fdb5c14c11314706d58d9f3fbafe2606be3d6e37da1918ad8bfe39dd87875c726a1b59b9f4da99d87ec3e36d4c528464f0b820f9e91e5cb1c02d
+  languageName: node
+  linkType: hard
+
+"libsodium-wrappers@npm:^0.7.13":
+  version: 0.7.13
+  resolution: "libsodium-wrappers@npm:0.7.13"
+  dependencies:
+    libsodium: ^0.7.13
+  checksum: d184395f7c33023414b191ef9ea2171eb1a5cb061503e886ea877590cb7adc3a4feaf794b9b08731a20515518fa23dbf1c1bfcd376e5ab01728e95cf1cb7525a
+  languageName: node
+  linkType: hard
+
+"libsodium@npm:^0.7.13":
+  version: 0.7.13
+  resolution: "libsodium@npm:0.7.13"
+  checksum: 75a5f70e84c197d54d9b67dcbd852abbd41cca8facd510767c7c8400a52a23da293e83eebf1693831b2c0c0498f266bd9350a8c27ec66f46a055890dff758d38
   languageName: node
   linkType: hard
 
