@@ -5,15 +5,15 @@
     const modUtils = window.modUtils;
     const modSC2DataManager = window.modSC2DataManager;
 
-    const ogrinPassageData = structuredClone(modSC2DataManager.getSC2DataInfoAfterPatch().passageDataItems.items);
-
-    window.MyMod_PassageOverwrite = ogrinPassageData.map(T => {
-        T.name;
-        // TODO apply i18n passage replace on there
-        T.content;
-        return T;
-    });
-    console.log('MyMod_script_earlyload_example.js', '  ', window.MyMod_PassageOverwrite);
+    // const ogrinPassageData = structuredClone(modSC2DataManager.getSC2DataInfoAfterPatch().passageDataItems.items);
+    //
+    // window.MyMod_PassageOverwrite = ogrinPassageData.map(T => {
+    //     T.name;
+    //     // TODO apply i18n passage replace on there
+    //     T.content;
+    //     return T;
+    // });
+    // console.log('MyMod_script_earlyload_example.js', '  ', window.MyMod_PassageOverwrite);
 
 })();
 
