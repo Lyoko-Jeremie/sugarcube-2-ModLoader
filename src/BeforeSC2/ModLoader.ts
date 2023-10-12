@@ -111,7 +111,7 @@ export class ModLoader {
     checkModConflict2Root(modName: string) {
         const mod = this.getMod(modName);
         if (!mod) {
-            console.error('ModLoader checkModConfictOne() (!mod)');
+            console.error('ModLoader checkModConflictOne() (!mod)');
             return undefined;
         }
         return simulateMergeSC2DataInfoCache(this.gSC2DataManager.getSC2DataInfoAfterPatch(), mod.cache)[0];
