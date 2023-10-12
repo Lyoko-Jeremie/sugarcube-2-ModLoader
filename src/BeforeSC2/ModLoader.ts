@@ -13,6 +13,7 @@ import {SC2DataManager} from "./SC2DataManager";
 import {JsPreloader} from 'JsPreloader';
 import {LogWrapper, ModLoadControllerCallback} from "./ModLoadController";
 import {ReplacePatcher} from "./ReplacePatcher";
+import {LRUCache} from 'lru-cache';
 
 export interface IModImgGetter {
     /**
@@ -20,6 +21,16 @@ export interface IModImgGetter {
      */
     getBase64Image(): Promise<string>;
 }
+
+export const StaticModImgLruCache = new LRUCache<string, string>({
+    max: 100,
+    ttl: 1000 * 60 * 30,
+    dispose: (value: string, key: string, reason: LRUCache.DisposeReason) => {
+        console.log('ModImgLruCache dispose', [value], [reason]);
+    },
+    updateAgeOnGet: true,
+    updateAgeOnHas: true,
+});
 
 export class ModImgGetterDefault implements IModImgGetter {
     constructor(
@@ -29,17 +40,19 @@ export class ModImgGetterDefault implements IModImgGetter {
     ) {
     }
 
-    imgCache?: string;
+    // imgCache?: string;
 
     async getBase64Image() {
-        if (this.imgCache) {
-            return this.imgCache;
+        const cache = StaticModImgLruCache.get(this.imgPath);
+        if (cache) {
+            return cache;
         }
         const imgFile = this.zip.zip.file(this.imgPath);
         if (imgFile) {
             const data = await imgFile.async('base64');
-            this.imgCache = imgWrapBase64Url(this.imgPath, data)
-            return this.imgCache;
+            const imgCache = imgWrapBase64Url(this.imgPath, data);
+            StaticModImgLruCache.set(this.imgPath, imgCache);
+            return imgCache;
         }
         console.error(`ModImgGetterDefault getBase64Image() imgFile not found: ${this.imgPath} in ${this.zip.modInfo?.name}`);
         this.logger.error(`ModImgGetterDefault getBase64Image() imgFile not found: ${this.imgPath} in ${this.zip.modInfo?.name}`);
