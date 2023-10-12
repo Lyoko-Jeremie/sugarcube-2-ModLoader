@@ -2,7 +2,7 @@ import JSZip from "jszip";
 import {every, get, has, isArray, isString} from "lodash";
 import {get as keyval_get, set as keyval_set, del as keyval_del, createStore, UseStore, setMany} from 'idb-keyval';
 import {SC2DataInfo} from "./SC2DataInfoCache";
-import {checkDependenceInfo, checkModBootJsonAddonPlugin, ModBootJson, ModInfo} from "./ModLoader";
+import {checkDependenceInfo, checkModBootJsonAddonPlugin, ModBootJson, ModImgGetterDefault, ModInfo} from "./ModLoader";
 import {getLogFromModLoadControllerCallback, LogWrapper, ModLoadControllerCallback} from "./ModLoadController";
 import {extname} from "./extname";
 import {ReplacePatcher, checkPatchInfo} from "./ReplacePatcher";
@@ -34,6 +34,14 @@ export function Twee2Passage(s: string): Twee2PassageR[] {
     return rr;
 }
 
+export function imgWrapBase64Url(fileName: string, base64: string) {
+    let ext = extname(fileName);
+    if (ext.startsWith('.')) {
+        ext = ext.substring(1);
+    }
+    // console.log('imgWrapBase64Url', [fileName, ext, base64]);
+    return `data:image/${ext};base64,${base64}`;
+}
 
 export class ModZipReader {
 
@@ -144,15 +152,6 @@ export class ModZipReader {
     //     });
     // }
 
-    imgWrapBase64Url(fileName: string, base64: string) {
-        let ext = extname(fileName);
-        if (ext.startsWith('.')) {
-            ext = ext.substring(1);
-        }
-        // console.log('imgWrapBase64Url', [fileName, ext, base64]);
-        return `data:image/${ext};base64,${base64}`;
-    }
-
     async init() {
         const bootJsonFile = this.zip.file(ModZipReader.modBootFilePath);
         if (!bootJsonFile) {
@@ -243,9 +242,9 @@ export class ModZipReader {
             for (const imgPath of bootJ.imgFileList || []) {
                 const imgFile = this.zip.file(imgPath);
                 if (imgFile) {
-                    const data = await imgFile.async('base64');
                     this.modInfo.imgs.push({
-                        data: this.imgWrapBase64Url(imgPath, data),
+                        // data: imgWrapBase64Url(imgPath, data),
+                        getter: new ModImgGetterDefault(this, imgPath, this.log),
                         path: imgPath,
                     });
                 } else {

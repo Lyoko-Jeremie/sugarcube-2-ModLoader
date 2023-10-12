@@ -1,15 +1,59 @@
 import {every, get, has, isArray, isObject, isPlainObject, isString} from 'lodash';
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {simulateMergeSC2DataInfoCache} from "./SimulateMerge";
-import {IndexDBLoader, LocalLoader, LocalStorageLoader, ModZipReader, RemoteLoader} from "./ModZipReader";
+import {
+    imgWrapBase64Url,
+    IndexDBLoader,
+    LocalLoader,
+    LocalStorageLoader,
+    ModZipReader,
+    RemoteLoader
+} from "./ModZipReader";
 import {SC2DataManager} from "./SC2DataManager";
 import {JsPreloader} from 'JsPreloader';
 import {LogWrapper, ModLoadControllerCallback} from "./ModLoadController";
 import {ReplacePatcher} from "./ReplacePatcher";
 
+export interface IModImgGetter {
+    /**
+     * @return Promise<string>   base64 img string
+     */
+    getBase64Image(): Promise<string>;
+}
+
+export class ModImgGetterDefault implements IModImgGetter {
+    constructor(
+        public zip: ModZipReader,
+        public imgPath: string,
+        public logger: LogWrapper,
+    ) {
+    }
+
+    imgCache?: string;
+
+    async getBase64Image() {
+        if (this.imgCache) {
+            return this.imgCache;
+        }
+        const imgFile = this.zip.zip.file(this.imgPath);
+        if (imgFile) {
+            const data = await imgFile.async('base64');
+            this.imgCache = imgWrapBase64Url(this.imgPath, data)
+            return this.imgCache;
+        }
+        console.error(`ModImgGetterDefault getBase64Image() imgFile not found: ${this.imgPath} in ${this.zip.modInfo?.name}`);
+        this.logger.error(`ModImgGetterDefault getBase64Image() imgFile not found: ${this.imgPath} in ${this.zip.modInfo?.name}`);
+        return Promise.reject(`ModImgGetterDefault getBase64Image() imgFile not found: ${this.imgPath} in ${this.zip.modInfo?.name}`);
+    }
+
+}
+
 export interface ModImg {
     // base64
-    data: string;
+    // data: string;
+
+    // () => Promise<base64 string>
+    getter: IModImgGetter;
     path: string;
 }
 
