@@ -533,7 +533,7 @@ TODO
 
 ## TODO
 
-- [ ] 安全模式 Safe Mode   
+- [x] 安全模式 Safe Mode   
 - [ ] Mod排序(ModLoaderGUI) Mod sorting    
 - [ ] 修改其他Mod(Mod i18n pack(eg. english a cn mod))  Modify other mods   
 - [ ] 在线编辑passage   
