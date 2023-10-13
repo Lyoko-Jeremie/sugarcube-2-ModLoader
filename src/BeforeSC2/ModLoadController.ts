@@ -16,7 +16,7 @@ export interface LifeTimeCircleHook extends Partial<ModLoadControllerCallback> {
 
 export interface ModLoadControllerCallback {
     /**
-     * ban a mod use this
+     * ban a mod use this, need register this hook in `InjectEarlyLoad`
      * @param bootJson
      * @param zip
      */
@@ -202,17 +202,19 @@ export class ModLoadController implements ModLoadControllerCallback {
     ModLoaderLoadEnd!: () => Promise<any>;
 
     async canLoadThisMod(bootJson: ModBootJson, zip: JSZip): Promise<boolean> {
-        for (const [id, hook] of this.lifeTimeCircleHookTable) {
+        for (const [hookId, hook] of this.lifeTimeCircleHookTable) {
             try {
                 if (hook.canLoadThisMod) {
                     const r = await hook.canLoadThisMod(bootJson, zip);
                     if (!r) {
+                        console.warn(`ModLoadController canLoadThisMod() mod [${bootJson.name}] be banned by [${hookId}]`);
+                        this.getLog().warn(`ModLoadController canLoadThisMod() mod [${bootJson.name}] be banned by [${hookId}]`);
                         return false;
                     }
                 }
             } catch (e: Error | any) {
-                console.error('ModLoadController canLoadThisMod()', [id, e]);
-                this.getLog().error(`ModLoadController canLoadThisMod() ${id} ${e?.message ? e.message : e}`);
+                console.error('ModLoadController canLoadThisMod()', [hookId, e]);
+                this.getLog().error(`ModLoadController canLoadThisMod() ${hookId} ${e?.message ? e.message : e}`);
             }
         }
         return true;

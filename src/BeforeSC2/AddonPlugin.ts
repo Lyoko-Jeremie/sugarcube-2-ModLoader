@@ -13,14 +13,14 @@ type  AddonPluginHookType = () => Promise<any>;
 const AddonPluginHookPoint_KL = [
     // 当前 mod 加载后 (这个hook无法拦截到，因为最早可能的hook注入点在InjectEarlyLoad)
     'afterInit',
-    // 所有 mod 加载后 (这个hook无法拦截到，因为最早可能的hook注入点在InjectEarlyLoad)
-    'afterModLoad',
-    // 所有 Mod 注册到 Addon 后
-    'afterRegisterMod2Addon',
     // 所有 EarlyInject 脚本插入后
     'afterInjectEarlyLoad',
+    // 所有 mod 加载后 ， 且 LifeTimeCircleHook.afterModLoad 触发后
+    'afterModLoad',
     // 所有 EarlyLoad 脚本执行后
     'afterEarlyLoad',
+    // 所有 Mod 注册到 Addon 后
+    'afterRegisterMod2Addon',
     // 所有 mod 数据覆盖到游戏前
     'beforePatchModToGame',
     // 所有 mod 数据覆盖到游戏后

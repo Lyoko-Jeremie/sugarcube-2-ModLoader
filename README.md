@@ -227,6 +227,15 @@ $(document).on(":storyready", () => {
 故所有提供插件的`插件Mod`（或者说`lib mod`）需要最迟在 `EarlyLoad` 阶段（喜欢的话也可以在`InjectEarlyLoad`阶段）
 调用 `window.modAddonPluginManager.registerAddonPlugin()` 将自己提供的插件注册到 `AddonPluginManager` 。
 
+【2023-10-14】 BreakChange ：破坏性变更：为了支持 "安全模式" 和 "Mod禁用功能" ，调整了 `InjectEarlyLoad` 的加载实现以及Mod加载行为。  
+
+调整了 `AddonPluginHook` 的触发顺序， `afterModLoad` 会在 `afterInjectEarlyLoad` 且 ` LifeTimeCircleHook.afterModLoad`  执行后触发。  
+所以，如果一个Mod需要等待其他Mod对自己修改后再执行操作（例如Mod对Mod的i18n），可以在`afterInjectEarlyLoad`中或`EarlyLoad`时再执行自己的任务。
+
+现在 ModLoader 会读取所有Mod，然后在 `InjectEarlyLoad` 每一个Mod后立即使用剩余未InjectEarlyLoad的Mod列表调用所有已加载Mod的`canLoadThisMod`来过滤接下来要加载的Mod。  
+即，先加载的Mod可以决定剩下还未加载的Mod是否需要继续加载，但对于已经加载的Mod没有过滤能力。
+
+
 
 【2023-09-21】 Delete `imgFileReplaceList`. Now, use the new ImageHookLoader to intercept image requests directly for image replacement. Therefore, images with the same name as the original image files will be overwritten.
 
