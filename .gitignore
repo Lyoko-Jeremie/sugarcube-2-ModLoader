@@ -27,4 +27,5 @@ mod
 !mod/ImageLoaderHook
 !mod/ModLoaderGui
 !mod/CheckDoLCompressorDictionaries
+!mod/CheckGameVersion
 
