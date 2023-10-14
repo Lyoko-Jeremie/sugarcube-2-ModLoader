@@ -16,3 +16,7 @@
 [submodule "mod/ReplacePatch"]
 	path = mod/ReplacePatch
 	url = ../Degrees-of-Lewdity_Mod_ReplacePatch.git
+[submodule "mod/CheckGameVersion"]
+	path = mod/CheckGameVersion
+	url = ../Degrees-of-Lewdity_Mod_CheckGameVersion.git
+	branch = master
