@@ -1,4 +1,5 @@
 import type {Passage} from "./SugarCube2";
+import {SC2DataManager} from "./SC2DataManager";
 
 export interface Sc2EventTracerCallback {
     // SugarCube2 引擎触发 StoryReady 事件后
@@ -16,7 +17,10 @@ export interface Sc2EventTracerCallback {
 }
 
 export class Sc2EventTracer {
-    constructor(public thisWin: Window) {
+    constructor(
+        public thisWin: Window,
+        public gSC2DataManager: SC2DataManager,
+    ) {
     }
 
     callback: Sc2EventTracerCallback[] = [];

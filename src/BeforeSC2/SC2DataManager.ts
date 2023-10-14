@@ -168,7 +168,7 @@ export class SC2DataManager {
         return this.passageTracer;
     }
 
-    private sc2EventTracer = new Sc2EventTracer(this.thisWin);
+    private sc2EventTracer = new Sc2EventTracer(this.thisWin, this);
 
     getSc2EventTracer() {
         return this.sc2EventTracer;
