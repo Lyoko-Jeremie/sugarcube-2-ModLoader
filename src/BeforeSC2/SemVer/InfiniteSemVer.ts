@@ -1,5 +1,8 @@
+import {isSafeInteger} from 'lodash';
+
 export const BoundaryOperatorList = [
-    '>', '<', '>=', '<=', '=', '^', undefined,
+    // long po first
+    '>=', '<=', '>', '<', '=', '^', undefined,
 ] as const;
 
 export type BoundaryOperator = typeof BoundaryOperatorList[number];
@@ -18,13 +21,28 @@ export type VersionBoundarySet = {
 
 export type InfiniteSemVer = number[];
 
-export function infiniteSemVer(versionStr: string): VersionBoundary | null {
+function isCharNumber(c: string) {
+    return typeof c === 'string' && c.length == 1 && c >= '0' && c <= '9';
+}
+
+export function parseInfiniteSemVer(versionStr: string): VersionBoundary {
+    console.log('parseInfiniteSemVer()', versionStr);
     let bo: BoundaryOperator = undefined;
-    if (BoundaryOperatorList.filter(
-        (T): T is Exclude<undefined, BoundaryOperator> => !!T
-    ).find(op => versionStr.startsWith(op))) {
-        bo = versionStr.substring(0, 2) as BoundaryOperator;
-        versionStr = versionStr.substring(2);
+    const bb = BoundaryOperatorList.filter(
+        (T): T is Exclude<BoundaryOperator, undefined> => !!T
+    ).find(op => versionStr.startsWith(op));
+    if (bb) {
+        bo = versionStr.substring(0, bb.length) as BoundaryOperator;
+        versionStr = versionStr.substring(bb.length);
+        bo = bb;
+    }
+
+    if (versionStr.length === 0 || !isCharNumber(versionStr[0])) {
+        console.error('parseInfiniteSemVer() invalid versionStr', [versionStr, bb, bo]);
+        return {
+            version: [],
+            operator: bo,
+        };
     }
 
     const parts = versionStr.trim().split('.');
@@ -33,9 +51,13 @@ export function infiniteSemVer(versionStr: string): VersionBoundary | null {
     for (const part of parts) {
         const num = parseInt(part, 10);
         if (isNaN(num) || num < 0) {
-            return null;
+            // return null;
+            break;
         }
         version.push(num);
+    }
+    if (version.length === 0) {
+        version.push(0);
     }
 
     return {
@@ -57,14 +79,14 @@ export function compareInfiniteVersions(a: InfiniteSemVer, b: InfiniteSemVer): n
     return 0;
 }
 
-export function parseVersionRange(rangeStr: string): VersionRange | null {
+export function parseVersionRange(rangeStr: string): VersionRange {
     const rangeSets =
         rangeStr.split(/\s*\|\|\s*/)
             .map(setStr => parseVersionBoundarySet(setStr))
-            .filter(Boolean) as VersionBoundarySet[];
+            .filter((T): T is VersionBoundarySet => !!T);
 
     if (rangeSets.length === 0) {
-        return null;
+        return [];
     }
 
     return rangeSets;
@@ -80,8 +102,8 @@ function parseVersionBoundarySet(setStr: string): VersionBoundarySet | null {
     const boundarySet: VersionBoundarySet = {};
 
     for (const boundaryStr of boundaries) {
-        const boundary = infiniteSemVer(boundaryStr);
-        if (!boundary) {
+        const boundary = parseInfiniteSemVer(boundaryStr);
+        if (boundary.version.length === 0) {
             return null;
         }
 
@@ -102,8 +124,22 @@ function parseVersionBoundarySet(setStr: string): VersionBoundarySet | null {
                 boundarySet.upper = boundary;
                 break;
 
+            case '^': {
+                if (boundarySet.lower || boundarySet.upper) {
+                    return null;
+                }
+                boundarySet.lower = {version: boundary.version, operator: '>='};
+                if (boundary.version[0] === 0) {
+                    const c1 = boundary.version.length >= 2 ? boundary.version[1] + 1 : 1;
+                    boundarySet.upper = {version: [0, c1], operator: '<'};
+                } else if (boundary.version[0] > 0) {
+                    const c0 = boundary.version[0] + 1;
+                    boundarySet.upper = {version: [c0], operator: '<'};
+                }
+            }
+                break;
+
             case '=':
-            case '^':
             case undefined:
                 if (boundarySet.lower || boundarySet.upper) {
                     return null;
@@ -123,6 +159,7 @@ export function isWithinRange(version: InfiniteSemVer, range: VersionRange): boo
 
         if (boundarySet.lower) {
             const comparison = compareInfiniteVersions(version, boundarySet.lower.version);
+            console.log('comparison lower', [comparison, version, boundarySet.lower.version]);
             switch (boundarySet.lower.operator) {
                 case '>':
                     if (comparison <= 0) isWithinBoundarySet = false;
@@ -135,6 +172,7 @@ export function isWithinRange(version: InfiniteSemVer, range: VersionRange): boo
 
         if (boundarySet.upper) {
             const comparison = compareInfiniteVersions(version, boundarySet.upper.version);
+            console.log('comparison upper', [comparison, version, boundarySet.upper.version]);
             switch (boundarySet.upper.operator) {
                 case '<':
                     if (comparison >= 0) isWithinBoundarySet = false;
@@ -152,3 +190,8 @@ export function isWithinRange(version: InfiniteSemVer, range: VersionRange): boo
 
     return false;
 }
+
+export const parseRange = parseVersionRange;
+export const parseVersion = parseInfiniteSemVer;
+export const satisfies = isWithinRange;
+
