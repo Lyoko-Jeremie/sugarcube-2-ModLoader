@@ -132,6 +132,20 @@ jobs:
           source: ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries/CheckDoLCompressorDictionaries.mod.zip
           target: ${{ github.workspace }}/out
 
+      - name: Build CheckGameVersion
+        working-directory: ${{ github.workspace }}/mod/CheckGameVersion
+        run: |
+          cd ${{ github.workspace }}/mod/CheckGameVersion
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Copy CheckGameVersion
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/CheckGameVersion/CheckGameVersion.mod.zip
+          target: ${{ github.workspace }}/out
+
       - name: Copy dist-BeforeSC2
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
