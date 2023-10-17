@@ -23,6 +23,7 @@ export class HtmlTagSrcHook {
     }
 
     public async doHook(el: HTMLImageElement | HTMLElement): Promise<boolean> {
+        // console.log('HtmlTagSrcHook: doHook: handing the element', [el, el.outerHTML]);
         if (!el.hasAttribute('ML-src')) {
             console.error('HtmlTagSrcHook: doHook: hasAttribute no ML-src', [el, el.outerHTML]);
             this.logger.error(`HtmlTagSrcHook: doHook: hasAttribute no ML-src [${el.outerHTML}]`);
