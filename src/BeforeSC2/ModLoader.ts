@@ -1,4 +1,4 @@
-import {every, get, has, isArray, isObject, isPlainObject, isString, clone} from 'lodash';
+import {every, get, has, isArray, isObject, isPlainObject, isString, cloneDeep} from 'lodash';
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {simulateMergeSC2DataInfoCache} from "./SimulateMerge";
 import {
@@ -222,7 +222,7 @@ export class ModLoader {
     private modRemoteLoader?: RemoteLoader;
 
     getModZip(modName: string) {
-        const order = this.loadOrder.reverse();
+        const order = cloneDeep(this.loadOrder).reverse();
         for (const loadType of order) {
             switch (loadType) {
                 case ModDataLoadType.Remote:
@@ -278,10 +278,14 @@ export class ModLoader {
         return this.modRemoteLoader;
     }
 
-    loadOrder: ModDataLoadType[] = [];
+    loadOrder: ModDataLoadType[] = [
+        ModDataLoadType.Local,
+        ModDataLoadType.Remote,
+        ModDataLoadType.IndexDB,
+    ];
 
-    public async loadMod(loadOrder: ModDataLoadType[]): Promise<boolean> {
-        this.loadOrder = loadOrder
+    public async loadMod(_loadOrder: ModDataLoadType[]): Promise<boolean> {
+        // this.loadOrder = loadOrder
         let ok = false;
         this.modReadOrder = [];
         const addModeZip = (T: ModZipReader) => {
@@ -294,7 +298,7 @@ export class ModLoader {
                 this.modReadOrder.push(T.modInfo.name);
             }
         };
-        for (const loadType of loadOrder) {
+        for (const loadType of this.loadOrder) {
             switch (loadType) {
                 case ModDataLoadType.Remote:
                     if (!this.modRemoteLoader) {
@@ -415,7 +419,7 @@ export class ModLoader {
     private async initModInjectEarlyLoadInDomScript() {
         this.modOrder = [];
         this.modCache.clear();
-        let toLoadModeList = clone(this.modReadOrder);
+        let toLoadModeList = cloneDeep(this.modReadOrder);
         while (toLoadModeList.length > 0) {
             const nowMod = toLoadModeList.shift();
             if (!nowMod) {
