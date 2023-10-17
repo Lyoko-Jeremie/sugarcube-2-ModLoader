@@ -1,7 +1,7 @@
 import {SC2DataManager} from "./SC2DataManager";
 import {LogWrapper} from "./ModLoadController";
 
-export type HtmlTagSrcHookType = (el: HTMLImageElement | HTMLElement) => Promise<boolean>;
+export type HtmlTagSrcHookType = (el: HTMLImageElement | HTMLElement, mlSrc: string) => Promise<boolean>;
 
 export class HtmlTagSrcHook {
     logger: LogWrapper;
@@ -24,16 +24,17 @@ export class HtmlTagSrcHook {
 
     public async doHook(el: HTMLImageElement | HTMLElement): Promise<boolean> {
         // console.log('HtmlTagSrcHook: doHook: handing the element', [el, el.outerHTML]);
-        if (!el.hasAttribute('ML-src')) {
-            console.error('HtmlTagSrcHook: doHook: hasAttribute no ML-src', [el, el.outerHTML]);
-            this.logger.error(`HtmlTagSrcHook: doHook: hasAttribute no ML-src [${el.outerHTML}]`);
+        const mlSrc = el.getAttribute('ML-src');
+        if (!mlSrc) {
+            console.error('HtmlTagSrcHook: doHook: no ML-src', [el, el.outerHTML]);
+            this.logger.error(`HtmlTagSrcHook: doHook: no ML-src [${el.outerHTML}]`);
             return false;
         }
         // call hook to find a mod hook to handle the element
         // if all mod cannot handle, don't change the element and return false
         for (const [hookKey, hook] of this.hookTable) {
             try {
-                if (await hook(el)) {
+                if (await hook(el, mlSrc)) {
                     return true;
                 }
             } catch (e: Error | any) {
@@ -42,12 +43,6 @@ export class HtmlTagSrcHook {
             }
         }
         // if no one can handle the element, do the default action
-        const mlSrc = el.getAttribute('ML-src');
-        if (!mlSrc) {
-            console.error('HtmlTagSrcHook: doHook: mlSrc no ML-src', [el, el.outerHTML]);
-            this.logger.error(`HtmlTagSrcHook: doHook: mlSrc no ML-src [${el.outerHTML}]`);
-            return false;
-        }
         // recover the src
         el.setAttribute('src', mlSrc);
         return false;
