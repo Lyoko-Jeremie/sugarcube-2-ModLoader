@@ -16,6 +16,7 @@ import {Sc2EventTracer} from "./Sc2EventTracer";
 import {SC2JsEvalContext} from "./SC2JsEvalContext";
 import {ModUtils} from "./Utils";
 import {JsPreloader} from "./JsPreloader";
+import {HtmlTagSrcHook} from "./HtmlTagSrcHook";
 
 export class SC2DataManager {
 
@@ -202,6 +203,12 @@ export class SC2DataManager {
 
     getDependenceChecker() {
         return this.dependenceChecker;
+    }
+
+    private htmlTagSrcHook = new HtmlTagSrcHook(this);
+
+    getHtmlTagSrcHook() {
+        return this.htmlTagSrcHook;
     }
 
     private conflictResult?: { mod: SC2DataInfo, result: SimulateMergeResult }[];
