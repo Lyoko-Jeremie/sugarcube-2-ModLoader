@@ -221,10 +221,10 @@ export class SC2DataManager {
         this.initSC2DataInfoCache();
 
         await this.getModLoader().loadMod([
-            ModDataLoadType.Remote,
             ModDataLoadType.Local,
-            ModDataLoadType.IndexDB,
+            ModDataLoadType.Remote,
             ModDataLoadType.LocalStorage,
+            ModDataLoadType.IndexDB,
         ]);
 
         this.getDependenceChecker().check();

@@ -278,14 +278,10 @@ export class ModLoader {
         return this.modRemoteLoader;
     }
 
-    loadOrder: ModDataLoadType[] = [
-        ModDataLoadType.Local,
-        ModDataLoadType.Remote,
-        ModDataLoadType.IndexDB,
-    ];
+    loadOrder: ModDataLoadType[] = [];
 
-    public async loadMod(_loadOrder: ModDataLoadType[]): Promise<boolean> {
-        // this.loadOrder = loadOrder
+    public async loadMod(loadOrder: ModDataLoadType[]): Promise<boolean> {
+        this.loadOrder = loadOrder
         let ok = false;
         this.modReadOrder = [];
         const addModeZip = (T: ModZipReader) => {
