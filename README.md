@@ -235,6 +235,33 @@ $(document).on(":storyready", () => {
 现在 ModLoader 会读取所有Mod，然后在 `InjectEarlyLoad` 每一个Mod后立即使用剩余未InjectEarlyLoad的Mod列表调用所有已加载Mod的`canLoadThisMod`来过滤接下来要加载的Mod。  
 即，先加载的Mod可以决定剩下还未加载的Mod是否需要继续加载，但对于已经加载的Mod没有过滤能力。
 
+【2023-10-08】 v1.6.0 使用 `HtmlTagSrcHook` 支持替换游戏中由 SC2 引擎创建的所有 html img 标签引用的图片。在此之前只有canvas绘图引用的图片才会被替换。
+
+通过对 SC2 引擎的 `Wikifier.Parser.add 'htmlTag' ` 添加如下的代码来在创建`<IMG>`标签前拦截图片请求并交由ModLoader进行处理，来实现拦截并替换图片的功能。
+
+```js
+if (typeof window.modSC2DataManager !== 'undefined' &&
+	typeof window.modSC2DataManager.getHtmlTagSrcHook?.()?.doHook !== 'undefined') {
+	if (tagName === 'img' && !el.getAttribute('src')?.startsWith('data:')) {
+		// need check the src is not "data:" URI
+		el.setAttribute('ML-src', el.getAttribute('src'));
+		el.removeAttribute('src');
+		// call img loader on there
+		window.modSC2DataManager.getHtmlTagSrcHook().doHook(el).catch(E => console.error(E));
+	}
+}
+
+// 以下这行是SC2原始代码，上面添加的代码需要插入在这一行之前
+output.appendChild(tagName === 'track' ? el.cloneNode(true) : el);
+```
+
+`ModLoader DoL ImageLoaderHook` 已经添加了这个功能的支持，只需要像之前那样正常使用即可。
+
+_使用此功能可以通过自行注册 `HtmlTagSrcHook` 钩子，或者使用 v2.3.0 以上版本的 `ModLoader DoL ImageLoaderHook` 。_
+
+注：游戏 DoL 仍然存在部分没有拦截到的图片，这些图片由 DoL 自行添加了 `Macro.add("icon",` **icon** 标签来实现的。这些代码几乎全是在 link 前使用的标签。
+
+
 
 
 【2023-09-21】 Delete `imgFileReplaceList`. Now, use the new ImageHookLoader to intercept image requests directly for image replacement. Therefore, images with the same name as the original image files will be overwritten.
