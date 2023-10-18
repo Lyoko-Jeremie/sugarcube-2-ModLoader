@@ -28,4 +28,5 @@ mod
 !mod/ModLoaderGui
 !mod/CheckDoLCompressorDictionaries
 !mod/CheckGameVersion
+!mod/Diff3WayMerge
 
