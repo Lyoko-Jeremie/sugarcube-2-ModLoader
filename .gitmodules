@@ -20,3 +20,6 @@
 	path = mod/CheckGameVersion
 	url = ../Degrees-of-Lewdity_Mod_CheckGameVersion.git
 	branch = master
+[submodule "mod/Diff3WayMerge"]
+	path = mod/Diff3WayMerge
+	url = ../Mod_Diff3WayMerge.git
