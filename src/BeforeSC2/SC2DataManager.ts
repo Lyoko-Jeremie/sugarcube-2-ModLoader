@@ -137,11 +137,15 @@ export class SC2DataManager {
      * 对于mod来说，如无必要不要使用这里的数据，
      * 特别是合并时不要使用此处的数据作为数据源，而是使用 getSC2DataInfoAfterPatch()，否则会覆盖之前的mod的修改，导致之前的修改无效
      */
-    getSC2DataInfoCache() {
+    getSC2DataInfoCache(): SC2DataInfoCache {
         this.initSC2DataInfoCache();
         // console.log('getSC2DataInfoCache() get', this.originSC2DataInfoCache);
+        if (!this.originSC2DataInfoCache) {
+            console.error('getSC2DataInfoCache() (!this.originSC2DataInfoCache)');
+            this.getModLoadController().getLog().error('getSC2DataInfoCache() (!this.originSC2DataInfoCache)');
+        }
         // TODO a immutable clone
-        return this.originSC2DataInfoCache;
+        return this.originSC2DataInfoCache!;
     }
 
     private modLoader?: ModLoader;
