@@ -24,3 +24,6 @@
 	path = mod/Diff3WayMerge
 	url = ../Mod_Diff3WayMerge.git
 	branch = master
+[submodule "mod/ModdedClothesAddon"]
+	path = mod/ModdedClothesAddon
+	url = ../DoL_ModdedClothesAddon.git
