@@ -290,6 +290,7 @@ export class ModLoader {
                 if (overwrite) {
                     this.modReadOrder = this.modReadOrder.filter(T1 => T1 !== T.modInfo!.name);
                 }
+                // this is invalid ?
                 this.gSC2DataManager.getDependenceChecker().checkFor(T.modInfo);
                 this.modReadOrder.push(T.modInfo.name);
             }
