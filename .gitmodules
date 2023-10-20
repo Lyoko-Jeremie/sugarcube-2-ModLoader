@@ -33,3 +33,7 @@
 	path = mod/ModdedClothesAddon
 	url = https://github.com/Lyoko-Jeremie/DoL_ModdedClothesAddon.git
 	branch = master
+[submodule "mod/ModdedFeatsAddon"]
+	path = mod/ModdedFeatsAddon
+	url = https://github.com/Lyoko-Jeremie/DoL_ModdedFeatsAddon.git
+	branch = master
