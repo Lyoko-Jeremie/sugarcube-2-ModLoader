@@ -24,6 +24,10 @@ export class DependenceChecker {
         const modCache = this.gSC2DataManager.getModLoader().modCache;
         if (mod.bootJson.dependenceInfo) {
             for (const d of mod.bootJson.dependenceInfo) {
+                if (d.modName === 'GameVersion') {
+                    // skip
+                    continue;
+                }
                 if (d.modName === 'ModLoader') {
                     if (!satisfies(parseVersion(this.gModUtils.version).version, parseRange(d.version))) {
                         console.error('DependenceChecker.checkFor() not satisfies ModLoader', [mod.bootJson.name, d, this.gModUtils.version]);
@@ -119,6 +123,11 @@ export class DependenceChecker {
         return allOk;
     }
 
+    /**
+     * this called by mod `CheckGameVersion`
+     * because the game version only can get after game loaded
+     * @param gameVersion
+     */
     checkGameVersion(gameVersion: string) {
         const modCache = this.gSC2DataManager.getModLoader().modCache;
         let allOk = true;
@@ -126,7 +135,7 @@ export class DependenceChecker {
             if (mod.bootJson.dependenceInfo) {
                 const n = mod.bootJson.dependenceInfo.find(T => T.modName === 'GameVersion');
                 if (n) {
-                    if (!satisfies(parseVersion(gameVersion).version, parseRange(n.version))) {
+                    if (!satisfies(parseVersion(gameVersion).version, parseRange(n.version), true)) {
                         console.error('DependenceChecker.checkGameVersion() not satisfies', [mod.bootJson.name, n.version, gameVersion]);
                         this.log.error(`DependenceChecker.checkGameVersion() not satisfies: mod[${mod.bootJson.name}] need gameVersion[${n.version}] but gameVersion is [${gameVersion}].`);
                         allOk = false;
