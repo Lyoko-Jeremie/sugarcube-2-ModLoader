@@ -9,6 +9,11 @@ import {
 } from './SemVer/InfiniteSemVer';
 import {isEqual, clone} from 'lodash';
 
+export class InfiniteSemVerApi {
+    parseRange = parseRange;
+    parseVersion = parseVersion;
+    satisfies = satisfies;
+}
 
 export class DependenceChecker {
     log: LogWrapper;
@@ -18,6 +23,10 @@ export class DependenceChecker {
         public gModUtils: ModUtils,
     ) {
         this.log = this.gSC2DataManager.getModLoadController().getLog();
+    }
+
+    public getInfiniteSemVerApi() {
+        return new InfiniteSemVerApi();
     }
 
     checkFor(mod: ModInfo): boolean {
