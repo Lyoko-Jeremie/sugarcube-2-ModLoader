@@ -1,4 +1,4 @@
-import {isSafeInteger} from 'lodash';
+import {isNil} from 'lodash';
 
 export const BoundaryOperatorList = [
     // long po first
@@ -19,7 +19,11 @@ export type VersionBoundarySet = {
     upper?: VersionBoundary;
 };
 
-export type InfiniteSemVer = number[];
+export type InfiniteSemVer = {
+    version: number[],
+    preRelease?: string | undefined;
+    buildMetadata?: string | undefined;
+};
 
 function isCharNumber(c: string) {
     return typeof c === 'string' && c.length == 1 && c >= '0' && c <= '9';
@@ -40,13 +44,27 @@ export function parseInfiniteSemVer(versionStr: string): VersionBoundary {
     if (versionStr.length === 0 || !isCharNumber(versionStr[0])) {
         console.error('parseInfiniteSemVer() invalid versionStr', [versionStr, bb, bo]);
         return {
-            version: [],
+            version: {
+                version: [],
+                preRelease: undefined,
+                buildMetadata: undefined,
+            },
             operator: bo,
         };
     }
 
-    const parts = versionStr.trim().split('.');
-    const version: InfiniteSemVer = [];
+    // format: 1.0.0-preRelease+buildMetadata
+
+    // preRelease: 1.0.0-alpha
+    let sp1 = versionStr.indexOf('-');
+    sp1 = sp1 === -1 ? versionStr.length : sp1;
+    // buildMetadata: 1.0.0+exp.sha.5114f85
+    let sp2 = versionStr.indexOf('+');
+    sp2 = sp2 === -1 ? versionStr.length : sp2;
+    const sp = Math.min(sp1, sp2);
+
+    const parts = versionStr.trim().substring(0, sp).split('.');
+    const version: number[] = [];
 
     for (const part of parts) {
         const num = parseInt(part, 10);
@@ -61,20 +79,49 @@ export function parseInfiniteSemVer(versionStr: string): VersionBoundary {
     }
 
     return {
-        version,
+        version: {
+            version: version,
+            preRelease: (sp1 < sp2 && sp1 < versionStr.length) ? versionStr.substring(sp1 + 1, sp2 - (sp1 + 1)) : undefined,
+            buildMetadata: sp2 < versionStr.length ? versionStr.substring(sp2 + 1) : undefined,
+        },
         operator: bo,
     };
 }
 
-export function compareInfiniteVersions(a: InfiniteSemVer, b: InfiniteSemVer): number {
-    const maxLength = Math.max(a.length, b.length);
+export function compareString(a: string, b: string) {
+    return a.localeCompare(b);
+}
+
+export function compareInfiniteVersions(a: InfiniteSemVer, b: InfiniteSemVer, ignorePostfix = false): number {
+    const maxLength = Math.max(a.version.length, b.version.length);
     for (let i = 0; i < maxLength; i++) {
-        const aValue = i < a.length ? a[i] : 0;
-        const bValue = i < b.length ? b[i] : 0;
+        const aValue = i < a.version.length ? a.version[i] : 0;
+        const bValue = i < b.version.length ? b.version[i] : 0;
 
         if (aValue !== bValue) {
             return aValue - bValue;
         }
+    }
+    if (ignorePostfix) {
+        return 0;
+    }
+    if (a.preRelease && b.preRelease) {
+        return compareString(a.preRelease, b.preRelease);
+    }
+    if (a.preRelease && isNil(b.preRelease)) {
+        return -1;
+    }
+    if (isNil(a.preRelease) && b.preRelease) {
+        return 1;
+    }
+    if (a.buildMetadata && b.buildMetadata) {
+        return compareString(a.buildMetadata, b.buildMetadata);
+    }
+    if (a.buildMetadata && isNil(b.buildMetadata)) {
+        return -1;
+    }
+    if (isNil(a.buildMetadata) && b.buildMetadata) {
+        return 1;
     }
     return 0;
 }
@@ -103,7 +150,7 @@ function parseVersionBoundarySet(setStr: string): VersionBoundarySet | null {
 
     for (const boundaryStr of boundaries) {
         const boundary = parseInfiniteSemVer(boundaryStr);
-        if (boundary.version.length === 0) {
+        if (boundary.version.version.length === 0) {
             return null;
         }
 
@@ -129,12 +176,12 @@ function parseVersionBoundarySet(setStr: string): VersionBoundarySet | null {
                     return null;
                 }
                 boundarySet.lower = {version: boundary.version, operator: '>='};
-                if (boundary.version[0] === 0) {
-                    const c1 = boundary.version.length >= 2 ? boundary.version[1] + 1 : 1;
-                    boundarySet.upper = {version: [0, c1], operator: '<'};
-                } else if (boundary.version[0] > 0) {
-                    const c0 = boundary.version[0] + 1;
-                    boundarySet.upper = {version: [c0], operator: '<'};
+                if (boundary.version.version[0] === 0) {
+                    const c1 = boundary.version.version.length >= 2 ? boundary.version.version[1] + 1 : 1;
+                    boundarySet.upper = {version: {version: [0, c1]}, operator: '<'};
+                } else if (boundary.version.version[0] > 0) {
+                    const c0 = boundary.version.version[0] + 1;
+                    boundarySet.upper = {version: {version: [c0]}, operator: '<'};
                 }
             }
                 break;
@@ -153,12 +200,12 @@ function parseVersionBoundarySet(setStr: string): VersionBoundarySet | null {
     return boundarySet;
 }
 
-export function isWithinRange(version: InfiniteSemVer, range: VersionRange): boolean {
+export function isWithinRange(version: InfiniteSemVer, range: VersionRange, ignorePostfix = false): boolean {
     for (const boundarySet of range) {
         let isWithinBoundarySet = true;
 
         if (boundarySet.lower) {
-            const comparison = compareInfiniteVersions(version, boundarySet.lower.version);
+            const comparison = compareInfiniteVersions(version, boundarySet.lower.version, ignorePostfix);
             console.log('comparison lower', [comparison, version, boundarySet.lower.version]);
             switch (boundarySet.lower.operator) {
                 case '>':
@@ -171,7 +218,7 @@ export function isWithinRange(version: InfiniteSemVer, range: VersionRange): boo
         }
 
         if (boundarySet.upper) {
-            const comparison = compareInfiniteVersions(version, boundarySet.upper.version);
+            const comparison = compareInfiniteVersions(version, boundarySet.upper.version, ignorePostfix);
             console.log('comparison upper', [comparison, version, boundarySet.upper.version]);
             switch (boundarySet.upper.operator) {
                 case '<':
