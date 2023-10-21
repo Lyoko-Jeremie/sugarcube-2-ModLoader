@@ -111,15 +111,27 @@ The format is as follows (sample src/insertTools/MyMod/boot.json):
   "dependenceInfo": [     // （可选） 依赖的mod列表，可以在此声明此mod依赖哪些前置mod，不满足的依赖会在加载日志中产生警告
     {
       "modName": "ModLoader DoL ImageLoaderHook",   // 依赖的mod名字
-      "version": "^2.0.0"                              // 依赖的mod版本
+      "version": "^2.0.0"                           // 依赖的mod版本
+      // 对于版本号声明格式的简单说明：
+      //    版本号是以逗号为分隔的数字，比较时从左往右逐个逗号进行比较。
+      //    通常是3个数字组成，第一个数字表示大版本，出现破坏性（不向前兼容的）变更时数值加一，第二个数字表示小版本，有新功能时数值加一，第三个数字表示修订版本，修复bug时数值加一。
+      //    以"^"开头表示从此大版本开始到下一个大版本结束的范围，这是推荐的默认依赖写法。
+      //    以"="或不带任何前缀表示只依赖指定的版本号。
+      //    以"> < >= <="这种不等式写法符合对应的数学语义。
+      //    
     },
     {
       "modName": "ModLoaderGui",
       "version": "^1.0.8"                          // 依赖的mod版本，使用(https://www.npmjs.com/package/semver)检查版本号，符合`语义化版本控制规范` (https://semver.org/lang/zh-CN/)
     },
+    // 除了以上的方法可以声明对普通Mod的依赖，还有下面两个特殊的对 ModLoader 版本和 游戏版本 的依赖声明
     {
-      "modName": "ModLoader",
-      "version": "^1.3.1"
+      "modName": "ModLoader",     // 部分Mod可能需要依赖从特定ModLoader版本开始才添加进ModLoader的API，例如大部分AddonMod，可以像这样声明对ModLoader版本的依赖
+      "version": "^1.6.0"
+    },
+    {
+      "modName": "GameVersion",   // 部分Mod只能在特定游戏版本下才能正常工作，可以像这样声明对游戏版本的依赖。特别注意这里以等号开头表示只匹配特定版本的游戏。此处比较时只会比较游戏的本体版本号，忽略第一个"-"开始的所有后缀。
+      "version": "=0.4.2.7"
     }
   ]
 }
