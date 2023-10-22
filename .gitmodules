@@ -37,3 +37,7 @@
 	path = mod/ModdedFeatsAddon
 	url = https://github.com/Lyoko-Jeremie/DoL_ModdedFeatsAddon.git
 	branch = master
+[submodule "mod/ConflictChecker"]
+	path = mod/ConflictChecker
+	url = https://github.com/Lyoko-Jeremie/ConflictCheckerAddon.git
+	branch = master
