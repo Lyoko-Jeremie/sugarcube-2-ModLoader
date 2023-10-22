@@ -208,7 +208,12 @@ export class AddonPluginManager implements Sc2EventTracerCallback {
     async exportDataZip(zip: JSZip): Promise<JSZip> {
         for (const addonPlugin of this.addonPluginTable) {
             if (addonPlugin.hookPoint.exportDataZip) {
-                zip = await addonPlugin.hookPoint.exportDataZip(zip);
+                try {
+                    zip = await addonPlugin.hookPoint.exportDataZip(zip);
+                } catch (e: Error | any) {
+                    console.error('exportDataZip error on addonPlugin.hookPoint', [addonPlugin], e);
+                    this.log.error(`exportDataZip error on addonPlugin.hookPoint [${addonPlugin.modName}] [${addonPlugin.addonName}] [${e?.message ? e.message : e}]`)
+                }
             }
         }
         return zip;
