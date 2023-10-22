@@ -114,10 +114,10 @@ export class DependenceChecker {
                     }
                     // check by order
                     const ii = modOrder.indexOf(mod2.bootJson.name);
-                    if (!(ii > 0)) {
+                    if (!(ii >= 0)) {
                         // never go there
-                        console.error('DependenceChecker.check() cannot find mod in modOrder', [mod.bootJson.name, mod2.bootJson, modOrder]);
-                        this.log.error(`DependenceChecker.check() cannot find mod in modOrder: mod[${mod.bootJson.name}] need mod[${d.modName}] but mod[${d.modName}] not find in modOrder.`);
+                        console.error('DependenceChecker.check() cannot find mod in modOrder. never go there.', [mod.bootJson.name, mod2.bootJson, clone(modOrder), ii]);
+                        this.log.error(`DependenceChecker.check() cannot find mod in modOrder: mod[${mod.bootJson.name}] need mod[${d.modName}] but mod[${d.modName}] not find in modOrder. never go there.`);
                         continue;
                     }
                     if (!(modOrder.indexOf(mod2.bootJson.name) < i)) {
