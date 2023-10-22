@@ -9,7 +9,7 @@ import JSZip from "jszip";
 
 export class ModUtils {
 
-    version = '1.7.0';
+    version = '1.8.0';
 
     constructor(
         public pSC2DataManager: SC2DataManager,
