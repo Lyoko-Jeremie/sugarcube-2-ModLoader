@@ -7,7 +7,8 @@
   ],
   "scriptFileList_earlyload": [
     "MyMod_script_earlyload_example.js",
-    "MyMod_script_earlyload_example_readzip.js"
+    "MyMod_script_earlyload_example_readzip.js",
+    "MyMod_script_test_mod_in_mod.js"
   ],
   "scriptFileList_inject_early": [
     "MyMod_script_inject_early_example.js"
@@ -40,6 +41,9 @@
   ],
   "additionFile": [
     "readme.txt"
+  ],
+  "additionBinaryFile": [
+    "MyMod--1.mod.zip"
   ],
   "addonPlugin": [
     {
