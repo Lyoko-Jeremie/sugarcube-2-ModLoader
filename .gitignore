@@ -31,4 +31,5 @@ mod
 !mod/Diff3WayMerge
 !mod/ModdedClothesAddon
 !mod/ModdedFeatsAddon
+!mod/ConflictChecker
 
