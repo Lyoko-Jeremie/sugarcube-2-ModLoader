@@ -23,6 +23,7 @@
     "libsodium-wrappers": "^0.7.13",
     "lodash": "^4.17.21",
     "lru-cache": "^10.0.1",
+    "moment": "^2.29.4",
     "semver": "^7.5.4",
     "ts-mixer": "^6.0.3"
   },
