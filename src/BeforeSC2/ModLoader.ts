@@ -118,13 +118,13 @@ export interface ModInfo {
     version: string;
     cache: SC2DataInfo;
     imgs: ModImg[];
-    // orgin path, replace path
+    // origin path, replace path
     imgFileReplaceList: [string, string][];
-    // file name, file contect
+    // file name, file content
     scriptFileList_preload: [string, string][];
-    // file name, file contect
+    // file name, file content
     scriptFileList_earlyload: [string, string][];
-    // file name, file contect
+    // file name, file content
     scriptFileList_inject_early: [string, string][];
     replacePatcher: ReplacePatcher[];
     bootJson: ModBootJson;
@@ -137,6 +137,9 @@ export enum ModDataLoadType {
     'IndexDB' = 'IndexDB',
 }
 
+
+// `modReadOrder`/`modReadCache` the read mod from zip file
+// `modOrder`/`modCache` the mod filter by the `filterModCanLoad`
 export class ModLoader {
     logger: LogWrapper;
 
