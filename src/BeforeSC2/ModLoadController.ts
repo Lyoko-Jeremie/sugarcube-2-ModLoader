@@ -104,6 +104,10 @@ const ModLoadControllerCallback_ScriptLoadHook = [
     'Load_start',
     'Load_end',
 ] as const;
+const ModLoadControllerCallback_ScriptLazyLoadHook = [
+    'LazyLoad_start',
+    'LazyLoad_end',
+] as const;
 
 export interface LogRecord {
     type: 'info' | 'warning' | 'error';
@@ -129,6 +133,20 @@ export class ModLoadController implements ModLoadControllerCallback {
                     try {
                         if (hook[T]) {
                             await hook[T]!.apply(hook, [modName, fileName]);
+                        }
+                    } catch (e: any | Error) {
+                        console.error('ModLoadController', [T, id, e]);
+                        this.logError(`ModLoadController ${T} ${id} ${e?.message ? e.message : e}`);
+                    }
+                }
+            };
+        });
+        ModLoadControllerCallback_ScriptLazyLoadHook.forEach((T) => {
+            this[T] = async (modName: string) => {
+                for (const [id, hook] of this.lifeTimeCircleHookTable) {
+                    try {
+                        if (hook[T]) {
+                            await hook[T]!.apply(hook, [modName]);
                         }
                     } catch (e: any | Error) {
                         console.error('ModLoadController', [T, id, e]);
