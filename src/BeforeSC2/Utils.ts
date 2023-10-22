@@ -5,6 +5,7 @@ import {Twee2Passage, Twee2PassageR} from "./ModZipReader";
 import {PassageDataItem, SC2DataInfo, SC2DataInfoCache} from "./SC2DataInfoCache";
 import {SimulateMergeResult} from "./SimulateMerge";
 import {replaceMergeSC2DataInfoCache, replaceMergeSC2DataInfoCacheForce} from "./MergeSC2DataInfoCache";
+import JSZip from "jszip";
 
 export class ModUtils {
 
@@ -364,6 +365,17 @@ export class ModUtils {
 
     getLogger() {
         return this.getModLoadController().getLog();
+    }
+
+    async lazyRegisterNewModZipData(data: JSZip.InputType, options?: JSZip.JSZipLoadOptions) {
+        try {
+            const zip = await JSZip.loadAsync(data, options);
+            return await this.pSC2DataManager.getModLoader().lazyRegisterNewMod(zip);
+        } catch (e: Error | any) {
+            console.error(e);
+            this.getLogger().error(`lazyRegisterNewMod() error:[${e?.message ? e.message : e}]`);
+            return false;
+        }
     }
 
 }
