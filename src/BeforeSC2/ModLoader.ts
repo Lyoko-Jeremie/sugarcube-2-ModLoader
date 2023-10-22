@@ -394,6 +394,7 @@ export class ModLoader {
         }
     }
 
+    // call the `canLoadThisMod` to filter mod.
     protected async filterModCanLoad(modeList: string[]) {
         const canLoadList: string[] = [];
         for (const modName of modeList) {
@@ -456,6 +457,9 @@ export class ModLoader {
                 await this.gSC2DataManager.getModLoadController().InjectEarlyLoad_end(modName, name);
             }
             // check ban
+            // the `canLoadThisMod` will be call in `filterModCanLoad`
+            // a mod only can ban the mods that load after it.
+            // any mod loaded cannot be banned, because it's `InjectEarlyLoad` already be injected and run.
             toLoadModeList = await this.filterModCanLoad(toLoadModeList);
         }
     }
