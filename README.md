@@ -12,6 +12,7 @@ Or download the automatic build version：[DoLModLoaderBuild](https://github.com
 
 * [ModLoader](#ModLoader)
   * [简介](#简介)
+  * [有关安全模式(SafeMode)的使用提示](#有关安全模式safemode的使用提示)
   * [如何制作 Mod.zip 文件](#如何制作-modzip-文件)
       * [注意事项](#注意事项)
   * [如何打包Mod](#如何打包mod)
@@ -45,6 +46,17 @@ To use this ModLoader for games, you need to use this version of the SC2 engine 
 For specific instructions on how to package a game with the ModLoader,
 please refer to the details provided in the section titled "ModLoader Development and Modification Methods"
 under [ModLoader Development and Modification Methods](#ModLoader开发及修改方法).
+
+---
+
+# 有关安全模式(SafeMode)的使用提示
+
+若因未知问题触发故障导致ModLoader无法正常完成加载，请连续触发3次故障后，再次进入游戏时，ModLoader会启动安全模式自动关闭所有Mod，以便您可以正常打开Mod管理器以便卸载可能触发故障的mod。
+
+If ModLoader fails to load due to an unknown issue, trigger the fault three times.
+On the next game entry, ModLoader will entry `safe mode` to disable all mods.
+You can then access the Mod Manager to remove the problematic mod.
+
 
 ---
 
