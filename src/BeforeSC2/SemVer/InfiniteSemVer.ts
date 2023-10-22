@@ -31,6 +31,7 @@ function isCharNumber(c: string) {
 
 export function parseInfiniteSemVer(versionStr: string): VersionBoundary {
     console.log('parseInfiniteSemVer()', versionStr);
+    versionStr = versionStr.trim();
     let bo: BoundaryOperator = undefined;
     const bb = BoundaryOperatorList.filter(
         (T): T is Exclude<BoundaryOperator, undefined> => !!T
@@ -53,6 +54,7 @@ export function parseInfiniteSemVer(versionStr: string): VersionBoundary {
         };
     }
 
+    versionStr = versionStr.trim();
     // format: 1.0.0-preRelease+buildMetadata
 
     // preRelease: 1.0.0-alpha
@@ -63,7 +65,7 @@ export function parseInfiniteSemVer(versionStr: string): VersionBoundary {
     sp2 = sp2 === -1 ? versionStr.length : sp2;
     const sp = Math.min(sp1, sp2);
 
-    const parts = versionStr.trim().substring(0, sp).split('.');
+    const parts = versionStr.substring(0, sp).split('.');
     const version: number[] = [];
 
     for (const part of parts) {
