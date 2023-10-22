@@ -25,6 +25,19 @@ export class SC2DataManager {
     ) {
     }
 
+    private modUtils = new ModUtils(this, this.thisWin);
+
+    getModUtils() {
+        return this.modUtils;
+    }
+
+    // it needs access modUtils, so must only init after modUtils
+    private modLoadController: ModLoadController = new ModLoadController(this);
+
+    getModLoadController() {
+        return this.modLoadController;
+    }
+
     get rootNode() {
         return this.thisWin.document.getElementsByTagName('tw-storydata')[0];
     }
@@ -158,15 +171,6 @@ export class SC2DataManager {
         return this.modLoader;
     }
 
-    private modLoadController?: ModLoadController;
-
-    getModLoadController() {
-        if (!this.modLoadController) {
-            this.modLoadController = new ModLoadController(this);
-        }
-        return this.modLoadController;
-    }
-
     private passageTracer = new PassageTracer(this.thisWin);
 
     getPassageTracer() {
@@ -177,12 +181,6 @@ export class SC2DataManager {
 
     getSc2EventTracer() {
         return this.sc2EventTracer;
-    }
-
-    private modUtils = new ModUtils(this, this.thisWin);
-
-    getModUtils() {
-        return this.modUtils;
     }
 
     private jsPreloader = new JsPreloader(this, this.modUtils, this.thisWin);
@@ -222,11 +220,13 @@ export class SC2DataManager {
     async startInit() {
         if (this.startInitOk) {
             console.log('ModLoader ====== SC2DataManager startInit() already start');
+            this.getModLoadController().logInfo('ModLoader ====== SC2DataManager startInit() already start');
             return;
         }
         this.startInitOk = true;
 
         console.log('ModLoader ====== SC2DataManager startInit() start');
+        this.getModLoadController().logInfo('ModLoader ====== SC2DataManager startInit() start');
 
         // keep originSC2DataInfoCache valid, keep it have the unmodified vanilla data
         this.initSC2DataInfoCache();

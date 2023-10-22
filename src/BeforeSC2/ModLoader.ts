@@ -166,6 +166,7 @@ export class ModLoader {
         const overwrite = this.modReadCache.get(m.name);
         if (overwrite) {
             console.error('ModLoader addMod() has duplicate name: ', [m.name], ' will be overwrite');
+            this.logger.error(`ModLoader addMod() has duplicate name: [${m.name}] will be overwrite`);
         }
         this.modReadCache.set(m.name, m);
         return !overwrite;
@@ -178,6 +179,7 @@ export class ModLoader {
         const mod = this.getMod(modName);
         if (!mod) {
             console.error('ModLoader checkModConflictOne() (!mod)');
+            this.logger.error(`ModLoader checkModConflictOne() (!mod)`);
             return undefined;
         }
         return simulateMergeSC2DataInfoCache(this.gSC2DataManager.getSC2DataInfoAfterPatch(), mod.cache)[0];
@@ -346,6 +348,7 @@ export class ModLoader {
                     break;
                 default:
                     console.error('ModLoader loadTranslateData() unknown loadType:', [loadType]);
+                    this.logger.error(`ModLoader loadTranslateData() unknown loadType: [${loadType}]`);
             }
         }
         await this.initModInjectEarlyLoadInDomScript();
@@ -365,12 +368,14 @@ export class ModLoader {
             if (!mod) {
                 // never go there
                 console.error('ModLoader ====== initModInjectEarlyLoadScript() (!mod)');
+                this.logger.error(`ModLoader ====== initModInjectEarlyLoadScript() (!mod)`);
                 continue;
             }
             const zip = this.getModZip(modName);
             if (!zip) {
                 // never go there
                 console.error('ModLoader ====== initModInjectEarlyLoadScript() (!zip)');
+                this.logger.error(`ModLoader ====== initModInjectEarlyLoadScript() (!zip)`);
                 continue;
             }
             for (const modZipReader of zip) {
@@ -386,6 +391,7 @@ export class ModLoader {
             if (!modInfo || !zips) {
                 // never go there
                 console.error(`ModLoader ====== triggerAfterModLoad() (!m || !zips) mod not find: [${modName}]. never go there.`);
+                this.logger.error(`ModLoader ====== triggerAfterModLoad() (!m || !zips) mod not find: [${modName}]. never go there.`);
                 continue;
             }
             const bootJson = modInfo.bootJson;
@@ -403,6 +409,7 @@ export class ModLoader {
             if (!m || !zips) {
                 // never go there
                 console.error(`ModLoader ====== initModInjectEarlyLoadScript() (!m || !zips) mod not find: [${modName}]. never go there.`);
+                this.logger.error(`ModLoader ====== initModInjectEarlyLoadScript() (!m || !zips) mod not find: [${modName}]. never go there.`);
                 continue;
             }
             const bootJ = m.bootJson;
@@ -426,12 +433,14 @@ export class ModLoader {
             if (!nowMod) {
                 // never go there
                 console.error('ModLoader ====== initModInjectEarlyLoadInDomScript() (!nowMod). never go there.');
+                this.logger.error(`ModLoader ====== initModInjectEarlyLoadInDomScript() (!nowMod). never go there.`);
                 continue;
             }
             const mod = this.getModRead(nowMod);
             if (!mod) {
                 // never go there
                 console.error('ModLoader ====== initModInjectEarlyLoadScript() (!mod)');
+                this.logger.error(`ModLoader ====== initModInjectEarlyLoadScript() (!mod)`);
                 continue;
             }
             const modName = mod.name;
@@ -439,6 +448,7 @@ export class ModLoader {
             this.modCache.set(modName, mod);
             for (const [name, content] of mod.scriptFileList_inject_early) {
                 console.log('ModLoader ====== initModInjectEarlyLoadScript() inject start: ', [modName], [name]);
+                this.logger.log(`ModLoader ====== initModInjectEarlyLoadScript() inject start: [${modName}] [${name}]`);
                 await this.gSC2DataManager.getModLoadController().InjectEarlyLoad_start(modName, name);
                 const script = this.thisWin.document.createElement('script');
                 script.innerHTML = content;
@@ -451,9 +461,11 @@ export class ModLoader {
                 } else {
                     // or insert to head
                     console.warn('ModLoader ====== initModInjectEarlyLoadScript() gSC2DataManager is undefined, insert to head');
+                    this.logger.warn(`ModLoader ====== initModInjectEarlyLoadScript() gSC2DataManager is undefined, insert to head`);
                     this.thisWin.document.head.appendChild(script);
                 }
                 console.log('ModLoader ====== initModInjectEarlyLoadScript() inject end: ', [modName], [name]);
+                this.logger.log(`ModLoader ====== initModInjectEarlyLoadScript() inject end: [${modName}] [${name}]`);
                 await this.gSC2DataManager.getModLoadController().InjectEarlyLoad_end(modName, name);
             }
             // check ban
@@ -469,10 +481,12 @@ export class ModLoader {
             const mod = this.getMod(modName);
             if (!mod) {
                 console.error('ModLoader ====== initModEarlyLoadScript() (!mod)');
+                this.logger.error(`ModLoader ====== initModEarlyLoadScript() (!mod)`);
                 continue;
             }
             for (const [name, content] of mod.scriptFileList_earlyload) {
                 console.log('ModLoader ====== initModEarlyLoadScript() excute start: ', [modName], [name]);
+                this.logger.log(`ModLoader ====== initModEarlyLoadScript() excute start: [${modName}] [${name}]`);
                 await this.gSC2DataManager.getModLoadController().EarlyLoad_start(modName, name);
                 try {
                     // const R = await Function(`return ${content}`)();
@@ -483,12 +497,16 @@ export class ModLoader {
                         'EarlyLoadScript',
                         this.gSC2DataManager,
                         this.thisWin,
+                        this.logger,
                     );
                     console.log('ModLoader ====== initModEarlyLoadScript() excute result: ', [modName], [name], R);
+                    this.logger.log(`ModLoader ====== initModEarlyLoadScript() excute result: [${modName}] [${name}] [${R}]`);
                 } catch (e) {
                     console.error('ModLoader ====== initModEarlyLoadScript() excute error: ', [modName], [name], e);
+                    this.logger.error(`ModLoader ====== initModEarlyLoadScript() excute error: [${modName}] [${name}] [${e}]`);
                 }
                 console.log('ModLoader ====== initModEarlyLoadScript() excute end: ', [modName], [name]);
+                this.logger.log(`ModLoader ====== initModEarlyLoadScript() excute end: [${modName}] [${name}]`);
                 await this.gSC2DataManager.getModLoadController().EarlyLoad_end(modName, name);
                 this.logger.log(`ModLoader ========= version: [${this.gSC2DataManager.getModUtils().version}]`);
             }

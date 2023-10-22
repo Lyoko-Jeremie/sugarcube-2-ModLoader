@@ -1,6 +1,6 @@
 import {isString, isArray, every, isNil, get} from 'lodash';
 import {SC2DataInfo} from "./SC2DataInfoCache";
-import {ModLoadControllerCallback} from "./ModLoadController";
+import {LogWrapper, ModLoadControllerCallback} from "./ModLoadController";
 
 export interface PatchInfo {
     js?: PatchInfoItem[];
@@ -111,7 +111,7 @@ export class ReplacePatcher {
     public patchInfoMap: PatchInfoMap;
 
     constructor(
-        public modLoadControllerCallback: ModLoadControllerCallback,
+        public logger: LogWrapper,
         public modName: string,
         public patchFileName: string,
         public patchInfo_: any,
@@ -182,7 +182,7 @@ export class ReplacePatcher {
                         ' content ',
                         [item.content],
                     );
-                    this.modLoadControllerCallback.logWarning(`applyReplacePatcher() js replace multiple:` +
+                    this.logger.warn(`applyReplacePatcher() js replace multiple:` +
                         ` in [${item.name}] of [${patchInfoItem.from}]` +
                         ` positions [${r.positions}]`);
                 } else if (r.positions.length === 0) {
@@ -198,7 +198,7 @@ export class ReplacePatcher {
                         ' content ',
                         [item.content],
                     );
-                    this.modLoadControllerCallback.logWarning(`applyReplacePatcher() js replace 0:` +
+                    this.logger.warn(`applyReplacePatcher() js replace 0:` +
                         ` in [${item.name}] of [${patchInfoItem.from}]` +
                         ` positions [${r.positions}]`);
                 }
@@ -228,7 +228,7 @@ export class ReplacePatcher {
                         ' content ',
                         [item.content],
                     );
-                    this.modLoadControllerCallback.logWarning(`applyReplacePatcher() css replace multiple:` +
+                    this.logger.warn(`applyReplacePatcher() css replace multiple:` +
                         ` in [${item.name}] of [${patchInfoItem.from}]` +
                         ` positions [${r.positions}]`);
                 } else if (r.positions.length === 0) {
@@ -244,7 +244,7 @@ export class ReplacePatcher {
                         ' content ',
                         [item.content],
                     );
-                    this.modLoadControllerCallback.logWarning(`applyReplacePatcher() css replace 0:` +
+                    this.logger.warn(`applyReplacePatcher() css replace 0:` +
                         ` in [${item.name}] of [${patchInfoItem.from}]` +
                         ` positions [${r.positions}]`);
                 }
@@ -274,7 +274,7 @@ export class ReplacePatcher {
                         ' content ',
                         [item.content],
                     );
-                    this.modLoadControllerCallback.logWarning(`applyReplacePatcher() passage replace multiple:` +
+                    this.logger.warn(`applyReplacePatcher() passage replace multiple:` +
                         ` in [${item.name}] of [${patchInfoItem.from}]` +
                         ` positions [${r.positions}]`);
                 } else if (r.positions.length === 0) {
@@ -290,7 +290,7 @@ export class ReplacePatcher {
                         ' content ',
                         [item.content],
                     );
-                    this.modLoadControllerCallback.logWarning(`applyReplacePatcher() passage replace 0:` +
+                    this.logger.warn(`applyReplacePatcher() passage replace 0:` +
                         ` in [${item.name}] of [${patchInfoItem.from}]` +
                         ` positions [${r.positions}]`);
                 }

@@ -55,6 +55,7 @@ export class CacheRecord<T extends { name: string, content: string }> {
                         [item.name],
                         [this.cacheRecordName, this.dataSource],
                     );
+                    this.log.warn(`CacheRecord.fillMap() has duplicate name: [${item.name}] [${this.cacheRecordName} ${this.dataSource}]`);
                 }
                 this.map.set(item.name, item);
             } else {
