@@ -39,6 +39,10 @@ export interface ModLoadControllerCallback {
 
     EarlyLoad_end(modName: string, fileName: string): Promise<any>;
 
+    LazyLoad_start(modName: string): Promise<any>;
+
+    LazyLoad_end(modName: string): Promise<any>;
+
     Load_start(modName: string, fileName: string): Promise<any>;
 
     Load_end(modName: string, fileName: string): Promise<any>;
@@ -222,6 +226,8 @@ export class ModLoadController implements ModLoadControllerCallback {
 
     public logRecordBeforeAnyLogHookRegister: LogRecord[] = [];
 
+    LazyLoad_end!: (modName: string) => Promise<any>;
+    LazyLoad_start!: (modName: string) => Promise<any>;
     EarlyLoad_end!: (modName: string, fileName: string) => Promise<any>;
     EarlyLoad_start!: (modName: string, fileName: string) => Promise<any>;
     InjectEarlyLoad_end!: (modName: string, fileName: string) => Promise<any>;

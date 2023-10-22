@@ -731,3 +731,26 @@ export class RemoteLoader extends LoaderBase {
 
 }
 
+
+export class LazyLoader extends LoaderBase {
+
+    async add(modeZip: JSZip) {
+        try {
+            const m = new ModZipReader(modeZip, this, this.log);
+            if (await m.init()) {
+                this.modList.push(m);
+            }
+            return m;
+        } catch (E: Error | any) {
+            console.error('LazyLoader add()', E);
+            this.log.logError(`LazyLoader add() [${E?.message ? E.message : E}]`);
+            return Promise.reject(E);
+        }
+    }
+
+    async load(): Promise<boolean> {
+        return Promise.resolve(true);
+    }
+
+}
+
