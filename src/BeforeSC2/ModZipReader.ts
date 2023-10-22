@@ -295,8 +295,8 @@ export class ModZipReader {
                     //     });
                     // }
                 } else {
-                    console.warn('cannot get tweeFileList file from mod zip:', [this.modInfo.name, tweePath]);
-                    this.log.warn(`cannot get tweeFileList file from mod zip: [${this.modInfo.name}] [${tweePath}]`);
+                    console.error('cannot get tweeFileList file from mod zip:', [this.modInfo.name, tweePath]);
+                    this.log.error(`cannot get tweeFileList file from mod zip: [${this.modInfo.name}] [${tweePath}]`);
                 }
             }
             this.modInfo.cache.passageDataItems.fillMap();
@@ -311,8 +311,8 @@ export class ModZipReader {
                         id: 0,
                     });
                 } else {
-                    console.warn('cannot get scriptFileList file from mod zip:', [this.modInfo.name, scPath]);
-                    this.log.warn(`cannot get scriptFileList file from mod zip: [${this.modInfo.name}] [${scPath}]`);
+                    console.error('cannot get scriptFileList file from mod zip:', [this.modInfo.name, scPath]);
+                    this.log.error(`cannot get scriptFileList file from mod zip: [${this.modInfo.name}] [${scPath}]`);
                 }
             }
             this.modInfo.cache.scriptFileItems.fillMap();

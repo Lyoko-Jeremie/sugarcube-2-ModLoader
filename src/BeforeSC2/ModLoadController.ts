@@ -287,8 +287,8 @@ export class ModLoadController implements ModLoadControllerCallback {
 
     public addLifeTimeCircleHook(id: string, hook: LifeTimeCircleHook) {
         if (this.lifeTimeCircleHookTable.has(id)) {
-            console.warn(`ModLoadController addLifeTimeCircleHook() id ${id} already exists.`);
-            this.logWarning(`ModLoadController addLifeTimeCircleHook() id ${id} already exists.`);
+            console.error(`ModLoadController addLifeTimeCircleHook() id ${id} already exists.`);
+            this.logError(`ModLoadController addLifeTimeCircleHook() id ${id} already exists.`);
         }
         this.lifeTimeCircleHookTable.set(id, hook);
     }
