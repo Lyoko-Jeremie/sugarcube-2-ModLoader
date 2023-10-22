@@ -191,7 +191,7 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
         const scriptFile = await promisify(fs.readFile)(scriptPath, {encoding: 'utf-8'});
         zip.file(scriptPath, scriptFile);
     }
-    for (const bfPath of bootJson.additionBinaryFile) {
+    for (const bfPath of bootJson.additionBinaryFile || []) {
         const scriptFile = await promisify(fs.readFile)(bfPath);
         zip.file(bfPath, scriptFile, {binary: true});
     }
