@@ -109,8 +109,12 @@ The format is as follows (sample src/insertTools/MyMod/boot.json):
     "MyMod_Image/typeBImage/222.png",
     "MyMod_Image/typeBImage/333.gif"
   ],
-  "additionFile": [     // （必须存在） 附加文件列表，额外打包到zip中的文件，此列表中的文件不会被加载，仅作为附加文件存在
+  "additionFile": [     // （必须存在） 附加文件列表，额外打包到zip中的文件，此列表中的文件不会被加载，仅作为附加文件存在。
+                        //  请注意，这里的文件会以被当作文本文件以utf-8编码读取并保存
     "readme.txt"      // 第一个以readme(不区分大小写)开头的文件会被作为mod的说明文件，会在mod管理器中显示
+  ],
+  "additionBinaryFile": [   // 附加二进制文件
+    "xxxx.zip"          // 如果有需要附加的二进制文件，编写在这里时 `packModZip.ts` 会将其以二进制格式保存
   ],
   "addonPlugin": [      // （可选） 依赖的插件列表，在此声明本mod依赖哪些插件，在此处声明后会调用对应的插件，不满足的依赖会在加载日志中产生警告
     {           //  需要首先由提供插件的mod在EarlyLoad阶段注册插件，否则会找不到插件

@@ -23,6 +23,7 @@ export interface ModBootJson {
     imgFileList: string[];
     replacePatchList?: string[];
     additionFile: string[];
+    additionBinaryFile: string[];
     addonPlugin?: ModBootJsonAddonPlugin[];
     dependenceInfo?: DependenceInfo[];
 }
@@ -189,6 +190,10 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
     for (const scriptPath of bootJson.additionFile) {
         const scriptFile = await promisify(fs.readFile)(scriptPath, {encoding: 'utf-8'});
         zip.file(scriptPath, scriptFile);
+    }
+    for (const bfPath of bootJson.additionBinaryFile) {
+        const scriptFile = await promisify(fs.readFile)(bfPath);
+        zip.file(bfPath, scriptFile, {binary: true});
     }
     if (bootJson.replacePatchList) {
         for (const patchPath of bootJson.replacePatchList) {
