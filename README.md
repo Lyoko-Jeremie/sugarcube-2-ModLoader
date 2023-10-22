@@ -573,18 +573,28 @@ TODO
 ## TODO
 
 - [x] 安全模式 Safe Mode   
-- [ ] Mod排序(ModLoaderGUI) Mod sorting    
+- [ ] Mod排序(ModLoaderGUI) Mod sorting
+- [ ] Mod禁用启用(可选加载)  
+- [ ] 游戏内Mod设置界面  
 - [ ] 修改其他Mod(Mod i18n pack(eg. english a cn mod))  Modify other mods   
 - [ ] 在线编辑passage   
 - [ ] 查看Diff   
-- [ ] 游戏内Mod设置界面   
-- [ ] Mod禁用启用(可选加载)   
-- [ ] Mod-游戏版本兼容性检查   
+- [x] Mod-游戏版本兼容性检查   
 - [ ] 使用Wikify执行script来注入游戏上下文，注入和拦截js函数和对象   
 - [ ] 提供Passage Prefix/Postfix Addon来实现前后缀模式(可以使用注入script函数并添加一行前后缀标签的方式实现)   
 - [ ] 提供PostPassage Addon来访问输出后的html node   
 - [ ] Mod Zip 加密 ( libsodium + 安全模式 + Mod禁用启用 )   
 
+### addon mod
 
-
-
+- [x] ModLoaderGui       Mod管理器
+- [x] ImageLoaderHook       图片加载器，负责拦截DoL的图像加载请求并将mod提供的图片注入到游戏
+- [x] CheckDoLCompressorDictionaries       检查DoLCompressorDictionaries数据结构，发现变化时发出警告，提示mod作者可能造成了存档不兼容
+- [x] CheckGameVersion       提供mod检查游戏版本的功能
+- [x] ConflictChecker        提供mod检查冲突的功能，给mod作者提供额外的mod间的先序和后序依赖检查
+- [x] ReplacePatch           提供passage和js/css的字符串替换功能
+- [x] TweeReplacer           提供passage的字符串替换功能，支持复杂的正则替换和大分段替换
+- [x] Diff3WayMerge          以在线三方合并计算的方式提供passage的合并功能，避免手动填写搜索字符串。此addon尚不稳定不稳定
+- [x] ModdedClothesAddon     提供快速添加衣服的addon，可以简单地添加衣服，不需要编写js代码
+- [x] ModdedFeatsAddon       提供快速添加成就的addon，可以简单地添加成就，不需要编写js代码
+- [ ] ModdedNpcAddon         提供快速添加NPC的addon，可以简单地添加NPC，不需要编写js代码  【正在收集方案阶段】
