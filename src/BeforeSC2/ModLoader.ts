@@ -178,6 +178,7 @@ export class ModLoader {
 
     modReadOrder: string[] = [];
     modOrder: string[] = [];
+    modLazyOderRecord: string[] = [];
     modLazyWaiting: string[] = [];
 
     checkModConflict2Root(modName: string) {
@@ -534,6 +535,7 @@ export class ModLoader {
             }
             await this.do_initModEarlyLoadScript(modName, mod);
             // to load lazy mod if this mod inject lazy mod
+            // `tryInitWaitingLazyLoadMod` will change `modOrder` , so we receive the new list from it
             toLoadModList = await this.tryInitWaitingLazyLoadMod(modName, toLoadModList);
         }
     }
@@ -541,9 +543,15 @@ export class ModLoader {
     private async tryInitWaitingLazyLoadMod(byModName: string, toLoadModList: string[]) {
         if (this.modLazyWaiting.length > 0) {
             await this.gSC2DataManager.getModLoadController().LazyLoad_start(byModName);
-            let canOverwriteMod = [byModName].concat(cloneDeep(this.modLazyWaiting));
+            let canOverwriteMod = new Set([byModName].concat(cloneDeep(this.modLazyWaiting)));
             // filter ban
             this.modLazyWaiting = await this.filterModCanLoad(this.modLazyWaiting);
+
+            if (uniq(this.modOrder).length !== this.modOrder.length) {
+                // never go there
+                console.error('ModLoader ====== tryInitWaitingLazyLoadMod() pre check duplicate mod in modOrder. never go there.', [byModName, this.modOrder]);
+                this.logger.error(`ModLoader ====== tryInitWaitingLazyLoadMod() pre check duplicate mod in modOrder. never go there.`);
+            }
 
             // split by NowMod
             // the lazy mod and it overwrote mod will insert after the NowMod
@@ -551,7 +559,7 @@ export class ModLoader {
             const loadedMod = this.modOrder.slice(0, nowModPos);
             const pendingMod = this.modOrder.slice(nowModPos + 1);
 
-            let nowLoadingMod: string[] = [];
+            let nowLoadingMod: string[] = [byModName];
 
             // mod can call add lazy mod on this loop,
             // so we must process the case that overwrite itself.
@@ -560,6 +568,7 @@ export class ModLoader {
             while (this.modLazyWaiting.length > 0) {
                 // remember the loading mod info, then pop-front it
                 const modName = this.modLazyWaiting.shift()!;
+                this.modLazyOderRecord.push(modName);
                 const mod = this.modLazyCache.get(modName);
                 if (!mod) {
                     // never go there
@@ -569,7 +578,7 @@ export class ModLoader {
                 }
                 // warning overwrite, but user can in-place overwrite self
                 if (this.modOrder.indexOf(modName) >= 0) {
-                    if (canOverwriteMod.indexOf(modName) >= 0) {
+                    if (canOverwriteMod.has(modName)) {
                         console.log('ModLoader ====== tryInitWaitingLazyLoadMod() mod already loaded:', [byModName, modName, this.modOrder]);
                         this.logger.log(`ModLoader ====== tryInitWaitingLazyLoadMod() mod already loaded: [${modName}]. when LazyLoad by [${byModName}] . ` +
                             ' be carefully, this will case unexpected behavior .');
@@ -580,7 +589,7 @@ export class ModLoader {
                     }
                 }
                 if (this.modCache.has(modName)) {
-                    if (canOverwriteMod.indexOf(modName) >= 0) {
+                    if (canOverwriteMod.has(modName)) {
                         console.log('ModLoader ====== tryInitWaitingLazyLoadMod() mod already loaded:', [byModName, modName, this.modCache]);
                         this.logger.log(`ModLoader ====== tryInitWaitingLazyLoadMod() mod already loaded: [${modName}]. when LazyLoad by [${byModName}] . ` +
                             ' be carefully, this will case unexpected behavior .');
@@ -592,15 +601,30 @@ export class ModLoader {
                 }
 
                 // overwrite loaded mod
+                // user can overwrite loaded mod, but this is unusual case
                 if (loadedMod.indexOf(modName) >= 0) {
+                    console.warn('ModLoader ====== tryInitWaitingLazyLoadMod() overwrite loaded mod:', [byModName, modName, loadedMod, pendingMod, nowLoadingMod]);
+                    this.logger.warn(`ModLoader ====== tryInitWaitingLazyLoadMod() overwrite loaded mod: [${modName}]. when LazyLoad by [${byModName}] . ` +
+                        'are you sure you want overwrite a mod that was loaded ? ' +
+                        'this is unusual case , will cause js conflict and memory incorrect , and will case unexpected behavior !!!');
                     loadedMod.splice(loadedMod.indexOf(modName), 1);
                 }
                 // replace pending mod
+                // means, the later mod we will overwrite and load early
                 if (pendingMod.indexOf(modName) >= 0) {
+                    console.warn('ModLoader ====== tryInitWaitingLazyLoadMod() overwrite later mod:', [byModName, modName, loadedMod, pendingMod, nowLoadingMod]);
+                    this.logger.warn(`ModLoader ====== tryInitWaitingLazyLoadMod() overwrite later mod: [${modName}]. when LazyLoad by [${byModName}] . ` +
+                        'are you sure you want overwrite and early load the mod that need later load ? ' +
+                        'this is unusual case , will broken mod order system , and will case unexpected behavior !!!');
                     pendingMod.splice(pendingMod.indexOf(modName), 1);
                 }
                 // loop overwrite lazy mod in this loop
+                // user can overwrite self in this loop multi time
                 if (nowLoadingMod.indexOf(modName) >= 0) {
+                    console.log('ModLoader ====== tryInitWaitingLazyLoadMod() overwrite loaded lazy mod:', [byModName, modName, loadedMod, pendingMod, nowLoadingMod]);
+                    this.logger.log(`ModLoader ====== tryInitWaitingLazyLoadMod() overwrite loaded lazy mod: [${modName}]. when LazyLoad by [${byModName}] . ` +
+                        'are you sure you want overwrite a mod that was loaded in lazy load ? ' +
+                        'carefully use this feature, otherwise will case unexpected behavior !!!');
                     nowLoadingMod.splice(nowLoadingMod.indexOf(modName), 1);
                 }
                 nowLoadingMod.push(modName);
@@ -614,11 +638,18 @@ export class ModLoader {
                 // and maybe add duplicate mod, there maybe case duplicate load, so we must filter it.
                 // in this special case, the duplicate mod will be overwritten by the last one, but will early load in the first one order.
                 this.modLazyWaiting = await this.filterModCanLoad(uniq(this.modLazyWaiting));
-                canOverwriteMod = uniq(canOverwriteMod.concat(this.modLazyWaiting));
+                this.modLazyWaiting.forEach(T => canOverwriteMod.add(T));
             }
 
             // rebuild `modOrder`
             this.modOrder = loadedMod.concat(nowLoadingMod).concat(pendingMod);
+
+            if (uniq(this.modOrder).length !== this.modOrder.length) {
+                // never go there
+                console.error('ModLoader ====== tryInitWaitingLazyLoadMod() post check duplicate mod in modOrder. never go there.', [byModName, this.modOrder]);
+                this.logger.error(`ModLoader ====== tryInitWaitingLazyLoadMod() post check duplicate mod in modOrder. never go there.`);
+            }
+
             await this.gSC2DataManager.getModLoadController().LazyLoad_end(byModName);
 
             return pendingMod;
