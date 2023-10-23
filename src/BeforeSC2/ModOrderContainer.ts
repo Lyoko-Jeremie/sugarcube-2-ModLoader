@@ -147,7 +147,7 @@ export class ModOrderContainer {
     }
 
     /**
-     * O(n+n)
+     * O(2n)
      */
     get_One_Array() {
         this.checkNameUniq();

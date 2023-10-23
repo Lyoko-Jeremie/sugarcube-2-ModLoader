@@ -1,4 +1,17 @@
-import {every, get, has, isArray, isObject, isPlainObject, isString, cloneDeep, uniq} from 'lodash';
+import {
+    every,
+    get,
+    has,
+    isArray,
+    isObject,
+    isPlainObject,
+    isString,
+    cloneDeep,
+    uniq,
+    uniqBy,
+    orderBy,
+    isEqualWith,
+} from 'lodash';
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {simulateMergeSC2DataInfoCache} from "./SimulateMerge";
 import {
@@ -13,6 +26,7 @@ import {SC2DataManager} from "./SC2DataManager";
 import {JsPreloader} from 'JsPreloader';
 import {LogWrapper, ModLoadControllerCallback} from "./ModLoadController";
 import {ReplacePatcher} from "./ReplacePatcher";
+import {ModLoadFromSourceType, ModOrderContainer} from "./ModOrderContainer";
 import {LRUCache} from 'lru-cache';
 import JSZip from 'jszip';
 
@@ -138,7 +152,6 @@ export enum ModDataLoadType {
     'IndexDB' = 'IndexDB',
 }
 
-
 // `modReadOrder`/`modReadCache` the read mod from zip file
 // `modOrder`/`modCache` the mod filter by the `filterModCanLoad`
 // `modLazyOrder`/`modLazyCache` the mod that Lazy load by a mod programming
@@ -154,32 +167,68 @@ export class ModLoader {
         this.logger = this.gSC2DataManager.getModUtils().getLogger();
     }
 
-    modReadCache: Map<string, ModInfo> = new Map<string, ModInfo>();
-    modCache: Map<string, ModInfo> = new Map<string, ModInfo>();
-    modLazyCache: Map<string, ModInfo> = new Map<string, ModInfo>();
+    private modReadCache: ModOrderContainer = new ModOrderContainer();
+    private modCache: ModOrderContainer = new ModOrderContainer();
+    private modLazyCache: Map<string, ModInfo> = new Map<string, ModInfo>();
 
     getMod(modName: string) {
-        return this.modCache.get(modName);
+        return this.modCache.getByNameOne(modName);
+    }
+
+    // getModCache() {
+    //     return this.modCache;
+    // }
+
+    /**
+     * O(2n)
+     */
+    getModCacheOneArray() {
+        return this.modCache.get_One_Array();
+    }
+
+    /**
+     O(n)
+     */
+    getModCacheArray() {
+        return this.modCache.get_Array();
+    }
+
+    /**
+     O(1)
+     */
+    getModCacheMap() {
+        return this.modCache.get_One_Map();
+    }
+
+    checkModCacheData() {
+        return this.modCache.checkData();
+    }
+
+    checkModCacheUniq() {
+        return this.modCache.checkNameUniq();
+    }
+
+    getModCacheByNameOne(modName: string) {
+        return this.modCache.getByNameOne(modName);
     }
 
     getModRead(modName: string) {
-        return this.modReadCache.get(modName);
+        return this.modReadCache.getByNameOne(modName);
     }
 
-    private addMod(m: ModInfo) {
-        const overwrite = this.modReadCache.get(m.name);
+    private addMod(m: ModZipReader, from: ModLoadFromSourceType) {
+        const overwrite = this.modReadCache.getHasByName(m.modInfo!.name);
         if (overwrite) {
-            console.error('ModLoader addMod() has duplicate name: ', [m.name], ' will be overwrite');
-            this.logger.error(`ModLoader addMod() has duplicate name: [${m.name}] will be overwrite`);
+            console.error('ModLoader addMod() has duplicate name: ', [m.modInfo!.name], ' will be overwrite');
+            this.logger.error(`ModLoader addMod() has duplicate name: [${m.modInfo!.name}] will be overwrite`);
         }
-        this.modReadCache.set(m.name, m);
+        this.modReadCache.insertReplace(m, from);
+        this.modReadCache.checkNameUniq();
         return !overwrite;
     }
 
-    modReadOrder: string[] = [];
-    modOrder: string[] = [];
-    modLazyOderRecord: string[] = [];
-    modLazyWaiting: string[] = [];
+    private modLazyOderRecord: string[] = [];
+    private modLazyWaiting: string[] = [];
 
     checkModConflict2Root(modName: string) {
         const mod = this.getMod(modName);
@@ -192,7 +241,7 @@ export class ModLoader {
     }
 
     checkModConflictList() {
-        const ml = this.modOrder.map(T => this.modCache.get(T))
+        const ml = this.modCache.order.map(T => T.mod)
             .filter((T): T is ModInfo => !!T)
             .map(T => T.cache);
         return simulateMergeSC2DataInfoCache(this.gSC2DataManager.getSC2DataInfoAfterPatch(), ...ml).map((T, index) => {
@@ -211,49 +260,58 @@ export class ModLoader {
 
     getModZip(modName: string) {
         const order = cloneDeep(this.loadOrder).reverse();
-        for (const loadType of order) {
-            switch (loadType) {
-                case ModDataLoadType.Remote:
-                    if (this.modRemoteLoader) {
-                        const mod = this.modRemoteLoader.getZipFile(modName);
-                        if (mod) {
-                            return mod;
-                        }
-                    }
-                    break;
-                case ModDataLoadType.Local:
-                    if (this.modLocalLoader) {
-                        const mod = this.modLocalLoader.getZipFile(modName);
-                        if (mod) {
-                            return mod;
-                        }
-                    }
-                    break;
-                case ModDataLoadType.LocalStorage:
-                    if (this.modLocalStorageLoader) {
-                        const mod = this.modLocalStorageLoader.getZipFile(modName);
-                        if (mod) {
-                            return mod;
-                        }
-                    }
-                    break;
-                case ModDataLoadType.IndexDB:
-                    if (this.modIndexDBLoader) {
-                        const mod = this.modIndexDBLoader.getZipFile(modName);
-                        if (mod) {
-                            return mod;
-                        }
-                    }
-                    break;
-            }
+        // for (const loadType of order) {
+        //     switch (loadType) {
+        //         case ModDataLoadType.Remote:
+        //             if (this.modRemoteLoader) {
+        //                 const mod = this.modRemoteLoader.getZipFile(modName);
+        //                 if (mod) {
+        //                     return mod;
+        //                 }
+        //             }
+        //             break;
+        //         case ModDataLoadType.Local:
+        //             if (this.modLocalLoader) {
+        //                 const mod = this.modLocalLoader.getZipFile(modName);
+        //                 if (mod) {
+        //                     return mod;
+        //                 }
+        //             }
+        //             break;
+        //         case ModDataLoadType.LocalStorage:
+        //             if (this.modLocalStorageLoader) {
+        //                 const mod = this.modLocalStorageLoader.getZipFile(modName);
+        //                 if (mod) {
+        //                     return mod;
+        //                 }
+        //             }
+        //             break;
+        //         case ModDataLoadType.IndexDB:
+        //             if (this.modIndexDBLoader) {
+        //                 const mod = this.modIndexDBLoader.getZipFile(modName);
+        //                 if (mod) {
+        //                     return mod;
+        //                 }
+        //             }
+        //             break;
+        //     }
+        // }
+        // if (this.modLazyLoader) {
+        //     const mod = this.modLazyLoader.getZipFile(modName);
+        //     if (mod) {
+        //         return mod;
+        //     }
+        // }
+        // return undefined;
+        const nn = this.modCache.getByName(modName);
+        if (!nn) {
+            return undefined;
         }
-        if (this.modLazyLoader) {
-            const mod = this.modLazyLoader.getZipFile(modName);
-            if (mod) {
-                return mod;
-            }
+        const kk = order.find(T => nn?.has(T));
+        if (!kk) {
+            return undefined;
         }
-        return undefined;
+        return nn.get(kk)!.zip;
     }
 
     public getIndexDBLoader() {
@@ -274,22 +332,23 @@ export class ModLoader {
 
     loadOrder: ModDataLoadType[] = [];
 
-    private addModeZip(T: ModZipReader) {
+    private addModeZip(T: ModZipReader, from: ModLoadFromSourceType) {
         if (T.modInfo) {
-            const overwrite = !this.addMod(T.modInfo);
+            const overwrite = !this.modReadCache.getHasByName(T.modInfo.name);
             if (overwrite) {
-                this.modReadOrder = this.modReadOrder.filter(T1 => T1 !== T.modInfo!.name);
+                this.modReadCache.deleteAll(T.modInfo.name);
             }
-            // this is invalid ?
+            // this is invalid
             this.gSC2DataManager.getDependenceChecker().checkFor(T.modInfo);
-            this.modReadOrder.push(T.modInfo.name);
+            this.modReadCache.pushBack(T, from);
+            this.modReadCache.checkNameUniq();
         }
     }
 
     public async loadMod(loadOrder: ModDataLoadType[]): Promise<boolean> {
         this.loadOrder = loadOrder;
         let ok = false;
-        this.modReadOrder = [];
+        // this.modReadOrder = [];
         for (const loadType of this.loadOrder) {
             switch (loadType) {
                 case ModDataLoadType.Remote:
@@ -298,7 +357,7 @@ export class ModLoader {
                     }
                     try {
                         ok = await this.modRemoteLoader.load() || ok;
-                        this.modRemoteLoader.modList.forEach(T => this.addModeZip(T));
+                        this.modRemoteLoader.modList.forEach(T => this.addModeZip(T, loadType));
                     } catch (e: Error | any) {
                         console.error(e);
                         this.logger.error(`ModLoader loadMod() RemoteLoader load error: ${e?.message ? e.message : e}`);
@@ -310,7 +369,7 @@ export class ModLoader {
                     }
                     try {
                         ok = await this.modLocalLoader.load() || ok;
-                        this.modLocalLoader.modList.forEach(T => this.addModeZip(T));
+                        this.modLocalLoader.modList.forEach(T => this.addModeZip(T, loadType));
                     } catch (e: Error | any) {
                         console.error(e);
                         this.logger.error(`ModLoader loadMod() LocalLoader load error: ${e?.message ? e.message : e}`);
@@ -322,7 +381,7 @@ export class ModLoader {
                     }
                     try {
                         ok = await this.modLocalStorageLoader.load() || ok;
-                        this.modLocalStorageLoader.modList.forEach(T => this.addModeZip(T));
+                        this.modLocalStorageLoader.modList.forEach(T => this.addModeZip(T, loadType));
                     } catch (e: Error | any) {
                         console.error(e);
                         this.logger.error(`ModLoader loadMod() LocalStorageLoader load error: ${e?.message ? e.message : e}`);
@@ -334,7 +393,7 @@ export class ModLoader {
                     }
                     try {
                         ok = await this.modIndexDBLoader.load() || ok;
-                        this.modIndexDBLoader.modList.forEach(T => this.addModeZip(T));
+                        this.modIndexDBLoader.modList.forEach(T => this.addModeZip(T, loadType));
                     } catch (e: Error | any) {
                         console.error(e);
                         this.logger.error(`ModLoader loadMod() IndexDBLoader load error: ${e?.message ? e.message : e}`);
@@ -349,6 +408,14 @@ export class ModLoader {
         await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterInjectEarlyLoad');
         await this.triggerAfterModLoad();
         await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterModLoad');
+        if (!this.modCache.checkData()) {
+            console.error('ModLoader loadMod() modCache.checkData() failed. Data consistency check failed.');
+            this.logger.error(`ModLoader loadMod() modCache.checkData() failed. Data consistency check failed.`);
+        }
+        if (!this.modCache.checkNameUniq()) {
+            console.error('ModLoader loadMod() modCache.checkNameUniq() failed. Data consistency check failed.');
+            this.logger.error(`ModLoader loadMod() modCache.checkNameUniq() failed. Data consistency check failed.`);
+        }
         await this.initModEarlyLoadScript();
         await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterEarlyLoad');
         await this.registerMod2Addon();
@@ -357,40 +424,18 @@ export class ModLoader {
     }
 
     private async registerMod2Addon() {
-        for (const modName of this.modOrder) {
-            const mod = this.getMod(modName);
-            if (!mod) {
-                // never go there
-                console.error('ModLoader ====== initModInjectEarlyLoadScript() (!mod)');
-                this.logger.error(`ModLoader ====== initModInjectEarlyLoadScript() (!mod)`);
-                continue;
-            }
-            const zip = this.getModZip(modName);
-            if (!zip) {
-                // never go there
-                console.error('ModLoader ====== initModInjectEarlyLoadScript() (!zip)');
-                this.logger.error(`ModLoader ====== initModInjectEarlyLoadScript() (!zip)`);
-                continue;
-            }
-            for (const modZipReader of zip) {
-                await this.gSC2DataManager.getAddonPluginManager().registerMod2Addon(mod, modZipReader);
-            }
+        for (const mod of this.modCache.get_Array()) {
+            const modZipReader = mod.zip;
+            await this.gSC2DataManager.getAddonPluginManager().registerMod2Addon(mod.mod, modZipReader);
         }
     }
 
     protected async triggerAfterModLoad() {
-        for (const modName of this.modOrder) {
-            const modInfo = this.getModRead(modName);
-            const zips = this.getModZip(modName);
-            if (!modInfo || !zips) {
-                // never go there
-                console.error(`ModLoader ====== triggerAfterModLoad() (!m || !zips) mod not find: [${modName}]. never go there.`);
-                this.logger.error(`ModLoader ====== triggerAfterModLoad() (!m || !zips) mod not find: [${modName}]. never go there.`);
-                continue;
-            }
+        for (const mod of this.modCache.get_Array()) {
+            const modInfo = mod.mod;
+            const modZipReader = mod.zip;
             const bootJson = modInfo.bootJson;
-            const zip = zips[0];
-            await this.modLoadControllerCallback.afterModLoad(bootJson, zip.zip, modInfo);
+            await this.modLoadControllerCallback.afterModLoad(bootJson, modZipReader.zip, modInfo);
         }
     }
 

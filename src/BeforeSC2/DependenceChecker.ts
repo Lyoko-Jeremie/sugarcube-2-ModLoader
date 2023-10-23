@@ -62,8 +62,8 @@ export class DependenceChecker {
     }
 
     check() {
-        const modCacheN = this.gSC2DataManager.getModLoader().getModCache();
-        const modOrder = modCacheN.get_One_Array();
+        const modOrder = this.gSC2DataManager.getModLoader().getModCacheOneArray();
+        const modCache = this.gSC2DataManager.getModLoader().getModCacheMap();
         // // check data state valid
         // if (modCache.size !== modOrder.length) {
         //     // never go there
@@ -99,7 +99,7 @@ export class DependenceChecker {
                         }
                         continue;
                     }
-                    const mod2 = modCacheN.getByNameOne(d.modName)?.mod;
+                    const mod2 = modCache.get(d.modName)?.mod;
                     if (!mod2) {
                         console.error('DependenceChecker.check() not found mod', [mod.bootJson.name, d]);
                         this.log.error(`DependenceChecker.check() not found mod: mod[${mod.bootJson.name}] need mod[${d.modName}] but not find.`);
@@ -138,7 +138,7 @@ export class DependenceChecker {
      * @param gameVersion
      */
     checkGameVersion(gameVersion: string) {
-        const modArray = this.gSC2DataManager.getModLoader().getModCache().get_One_Array();
+        const modArray = this.gSC2DataManager.getModLoader().getModCacheOneArray();
         let allOk = true;
         for (const mod of modArray) {
             if (mod.mod.bootJson.dependenceInfo) {

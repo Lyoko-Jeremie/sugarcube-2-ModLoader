@@ -250,12 +250,12 @@ export class SC2DataManager {
             };
         }));
 
-        if (!this.getModLoader().getModCache().checkData()) {
+        if (!this.getModLoader().checkModCacheData()) {
             // never go there
             console.error('ModLoader ====== SC2DataManager startInit() checkData() fail. never go there.');
             this.getModLoadController().logError('ModLoader ====== SC2DataManager startInit() checkData() fail. Data consistency check failed.. never go there.');
         }
-        if (this.getModLoader().getModCache().checkNameUniq()) {
+        if (this.getModLoader().checkModCacheUniq()) {
             console.error('ModLoader ====== SC2DataManager startInit() checkNameUniq() fail. never go there.');
             this.getModLoadController().logError('ModLoader ====== SC2DataManager startInit() checkNameUniq() fail. Data consistency check failed.. never go there.');
         }
@@ -301,8 +301,7 @@ export class SC2DataManager {
 
     async applyReplacePatcher(modSC2DataInfoCache: SC2DataInfo) {
 
-        const modCacheNN = this.getModLoader().getModCache();
-        const modOrder = modCacheNN.get_One_Array();
+        const modOrder = this.getModLoader().getModCacheOneArray();
 
         for (const mod of modOrder) {
             for (const rp of mod.mod.replacePatcher as ReplacePatcher[]) {
@@ -326,7 +325,7 @@ export class SC2DataManager {
     async patchModToGame() {
         await this.getModLoadController().PatchModToGame_start();
 
-        const modOrder = this.getModLoader().getModCache().get_Array();
+        const modOrder = this.getModLoader().getModCacheArray();
         this.cSC2DataInfoAfterPatchCache = undefined;
         this.flushAfterPatchCache();
         const originSC2DataInfoCache = this.getSC2DataInfoAfterPatch();

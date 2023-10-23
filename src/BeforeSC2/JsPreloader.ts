@@ -66,11 +66,11 @@ export class JsPreloader {
         this.logger.log('ModLoader ====== JsPreloader startLoad() end');
         this.pSC2DataManager.getPassageTracer().init();
         this.pSC2DataManager.getSc2EventTracer().init();
-        if (!this.pSC2DataManager.getModLoader().getModCache().checkData()) {
+        if (!this.pSC2DataManager.getModLoader().checkModCacheData()) {
             console.error('ModLoader ====== JsPreloader startLoad() checkData() failed. Data consistency check failed.');
             this.logger.error('ModLoader ====== JsPreloader startLoad() checkData() failed. Data consistency check failed.');
         }
-        if (!this.pSC2DataManager.getModLoader().getModCache().checkNameUniq()) {
+        if (!this.pSC2DataManager.getModLoader().checkModCacheUniq()) {
             console.error('ModLoader ====== JsPreloader startLoad() checkNameUniq() failed. Data consistency check failed.');
             this.logger.error('ModLoader ====== JsPreloader startLoad() checkNameUniq() failed. Data consistency check failed.');
         }
