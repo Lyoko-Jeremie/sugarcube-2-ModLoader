@@ -171,9 +171,9 @@ export class ModLoader {
     private modCache: ModOrderContainer = new ModOrderContainer();
     private modLazyCache: Map<string, ModInfo> = new Map<string, ModInfo>();
 
-    getMod(modName: string) {
-        return this.modCache.getByNameOne(modName);
-    }
+    // getMod(modName: string) {
+    //     return this.modCache.getByNameOne(modName);
+    // }
 
     // getModCache() {
     //     return this.modCache;
@@ -212,8 +212,8 @@ export class ModLoader {
         return this.modCache.getByNameOne(modName);
     }
 
-    getModRead(modName: string) {
-        return this.modReadCache.getByNameOne(modName);
+    getModReadCache() {
+        return this.modReadCache;
     }
 
     private addMod(m: ModZipReader, from: ModLoadFromSourceType) {
@@ -230,15 +230,15 @@ export class ModLoader {
     private modLazyOderRecord: string[] = [];
     private modLazyWaiting: string[] = [];
 
-    checkModConflict2Root(modName: string) {
-        const mod = this.getMod(modName);
-        if (!mod) {
-            console.error('ModLoader checkModConflictOne() (!mod)');
-            this.logger.error(`ModLoader checkModConflictOne() (!mod)`);
-            return undefined;
-        }
-        return simulateMergeSC2DataInfoCache(this.gSC2DataManager.getSC2DataInfoAfterPatch(), mod.cache)[0];
-    }
+    // checkModConflict2Root(modName: string) {
+    //     const mod = this.getModCacheByNameOne(modName);
+    //     if (!mod) {
+    //         console.error('ModLoader checkModConflictOne() (!mod)');
+    //         this.logger.error(`ModLoader checkModConflictOne() (!mod)`);
+    //         return undefined;
+    //     }
+    //     return simulateMergeSC2DataInfoCache(this.gSC2DataManager.getSC2DataInfoAfterPatch(), mod.mod.cache)[0];
+    // }
 
     checkModConflictList() {
         const ml = this.modCache.order.map(T => T.mod)
@@ -260,49 +260,6 @@ export class ModLoader {
 
     getModZip(modName: string) {
         const order = cloneDeep(this.loadOrder).reverse();
-        // for (const loadType of order) {
-        //     switch (loadType) {
-        //         case ModDataLoadType.Remote:
-        //             if (this.modRemoteLoader) {
-        //                 const mod = this.modRemoteLoader.getZipFile(modName);
-        //                 if (mod) {
-        //                     return mod;
-        //                 }
-        //             }
-        //             break;
-        //         case ModDataLoadType.Local:
-        //             if (this.modLocalLoader) {
-        //                 const mod = this.modLocalLoader.getZipFile(modName);
-        //                 if (mod) {
-        //                     return mod;
-        //                 }
-        //             }
-        //             break;
-        //         case ModDataLoadType.LocalStorage:
-        //             if (this.modLocalStorageLoader) {
-        //                 const mod = this.modLocalStorageLoader.getZipFile(modName);
-        //                 if (mod) {
-        //                     return mod;
-        //                 }
-        //             }
-        //             break;
-        //         case ModDataLoadType.IndexDB:
-        //             if (this.modIndexDBLoader) {
-        //                 const mod = this.modIndexDBLoader.getZipFile(modName);
-        //                 if (mod) {
-        //                     return mod;
-        //                 }
-        //             }
-        //             break;
-        //     }
-        // }
-        // if (this.modLazyLoader) {
-        //     const mod = this.modLazyLoader.getZipFile(modName);
-        //     if (mod) {
-        //         return mod;
-        //     }
-        // }
-        // return undefined;
         const nn = this.modCache.getByName(modName);
         if (!nn) {
             return undefined;
@@ -443,16 +400,15 @@ export class ModLoader {
     protected async filterModCanLoad(modeList: string[]) {
         const canLoadList: string[] = [];
         for (const modName of modeList) {
-            const m = this.getModRead(modName);
-            const zips = this.getModZip(modName);
-            if (!m || !zips) {
+            const m = this.getModReadCache().getByNameOne(modName);
+            if (!m) {
                 // never go there
-                console.error(`ModLoader ====== initModInjectEarlyLoadScript() (!m || !zips) mod not find. never go there.`, [modName, modeList, canLoadList, m, zips]);
-                this.logger.error(`ModLoader ====== initModInjectEarlyLoadScript() (!m || !zips) mod not find: [${modName}]. never go there.`);
+                console.error(`ModLoader ====== initModInjectEarlyLoadScript() (!m) mod not find. never go there.`, [modName, modeList, canLoadList, m]);
+                this.logger.error(`ModLoader ====== initModInjectEarlyLoadScript() (!m) mod not find: [${modName}]. never go there.`);
                 continue;
             }
-            const bootJ = m.bootJson;
-            const zip = zips[0];
+            const bootJ = m.mod.bootJson;
+            const zip = m.zip;
             if (!await this.modLoadControllerCallback.canLoadThisMod(bootJ, zip.zip)) {
                 console.warn(`ModLoader ====== ModZipReader init() Mod [${m.name}] be banned.`);
                 this.logger.warn(`ModLoader ====== ModZipReader init() Mod [${m.name}] be banned.`);

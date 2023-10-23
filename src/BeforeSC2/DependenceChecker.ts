@@ -51,9 +51,9 @@ export class DependenceChecker {
                     this.log.error(`DependenceChecker.checkFor(${mod.bootJson.name}) not found mod: mod[${mod.bootJson.name}] need mod[${d.modName}] but not find.`);
                     return false;
                 }
-                if (!satisfies(parseVersion(mod2.bootJson.version).version, parseRange(d.version))) {
-                    console.error('DependenceChecker.checkFor() not satisfies', [mod.bootJson.name, d, mod2.bootJson]);
-                    this.log.error(`DependenceChecker.checkFor(${mod.bootJson.name}) not satisfies: mod[${mod.bootJson.name}] need mod[${d.modName}] version[${d.version}] but find version[${mod2.bootJson.version}].`);
+                if (!satisfies(parseVersion(mod2.mod.bootJson.version).version, parseRange(d.version))) {
+                    console.error('DependenceChecker.checkFor() not satisfies', [mod.bootJson.name, d, mod2.mod.bootJson]);
+                    this.log.error(`DependenceChecker.checkFor(${mod.bootJson.name}) not satisfies: mod[${mod.bootJson.name}] need mod[${d.modName}] version[${d.version}] but find version[${mod2.mod.bootJson.version}].`);
                     return false;
                 }
             }

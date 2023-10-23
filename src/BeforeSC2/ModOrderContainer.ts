@@ -178,14 +178,14 @@ export class ModOrderContainer {
     /**
      * O(1)
      */
-    getByName(name: string) {
+    getByName(name: string): Map<ModLoadFromSourceType, ModOrderItem> | undefined {
         return this.container.get(name);
     }
 
     /**
      * O(1)
      */
-    getByNameOne(name: string) {
+    getByNameOne(name: string): ModOrderItem | undefined {
         const nn = this.container.get(name);
         if (!nn) {
             console.error('ModOrderContainer getByNameOne() cannot find name.', [name, this.container]);
@@ -274,7 +274,7 @@ export class ModOrderContainer {
     /**
      * O(1)
      */
-    createModOrderItem(zip: ModZipReader, from: ModLoadFromSourceType) {
+    createModOrderItem(zip: ModZipReader, from: ModLoadFromSourceType): ModOrderItem | undefined {
         if (!zip.modInfo) {
             console.error('ModOrderContainer createModOrderItem() zip.modInfo not found.', [zip]);
             return undefined;
@@ -350,6 +350,11 @@ export class ModOrderContainer {
             return true;
         }
         return false;
+    }
+
+    clear() {
+        this.container.clear();
+        this.order = [];
     }
 
 }

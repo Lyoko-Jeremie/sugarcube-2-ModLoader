@@ -35,16 +35,16 @@ export class ModUtils {
      * @param name ModName
      * @return ModInfo | undefined
      */
-    getMod(name: string): ModInfo {
-        return this.pSC2DataManager.getModLoader().getModCacheByNameOne(name).mod;
+    getMod(name: string): ModInfo | undefined {
+        return this.pSC2DataManager.getModLoader().getModCacheByNameOne(name)?.mod;
     }
 
     /**
      * 获取指定mod的Zip
      * @param modName ModName
-     * @return ModZipReader[] | undefined
+     * @return ModZipReader | undefined
      */
-    getModZip(modName: string): ModZipReader {
+    getModZip(modName: string): ModZipReader | undefined {
         return this.pSC2DataManager.getModLoader().getModCacheByNameOne(modName)?.zip;
     }
 
