@@ -1,0 +1,28 @@
+{
+  "name": "MyMod2",
+  "version": "1.0.0",
+  "styleFileList": [
+  ],
+  "scriptFileList_earlyload": [
+  ],
+  "scriptFileList_inject_early": [
+  ],
+  "scriptFileList_preload": [
+  ],
+  "scriptFileList": [
+  ],
+  "tweeFileList": [
+  ],
+  "imgFileList": [
+  ],
+  "replacePatchList": [
+  ],
+  "additionFile": [
+  ],
+  "additionBinaryFile": [
+  ],
+  "addonPlugin": [
+  ],
+  "dependenceInfo": [
+  ]
+}
