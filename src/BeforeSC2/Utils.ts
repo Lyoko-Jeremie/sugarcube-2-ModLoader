@@ -27,7 +27,7 @@ export class ModUtils {
      * 以mod加载顺序为序
      */
     getModListName(): string[] {
-        return this.pSC2DataManager.getModLoader().getModCache().get_Array().map(T => T.name);
+        return this.pSC2DataManager.getModLoader().getModCacheArray().map(T => T.name);
     }
 
     /**
@@ -36,7 +36,7 @@ export class ModUtils {
      * @return ModInfo | undefined
      */
     getMod(name: string): ModInfo {
-        return this.pSC2DataManager.getModLoader().getModCache().getByNameOne(name).mod;
+        return this.pSC2DataManager.getModLoader().getModCacheByNameOne(name).mod;
     }
 
     /**
@@ -45,7 +45,7 @@ export class ModUtils {
      * @return ModZipReader[] | undefined
      */
     getModZip(modName: string): ModZipReader {
-        return this.pSC2DataManager.getModLoader().getModCache().getByNameOne(modName)?.zip;
+        return this.pSC2DataManager.getModLoader().getModCacheByNameOne(modName)?.zip;
     }
 
     /**
