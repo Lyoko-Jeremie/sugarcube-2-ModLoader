@@ -139,31 +139,52 @@ export class ModOrderContainer {
     constructor() {
     }
 
+    /**
+     * O(1)
+     */
     get_One_Map() {
         return new ModOrderContainer_One_ReadonlyMap(this);
     }
 
+    /**
+     * O(n+n)
+     */
     get_One_Array() {
         this.checkNameUniq();
         return uniqBy(this.order, T => T.name);
     }
 
+    /**
+     * O(n)
+     */
     get_Array() {
         return clone(this.order);
     }
 
+    /**
+     * O(1)
+     */
     getHasByName(name: string) {
         return this.container.has(name) && this.container.get(name)!.size > 0;
     }
 
+    /**
+     * O(1)
+     */
     getHasByNameFrom(name: string, from: ModLoadFromSourceType) {
         return this.container.has(name) && this.container.get(name)!.has(from);
     }
 
+    /**
+     * O(1)
+     */
     getByName(name: string) {
         return this.container.get(name);
     }
 
+    /**
+     * O(1)
+     */
     getByNameOne(name: string) {
         const nn = this.container.get(name);
         if (!nn) {
@@ -177,10 +198,16 @@ export class ModOrderContainer {
         return nn.values().next().value;
     }
 
+    /**
+     * O(n)
+     */
     getByOrder(name: string) {
         return this.order.filter(T => T.name === name);
     }
 
+    /**
+     * O(n)
+     */
     checkNameUniq() {
         for (const [name, m] of this.container) {
             if (m.size > 1) {
@@ -191,6 +218,9 @@ export class ModOrderContainer {
         return true;
     }
 
+    /**
+     * O(n+log(n)*2)
+     */
     checkData() {
         // covert container to order , sort it, then compare order one-by-one to check container==order
         const order: ModOrderItem[] = [];
@@ -208,6 +238,9 @@ export class ModOrderContainer {
         return true;
     }
 
+    /**
+     * O(1)
+     */
     delete(name: string, from: ModLoadFromSourceType) {
         const m = this.container.get(name);
         if (m) {
@@ -224,6 +257,9 @@ export class ModOrderContainer {
         return false;
     }
 
+    /**
+     * O(1)
+     */
     deleteAll(name: string) {
         const m = this.container.get(name);
         if (m) {
@@ -235,6 +271,9 @@ export class ModOrderContainer {
         return false;
     }
 
+    /**
+     * O(1)
+     */
     createModOrderItem(zip: ModZipReader, from: ModLoadFromSourceType) {
         if (!zip.modInfo) {
             console.error('ModOrderContainer createModOrderItem() zip.modInfo not found.', [zip]);
@@ -248,9 +287,14 @@ export class ModOrderContainer {
         };
     }
 
-    pushFront(obj: ModOrderItem) {
-        if (!this.container.has(obj.name)) {
-            this.container.set(obj.name, new Map<ModLoadFromSourceType, ModOrderItem>());
+    /**
+     * O(2n)
+     */
+    pushFront(zip: ModZipReader, from: ModLoadFromSourceType) {
+        const obj = this.createModOrderItem(zip, from);
+        if (!obj) {
+            console.error('ModOrderContainer pushFront() createModOrderItem() failed.', [zip, from]);
+            return false;
         }
         const m = this.container.get(obj.name);
         if (m) {
@@ -263,6 +307,9 @@ export class ModOrderContainer {
         return false;
     }
 
+    /**
+     * O(2n)
+     */
     pushBack(zip: ModZipReader, from: ModLoadFromSourceType) {
         const obj = this.createModOrderItem(zip, from);
         if (!obj) {
@@ -283,6 +330,9 @@ export class ModOrderContainer {
         return false;
     }
 
+    /**
+     * O(2n)
+     */
     insertReplace(zip: ModZipReader, from: ModLoadFromSourceType) {
         const obj = this.createModOrderItem(zip, from);
         if (!obj) {
@@ -302,7 +352,4 @@ export class ModOrderContainer {
         return false;
     }
 
-    // forEach() {
-    //     return this.order.forEach(...arguments);
-    // }
 }
