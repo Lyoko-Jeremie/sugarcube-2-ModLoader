@@ -600,6 +600,8 @@ export class ModLoader {
                     }
                 }
 
+                this.gSC2DataManager.getDependenceChecker().checkFor(mod);
+
                 // overwrite loaded mod
                 // user can overwrite loaded mod, but this is unusual case
                 if (loadedMod.indexOf(modName) >= 0) {
