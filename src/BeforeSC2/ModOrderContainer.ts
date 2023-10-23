@@ -1,5 +1,5 @@
 import {ModZipReader} from "./ModZipReader";
-import {ModInfo} from "./ModLoader";
+import {ModDataLoadType, ModInfo} from "./ModLoader";
 import {
     every,
     get,
@@ -16,15 +16,13 @@ import {
     isEqualWith,
 } from 'lodash';
 
-export const ModLoadFromSourceList = [
-    'Remote',
-    'Local',
-    'LocalStorage',
-    'IndexDB',
-    'SideLazy',
-] as const;
-
-export type ModLoadFromSourceType = typeof ModLoadFromSourceList[number];
+export enum ModLoadFromSourceType {
+    'Remote' = ModDataLoadType.Remote,
+    'Local' = ModDataLoadType.Local,
+    'LocalStorage' = ModDataLoadType.LocalStorage,
+    'IndexDB' = ModDataLoadType.IndexDB,
+    'SideLazy' = 'SideLazy',
+}
 
 export interface ModOrderItem {
     name: string;
@@ -93,6 +91,11 @@ export class ModOrderContainer_One_ReadonlyMap implements ReadonlyMap<string, Mo
     }
 
     forEach(callback: (value: ModOrderItem, key: string, map: ReadonlyMap<string, ModOrderItem>) => void, thisArg?: any): void {
+        for (const nn of this.parent.container) {
+            for (const nnn of nn[1]) {
+                callback(nnn[1], nn[0], this);
+            }
+        }
     }
 
     get(key: string): ModOrderItem | undefined {
@@ -136,7 +139,9 @@ export class ModOrderContainer_One_ReadonlyMap implements ReadonlyMap<string, Mo
  * can keep mod `order` , optional keep mod `unique` , remember mod load `from source`
  */
 export class ModOrderContainer {
+    // keep unique key<name-from>, means a name have multi mod, but no multi mod from same source if there have same name.
     container: Map<string, Map<ModLoadFromSourceType, ModOrderItem>> = new Map<string, Map<ModLoadFromSourceType, ModOrderItem>>();
+    // keep order
     order: ModOrderItem[] = [];
 
     constructor() {
@@ -144,6 +149,8 @@ export class ModOrderContainer {
 
     /**
      * O(1)
+     *
+     * add addition limit that keep mod name unique
      */
     get_One_Map() {
         return new ModOrderContainer_One_ReadonlyMap(this);
@@ -151,6 +158,8 @@ export class ModOrderContainer {
 
     /**
      * O(2n)
+     *
+     * add addition limit that keep mod name unique
      */
     get_One_Array() {
         this.checkNameUniq();
