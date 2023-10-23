@@ -19,7 +19,7 @@ label
 !label/.gitkeep
 dist*
 
-src/insertTools/*.zip
+src/insertTools/**/*.zip
 
 mod
 !mod/.gitkeep
