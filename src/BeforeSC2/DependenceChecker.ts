@@ -29,37 +29,37 @@ export class DependenceChecker {
         return new InfiniteSemVerApi();
     }
 
-    checkFor(mod: ModInfo): boolean {
-        const ml = this.gSC2DataManager.getModLoader();
-        if (mod.bootJson.dependenceInfo) {
-            for (const d of mod.bootJson.dependenceInfo) {
-                if (d.modName === 'GameVersion') {
-                    // skip
-                    continue;
-                }
-                if (d.modName === 'ModLoader') {
-                    if (!satisfies(parseVersion(this.gModUtils.version).version, parseRange(d.version))) {
-                        console.error('DependenceChecker.checkFor() not satisfies ModLoader', [mod.bootJson.name, d, this.gModUtils.version]);
-                        this.log.error(`DependenceChecker.checkFor(${mod.bootJson.name}) not satisfies ModLoader: mod[${mod.bootJson.name}] need mod[${d.modName}] version[${d.version}] but find ModLoader[${this.gModUtils.version}].`);
-                        return false;
-                    }
-                    return true;
-                }
-                const mod2 = ml.getMod(d.modName);
-                if (!mod2) {
-                    console.error('DependenceChecker.checkFor() not found mod before', [mod.bootJson.name, d]);
-                    this.log.error(`DependenceChecker.checkFor(${mod.bootJson.name}) not found mod: mod[${mod.bootJson.name}] need mod[${d.modName}] but not find.`);
-                    return false;
-                }
-                if (!satisfies(parseVersion(mod2.mod.bootJson.version).version, parseRange(d.version))) {
-                    console.error('DependenceChecker.checkFor() not satisfies', [mod.bootJson.name, d, mod2.mod.bootJson]);
-                    this.log.error(`DependenceChecker.checkFor(${mod.bootJson.name}) not satisfies: mod[${mod.bootJson.name}] need mod[${d.modName}] version[${d.version}] but find version[${mod2.mod.bootJson.version}].`);
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+    // checkFor(mod: ModInfo): boolean {
+    //     const ml = this.gSC2DataManager.getModLoader();
+    //     if (mod.bootJson.dependenceInfo) {
+    //         for (const d of mod.bootJson.dependenceInfo) {
+    //             if (d.modName === 'GameVersion') {
+    //                 // skip
+    //                 continue;
+    //             }
+    //             if (d.modName === 'ModLoader') {
+    //                 if (!satisfies(parseVersion(this.gModUtils.version).version, parseRange(d.version))) {
+    //                     console.error('DependenceChecker.checkFor() not satisfies ModLoader', [mod.bootJson.name, d, this.gModUtils.version]);
+    //                     this.log.error(`DependenceChecker.checkFor(${mod.bootJson.name}) not satisfies ModLoader: mod[${mod.bootJson.name}] need mod[${d.modName}] version[${d.version}] but find ModLoader[${this.gModUtils.version}].`);
+    //                     return false;
+    //                 }
+    //                 return true;
+    //             }
+    //             const mod2 = ml.getMod(d.modName);
+    //             if (!mod2) {
+    //                 console.error('DependenceChecker.checkFor() not found mod before', [mod.bootJson.name, d]);
+    //                 this.log.error(`DependenceChecker.checkFor(${mod.bootJson.name}) not found mod: mod[${mod.bootJson.name}] need mod[${d.modName}] but not find.`);
+    //                 return false;
+    //             }
+    //             if (!satisfies(parseVersion(mod2.mod.bootJson.version).version, parseRange(d.version))) {
+    //                 console.error('DependenceChecker.checkFor() not satisfies', [mod.bootJson.name, d, mod2.mod.bootJson]);
+    //                 this.log.error(`DependenceChecker.checkFor(${mod.bootJson.name}) not satisfies: mod[${mod.bootJson.name}] need mod[${d.modName}] version[${d.version}] but find version[${mod2.mod.bootJson.version}].`);
+    //                 return false;
+    //             }
+    //         }
+    //     }
+    //     return true;
+    // }
 
     check() {
         const modOrder = this.gSC2DataManager.getModLoader().getModCacheOneArray();

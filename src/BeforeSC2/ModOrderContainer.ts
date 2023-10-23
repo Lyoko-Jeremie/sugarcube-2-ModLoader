@@ -239,7 +239,7 @@ export class ModOrderContainer {
     }
 
     /**
-     * O(1)
+     * O(n)
      */
     delete(name: string, from: ModLoadFromSourceType) {
         const m = this.container.get(name);
@@ -258,7 +258,7 @@ export class ModOrderContainer {
     }
 
     /**
-     * O(1)
+     * O(n)
      */
     deleteAll(name: string) {
         const m = this.container.get(name);
@@ -352,9 +352,66 @@ export class ModOrderContainer {
         return false;
     }
 
+    /**
+     * O(n)
+     */
+    popOut(name: string, from: ModLoadFromSourceType) {
+        const m = this.container.get(name);
+        if (m) {
+            const n = m.get(from);
+            if (!!n) {
+                m.delete(n.from);
+                if (m.size === 0) {
+                    this.container.delete(name);
+                }
+                this.order = this.order.filter(T => T.name !== n.name && T.from !== n.from);
+                this.checkData();
+                return n;
+            }
+        }
+        return undefined;
+    }
+
+    /**
+     * O(n)
+     */
+    popOutAll(name: string) {
+        const m = this.container.get(name);
+        if (m) {
+            this.container.delete(name);
+            this.order = this.order.filter(T => T.name !== name);
+            this.checkData();
+            return Array.from(m.values());
+        }
+        return undefined;
+    }
+
+    /**
+     * O(1)
+     */
+    popFront() {
+        const obj = this.order.shift();
+        if (obj) {
+            const m = this.container.get(obj.name);
+            if (m) {
+                m.delete(obj.from);
+                if (m.size === 0) {
+                    this.container.delete(obj.name);
+                }
+                this.checkData();
+                return obj;
+            }
+        }
+        return undefined;
+    }
+
     clear() {
         this.container.clear();
         this.order = [];
+    }
+
+    size() {
+        return this.order.length;
     }
 
 }

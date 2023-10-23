@@ -216,16 +216,16 @@ export class ModLoader {
         return this.modReadCache;
     }
 
-    private addMod(m: ModZipReader, from: ModLoadFromSourceType) {
-        const overwrite = this.modReadCache.getHasByName(m.modInfo!.name);
-        if (overwrite) {
-            console.error('ModLoader addMod() has duplicate name: ', [m.modInfo!.name], ' will be overwrite');
-            this.logger.error(`ModLoader addMod() has duplicate name: [${m.modInfo!.name}] will be overwrite`);
-        }
-        this.modReadCache.insertReplace(m, from);
-        this.modReadCache.checkNameUniq();
-        return !overwrite;
-    }
+    // private addMod(m: ModZipReader, from: ModLoadFromSourceType) {
+    //     const overwrite = this.modReadCache.getHasByName(m.modInfo!.name);
+    //     if (overwrite) {
+    //         console.error('ModLoader addMod() has duplicate name: ', [m.modInfo!.name], ' will be overwrite');
+    //         this.logger.error(`ModLoader addMod() has duplicate name: [${m.modInfo!.name}] will be overwrite`);
+    //     }
+    //     this.modReadCache.insertReplace(m, from);
+    //     this.modReadCache.checkNameUniq();
+    //     return !overwrite;
+    // }
 
     private modLazyOderRecord: string[] = [];
     private modLazyWaiting: string[] = [];
@@ -289,14 +289,14 @@ export class ModLoader {
 
     loadOrder: ModDataLoadType[] = [];
 
-    private addModeZip(T: ModZipReader, from: ModLoadFromSourceType) {
+    private addModeReadZip(T: ModZipReader, from: ModLoadFromSourceType) {
         if (T.modInfo) {
             const overwrite = !this.modReadCache.getHasByName(T.modInfo.name);
             if (overwrite) {
                 this.modReadCache.deleteAll(T.modInfo.name);
             }
-            // this is invalid
-            this.gSC2DataManager.getDependenceChecker().checkFor(T.modInfo);
+            // // this is invalid
+            // this.gSC2DataManager.getDependenceChecker().checkFor(T.modInfo);
             this.modReadCache.pushBack(T, from);
             this.modReadCache.checkNameUniq();
         }
@@ -305,7 +305,6 @@ export class ModLoader {
     public async loadMod(loadOrder: ModDataLoadType[]): Promise<boolean> {
         this.loadOrder = loadOrder;
         let ok = false;
-        // this.modReadOrder = [];
         for (const loadType of this.loadOrder) {
             switch (loadType) {
                 case ModDataLoadType.Remote:
@@ -314,7 +313,7 @@ export class ModLoader {
                     }
                     try {
                         ok = await this.modRemoteLoader.load() || ok;
-                        this.modRemoteLoader.modList.forEach(T => this.addModeZip(T, loadType));
+                        this.modRemoteLoader.modList.forEach(T => this.addModeReadZip(T, loadType));
                     } catch (e: Error | any) {
                         console.error(e);
                         this.logger.error(`ModLoader loadMod() RemoteLoader load error: ${e?.message ? e.message : e}`);
@@ -326,7 +325,7 @@ export class ModLoader {
                     }
                     try {
                         ok = await this.modLocalLoader.load() || ok;
-                        this.modLocalLoader.modList.forEach(T => this.addModeZip(T, loadType));
+                        this.modLocalLoader.modList.forEach(T => this.addModeReadZip(T, loadType));
                     } catch (e: Error | any) {
                         console.error(e);
                         this.logger.error(`ModLoader loadMod() LocalLoader load error: ${e?.message ? e.message : e}`);
@@ -338,7 +337,7 @@ export class ModLoader {
                     }
                     try {
                         ok = await this.modLocalStorageLoader.load() || ok;
-                        this.modLocalStorageLoader.modList.forEach(T => this.addModeZip(T, loadType));
+                        this.modLocalStorageLoader.modList.forEach(T => this.addModeReadZip(T, loadType));
                     } catch (e: Error | any) {
                         console.error(e);
                         this.logger.error(`ModLoader loadMod() LocalStorageLoader load error: ${e?.message ? e.message : e}`);
@@ -350,7 +349,7 @@ export class ModLoader {
                     }
                     try {
                         ok = await this.modIndexDBLoader.load() || ok;
-                        this.modIndexDBLoader.modList.forEach(T => this.addModeZip(T, loadType));
+                        this.modIndexDBLoader.modList.forEach(T => this.addModeReadZip(T, loadType));
                     } catch (e: Error | any) {
                         console.error(e);
                         this.logger.error(`ModLoader loadMod() IndexDBLoader load error: ${e?.message ? e.message : e}`);
