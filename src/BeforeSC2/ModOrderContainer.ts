@@ -131,7 +131,10 @@ export class ModOrderContainer_One_ReadonlyMap implements ReadonlyMap<string, Mo
 
 }
 
-
+/**
+ * a multi-index container designed for mod load cache list. work like a C++ Boost.MultiIndexContainer
+ * can keep mod `order` , optional keep mod `unique` , remember mod load `from source`
+ */
 export class ModOrderContainer {
     container: Map<string, Map<ModLoadFromSourceType, ModOrderItem>> = new Map<string, Map<ModLoadFromSourceType, ModOrderItem>>();
     order: ModOrderItem[] = [];
@@ -219,7 +222,7 @@ export class ModOrderContainer {
     }
 
     /**
-     * O(n+log(n)*2)
+     * O(n+2log(n))
      */
     checkData() {
         // covert container to order , sort it, then compare order one-by-one to check container==order
@@ -405,13 +408,78 @@ export class ModOrderContainer {
         return undefined;
     }
 
+    /**
+     * O(1)
+     */
     clear() {
         this.container.clear();
         this.order = [];
     }
 
-    size() {
+    /**
+     * O(1)
+     */
+    get size() {
         return this.order.length;
+    }
+
+    /**
+     * O(2n)
+     */
+    clone() {
+        const r = new ModOrderContainer();
+        r.container = new Map<string, Map<ModLoadFromSourceType, ModOrderItem>>();
+        for (const [name, m] of this.container) {
+            const mm = new Map<ModLoadFromSourceType, ModOrderItem>();
+            for (const [from, item] of m) {
+                mm.set(from, r.createModOrderItem(item.zip, item.from)!);
+            }
+            r.container.set(name, mm);
+        }
+        r.order = [];
+        for (const item of this.order) {
+            r.order.push(r.createModOrderItem(item.zip, item.from)!);
+        }
+        r.checkData();
+        return r;
+    }
+
+    /**
+     * O(n)
+     */
+    private rebuildContainerFromOrder() {
+        this.container.clear();
+        for (const item of this.order) {
+            if (!this.container.has(item.name)) {
+                this.container.set(item.name, new Map<ModLoadFromSourceType, ModOrderItem>());
+            }
+            const m = this.container.get(item.name);
+            if (m) {
+                m.set(item.from, item);
+            }
+        }
+        this.checkData();
+    }
+
+    /**
+     * O(2n)
+     */
+    splitCloneInArray(name: string, from: ModLoadFromSourceType) {
+        // split to 3 piece
+        const index = this.order.findIndex(T => T.name === name && T.from === from);
+        if (index === -1) {
+            return undefined;
+        }
+        const r = {
+            before: new ModOrderContainer(),
+            current: this.order.slice(index, index + 1)[0],
+            after: new ModOrderContainer(),
+        };
+        r.before.order = this.order.slice(0, index);
+        r.after.order = this.order.slice(index + 1);
+        r.before.rebuildContainerFromOrder();
+        r.after.rebuildContainerFromOrder();
+        return r;
     }
 
 }
