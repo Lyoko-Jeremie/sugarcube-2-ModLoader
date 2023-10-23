@@ -402,7 +402,7 @@ export class ModLoader {
             const zips = this.getModZip(modName);
             if (!m || !zips) {
                 // never go there
-                console.error(`ModLoader ====== initModInjectEarlyLoadScript() (!m || !zips) mod not find: [${modName}]. never go there.`);
+                console.error(`ModLoader ====== initModInjectEarlyLoadScript() (!m || !zips) mod not find. never go there.`, [modName, modeList, canLoadList, m, zips]);
                 this.logger.error(`ModLoader ====== initModInjectEarlyLoadScript() (!m || !zips) mod not find: [${modName}]. never go there.`);
                 continue;
             }
