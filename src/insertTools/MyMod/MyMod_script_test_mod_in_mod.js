@@ -19,7 +19,7 @@
       }
     }
     if (selfZip) {
-      const innerMod = await selfZip.getZipFile().file('MyMod--1.mod.zip').async('uint8array').catch((err) => {
+      const innerMod = await selfZip.getZipFile().file('MyMod2.mod.zip')?.async('uint8array').catch((err) => {
         console.error(err);
         return undefined;
       });
