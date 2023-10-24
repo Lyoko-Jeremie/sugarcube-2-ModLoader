@@ -41,3 +41,7 @@
 	path = mod/ConflictChecker
 	url = https://github.com/Lyoko-Jeremie/ConflictCheckerAddon.git
 	branch = master
+[submodule "mod/SweetAlert2Mod"]
+	path = mod/SweetAlert2Mod
+	url = https://github.com/Lyoko-Jeremie/SweetAlert2Mod.git
+	branch = master
