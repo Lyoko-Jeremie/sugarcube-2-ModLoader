@@ -7,6 +7,8 @@ import {SimulateMergeResult} from "./SimulateMerge";
 import {replaceMergeSC2DataInfoCache, replaceMergeSC2DataInfoCacheForce} from "./MergeSC2DataInfoCache";
 import JSZip from "jszip";
 import {ModInfo} from "./ModLoader";
+import {LogWrapper, ModLoadController} from "./ModLoadController";
+import {AddonPluginManager} from "./AddonPlugin";
 
 export class ModUtils {
 
@@ -18,7 +20,7 @@ export class ModUtils {
     ) {
     }
 
-    getThisWindow() {
+    getThisWindow(): Window {
         return this.thisWin;
     }
 
@@ -331,15 +333,15 @@ export class ModUtils {
         return _;
     }
 
-    getModLoadController() {
+    getModLoadController(): ModLoadController {
         return this.pSC2DataManager.getModLoadController();
     }
 
-    getAddonPluginManager() {
+    getAddonPluginManager(): AddonPluginManager {
         return this.pSC2DataManager.getAddonPluginManager();
     }
 
-    getLogger() {
+    getLogger(): LogWrapper {
         return this.getModLoadController().getLog();
     }
 
