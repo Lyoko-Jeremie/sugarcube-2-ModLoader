@@ -345,7 +345,7 @@ export class ModUtils {
         return this.getModLoadController().getLog();
     }
 
-    async lazyRegisterNewModZipData(data: JSZip.InputType, options?: JSZip.JSZipLoadOptions) {
+    async lazyRegisterNewModZipData(data: ArgumentTypes<typeof JSZip.loadAsync>[0], options?: JSZip.JSZipLoadOptions) {
         console.log('lazyRegisterNewModZipData', data);
         try {
             const zip = await JSZip.loadAsync(data, options);
@@ -358,3 +358,6 @@ export class ModUtils {
     }
 
 }
+
+// https://stackoverflow.com/questions/51851677/how-to-get-argument-types-from-function-in-typescript
+export type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any ? A : never;
