@@ -17,10 +17,10 @@ import {
 } from 'lodash';
 
 export enum ModLoadFromSourceType {
-    'Remote' = ModDataLoadType.Remote,
-    'Local' = ModDataLoadType.Local,
-    'LocalStorage' = ModDataLoadType.LocalStorage,
-    'IndexDB' = ModDataLoadType.IndexDB,
+    'Remote' = 'Remote',
+    'Local' = 'Local',
+    'LocalStorage' = 'LocalStorage',
+    'IndexDB' = 'IndexDB',
     'SideLazy' = 'SideLazy',
 }
 
