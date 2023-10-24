@@ -171,46 +171,46 @@ export class ModLoader {
     /**
      * O(2n)
      */
-    getModCacheOneArray(): ModOrderItem[] {
+    public getModCacheOneArray(): ModOrderItem[] {
         return this.modCache.get_One_Array();
     }
 
     /**
      O(n)
      */
-    getModCacheArray(): ModOrderItem[] {
+    public getModCacheArray(): ModOrderItem[] {
         return this.modCache.get_Array();
     }
 
     /**
      O(1)
      */
-    getModCacheMap(): ModOrderContainer_One_ReadonlyMap {
+    public getModCacheMap(): ModOrderContainer_One_ReadonlyMap {
         return this.modCache.get_One_Map();
     }
 
     /**
      * O(n+2log(n))
      */
-    checkModCacheData(): boolean {
+    public checkModCacheData(): boolean {
         return this.modCache.checkData();
     }
 
     /**
      O(n)
      */
-    checkModCacheUniq(): boolean {
+    public checkModCacheUniq(): boolean {
         return this.modCache.checkNameUniq();
     }
 
     /**
      O(1)
      */
-    getModCacheByNameOne(modName: string): ModOrderItem | undefined {
+    public getModCacheByNameOne(modName: string): ModOrderItem | undefined {
         return this.modCache.getByNameOne(modName);
     }
 
-    getModReadCache(): ModOrderContainer {
+    public getModReadCache(): ModOrderContainer {
         return this.modReadCache;
     }
 
@@ -504,7 +504,7 @@ export class ModLoader {
         this.loadEndModList = undefined;
     }
 
-    getModEarlyLoadCache(): ModOrderContainer {
+    public getModEarlyLoadCache(): ModOrderContainer {
         if (this.modCache.size > 0) {
             // we are not in EarlyLoad
             if (!isNil(this.loadEndModList) || !isNil(this.nowLoadedMod) || !isNil(this.toLoadModList) || !isNil(this.newNowMod) || !isNil(this.replacedNowMod)) {
@@ -535,46 +535,60 @@ export class ModLoader {
         }
     }
 
-    getModByNameOne(modName: string): ModOrderItem | undefined {
-        let nn = this.modCache.getByNameOne(modName);
-        // console.log('getModByNameOne modCache', [nn, this.modCache]);
-        if (nn) {
-            return nn;
+    public getModByNameOne(modName: string): ModOrderItem | undefined {
+        const rr = () => {
+            let nn = this.modCache.getByNameOne(modName, true);
+            // console.log('getModByNameOne modCache', [nn, this.modCache]);
+            if (nn) {
+                return nn;
+            }
+            nn = this.loadEndModList?.getByNameOne(modName, true);
+            // console.log('getModByNameOne loadEndModList', [nn, this.loadEndModList]);
+            if (nn) {
+                return nn;
+            }
+            nn = this.nowLoadedMod?.getByNameOne(modName, true);
+            // console.log('getModByNameOne nowLoadedMod', [nn, this.nowLoadedMod]);
+            if (nn) {
+                return nn;
+            }
+            // console.log('getModByNameOne newNowMod', [this.newNowMod]);
+            if (this.newNowMod && this.newNowMod.mod.name === modName) {
+                return this.newNowMod;
+            }
+            return undefined;
+        };
+        if (!rr) {
+            console.warn('ModLoader ====== getModByNameOne() mod not found:', [modName]);
+            this.logger.warn(`ModLoader ====== getModByNameOne() mod not found: [${modName}]`);
         }
-        nn = this.loadEndModList?.getByNameOne(modName);
-        // console.log('getModByNameOne loadEndModList', [nn, this.loadEndModList]);
-        if (nn) {
-            return nn;
-        }
-        nn = this.nowLoadedMod?.getByNameOne(modName);
-        // console.log('getModByNameOne nowLoadedMod', [nn, this.nowLoadedMod]);
-        if (nn) {
-            return nn;
-        }
-        // console.log('getModByNameOne newNowMod', [this.newNowMod]);
-        if (this.newNowMod && this.newNowMod.mod.name === modName) {
-            return this.newNowMod;
-        }
-        return undefined;
+        return rr();
     }
 
-    getModZip(modName: string) {
-        let nn = this.modCache.getByNameOne(modName);
-        if (nn) {
-            return nn.zip;
+    public getModZip(modName: string) {
+        const rr = () => {
+            let nn = this.modCache.getByNameOne(modName, true);
+            if (nn) {
+                return nn.zip;
+            }
+            nn = this.loadEndModList?.getByNameOne(modName, true);
+            if (nn) {
+                return nn.zip;
+            }
+            nn = this.nowLoadedMod?.getByNameOne(modName, true);
+            if (nn) {
+                return nn.zip;
+            }
+            if (this.newNowMod && this.newNowMod.mod.name === modName) {
+                return this.newNowMod.zip;
+            }
+            return undefined;
         }
-        nn = this.loadEndModList?.getByNameOne(modName);
-        if (nn) {
-            return nn.zip;
+        if (!rr) {
+            console.warn('ModLoader ====== getModZip() mod not found:', [modName]);
+            this.logger.warn(`ModLoader ====== getModZip() mod not found: [${modName}]`);
         }
-        nn = this.nowLoadedMod?.getByNameOne(modName);
-        if (nn) {
-            return nn.zip;
-        }
-        if (this.newNowMod && this.newNowMod.mod.name === modName) {
-            return this.newNowMod.zip;
-        }
-        return undefined;
+        return rr();
     }
 
     private loadEndModList?: ModOrderContainer;
