@@ -1,6 +1,6 @@
 import {cloneDeep, get, has, isArray, isObject, isString, uniq,} from 'lodash';
 import {SC2DataInfo} from "./SC2DataInfoCache";
-import {simulateMergeSC2DataInfoCache} from "./SimulateMerge";
+import {SimulateMergeResult, simulateMergeSC2DataInfoCache} from "./SimulateMerge";
 import {
     imgWrapBase64Url,
     IndexDBLoader,
@@ -14,7 +14,12 @@ import {SC2DataManager} from "./SC2DataManager";
 import {JsPreloader} from 'JsPreloader';
 import {LogWrapper, ModLoadControllerCallback} from "./ModLoadController";
 import {ReplacePatcher} from "./ReplacePatcher";
-import {ModLoadFromSourceType, ModOrderContainer, ModOrderItem} from "./ModOrderContainer";
+import {
+    ModLoadFromSourceType,
+    ModOrderContainer,
+    ModOrderContainer_One_ReadonlyMap,
+    ModOrderItem
+} from "./ModOrderContainer";
 import {LRUCache} from 'lru-cache';
 import JSZip from 'jszip';
 
@@ -164,50 +169,50 @@ export class ModLoader {
     /**
      * O(2n)
      */
-    getModCacheOneArray() {
+    getModCacheOneArray(): ModOrderItem[] {
         return this.modCache.get_One_Array();
     }
 
     /**
      O(n)
      */
-    getModCacheArray() {
+    getModCacheArray(): ModOrderItem[] {
         return this.modCache.get_Array();
     }
 
     /**
      O(1)
      */
-    getModCacheMap() {
+    getModCacheMap(): ModOrderContainer_One_ReadonlyMap {
         return this.modCache.get_One_Map();
     }
 
     /**
      * O(n+2log(n))
      */
-    checkModCacheData() {
+    checkModCacheData(): boolean {
         return this.modCache.checkData();
     }
 
     /**
      O(n)
      */
-    checkModCacheUniq() {
+    checkModCacheUniq(): boolean {
         return this.modCache.checkNameUniq();
     }
 
     /**
      O(1)
      */
-    getModCacheByNameOne(modName: string) {
+    getModCacheByNameOne(modName: string): ModOrderItem | undefined {
         return this.modCache.getByNameOne(modName);
     }
 
-    getModReadCache() {
+    getModReadCache(): ModOrderContainer {
         return this.modReadCache;
     }
 
-    checkModConflictList() {
+    checkModConflictList(): { mod: SC2DataInfo, result: SimulateMergeResult }[] {
         const ml = this.modCache.order.map(T => T.mod)
             .filter((T): T is ModInfo => !!T)
             .map(T => T.cache);
