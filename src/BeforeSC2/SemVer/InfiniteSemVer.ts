@@ -30,7 +30,7 @@ function isCharNumber(c: string) {
 }
 
 export function parseInfiniteSemVer(versionStr: string): VersionBoundary {
-    console.log('parseInfiniteSemVer()', versionStr);
+    // console.log('parseInfiniteSemVer()', versionStr);
     versionStr = versionStr.trim();
     let bo: BoundaryOperator = undefined;
     const bb = BoundaryOperatorList.filter(
@@ -208,7 +208,7 @@ export function isWithinRange(version: InfiniteSemVer, range: VersionRange, igno
 
         if (boundarySet.lower) {
             const comparison = compareInfiniteVersions(version, boundarySet.lower.version, ignorePostfix);
-            console.log('comparison lower', [comparison, version, boundarySet.lower.version]);
+            // console.log('comparison lower', [comparison, version, boundarySet.lower.version]);
             switch (boundarySet.lower.operator) {
                 case '>':
                     if (comparison <= 0) isWithinBoundarySet = false;
@@ -221,7 +221,7 @@ export function isWithinRange(version: InfiniteSemVer, range: VersionRange, igno
 
         if (boundarySet.upper) {
             const comparison = compareInfiniteVersions(version, boundarySet.upper.version, ignorePostfix);
-            console.log('comparison upper', [comparison, version, boundarySet.upper.version]);
+            // console.log('comparison upper', [comparison, version, boundarySet.upper.version]);
             switch (boundarySet.upper.operator) {
                 case '<':
                     if (comparison >= 0) isWithinBoundarySet = false;
