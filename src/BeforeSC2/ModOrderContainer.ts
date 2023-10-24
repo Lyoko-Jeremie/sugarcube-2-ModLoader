@@ -308,15 +308,18 @@ export class ModOrderContainer {
             console.error('ModOrderContainer pushFront() createModOrderItem() failed.', [zip, from]);
             return false;
         }
-        const m = this.container.get(obj.name);
-        if (m) {
-            m.set(obj.from, obj);
-            this.order.splice(this.order.findIndex(T => T.name === obj.name && T.from === obj.from), 1);
-            this.order = [obj, ...this.order];
-            this.checkData();
-            return true;
+        if (!this.container.has(obj.name)) {
+            this.container.set(obj.name, new Map<ModLoadFromSourceType, ModOrderItem>());
         }
-        return false;
+        const m = this.container.get(obj.name)!;
+        m.set(obj.from, obj);
+        const ii = this.order.findIndex(T => T.name === obj.name && T.from === obj.from);
+        if (ii >= 0) {
+            this.order.splice(ii, 1);
+        }
+        this.order = [obj, ...this.order];
+        this.checkData();
+        return true;
     }
 
     /**
@@ -331,15 +334,15 @@ export class ModOrderContainer {
         if (!this.container.has(obj.name)) {
             this.container.set(obj.name, new Map<ModLoadFromSourceType, ModOrderItem>());
         }
-        const m = this.container.get(obj.name);
-        if (m) {
-            m.set(obj.from, obj);
-            this.order.splice(this.order.findIndex(T => T.name === obj.name && T.from === obj.from), 1);
-            this.order.push(obj);
-            this.checkData();
-            return true;
+        const m = this.container.get(obj.name)!;
+        m.set(obj.from, obj);
+        const ii = this.order.findIndex(T => T.name === obj.name && T.from === obj.from);
+        if (ii >= 0) {
+            this.order.splice(ii, 1);
         }
-        return false;
+        this.order.push(obj);
+        this.checkData();
+        return true;
     }
 
     /**
@@ -354,14 +357,14 @@ export class ModOrderContainer {
         if (!this.container.has(obj.name)) {
             this.container.set(obj.name, new Map<ModLoadFromSourceType, ModOrderItem>());
         }
-        const m = this.container.get(obj.name);
-        if (m) {
-            m.set(obj.from, obj);
-            this.order.splice(this.order.findIndex(T => T.name === obj.name && T.from === obj.from), 0, obj);
-            this.checkData();
-            return true;
+        const m = this.container.get(obj.name)!;
+        m.set(obj.from, obj);
+        const ii = this.order.findIndex(T => T.name === obj.name && T.from === obj.from);
+        if (ii >= 0) {
+            this.order.splice(ii, 0, obj);
         }
-        return false;
+        this.checkData();
+        return true;
     }
 
     /**
