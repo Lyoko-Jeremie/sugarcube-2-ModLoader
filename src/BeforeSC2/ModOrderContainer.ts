@@ -239,6 +239,10 @@ export class ModOrderContainer {
         for (const [name, m] of this.container) {
             for (const [from, item] of m) {
                 order.push(item);
+                if (item.name !== name || item.from !== from) {
+                    console.error('ModOrderContainer checkData() failed. inner data modify.', [item, name, from]);
+                    return false;
+                }
             }
         }
         const order1 = orderBy(order, ['name', 'from'], ['asc', 'asc']);
