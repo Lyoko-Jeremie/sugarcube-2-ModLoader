@@ -10,7 +10,7 @@ import {ModInfo} from "./ModLoader";
 
 export class ModUtils {
 
-    version = '1.8.0';
+    version = '2.0.0';
 
     constructor(
         public pSC2DataManager: SC2DataManager,
@@ -344,6 +344,7 @@ export class ModUtils {
     }
 
     async lazyRegisterNewModZipData(data: JSZip.InputType, options?: JSZip.JSZipLoadOptions) {
+        console.log('lazyRegisterNewModZipData', data);
         try {
             const zip = await JSZip.loadAsync(data, options);
             return await this.pSC2DataManager.getModLoader().lazyRegisterNewMod(zip);
