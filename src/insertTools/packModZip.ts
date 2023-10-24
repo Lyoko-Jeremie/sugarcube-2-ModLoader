@@ -228,6 +228,7 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
 
     await promisify(fs.writeFile)(bootJson.name + '.mod.zip', zipBase64, {encoding: 'utf-8'});
 
+    console.log('=== Congratulation! packModZip done! Everything is ok. ===')
 })().catch((e) => {
     console.error(e);
     process.exit(1);
