@@ -1,4 +1,4 @@
-import {cloneDeep, get, has, isArray, isObject, isString, uniq,} from 'lodash';
+import {cloneDeep, get, has, isArray, isObject, isString, uniq, isNil} from 'lodash';
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {SimulateMergeResult, simulateMergeSC2DataInfoCache} from "./SimulateMerge";
 import {
@@ -232,15 +232,6 @@ export class ModLoader {
     private modRemoteLoader?: RemoteLoader;
     private modLazyLoader?: LazyLoader;
 
-    getModZip(modName: string) {
-        const order = cloneDeep(this.loadOrder).reverse();
-        const nn = this.modCache.getByNameOne(modName);
-        if (!nn) {
-            return undefined;
-        }
-        return nn.zip;
-    }
-
     public getIndexDBLoader() {
         return this.modIndexDBLoader;
     }
@@ -394,7 +385,7 @@ export class ModLoader {
             const m = await this.modLazyLoader.add(modeZip);
             if (m.modInfo) {
                 this.modLazyCache.pushBack(m, ModLoadFromSourceType.SideLazy);
-                console.log('ModLoader ====== lazyRegisterNewMod() LazyLoader load ok: ', [m]);
+                console.log('ModLoader ====== lazyRegisterNewMod() LazyLoader load ok: ', [m, this.modLazyCache]);
                 return true;
             } else {
                 console.error('ModLoader lazyRegisterNewMod() LazyLoader load error: modInfo not found', [m]);
@@ -484,30 +475,129 @@ export class ModLoader {
     }
 
     private async initModEarlyLoadScript() {
-        let loadEndModList = new ModOrderContainer();
-        let toLoadModList = this.modCache.clone();
-        while (toLoadModList.size > 0) {
-            const modNow = toLoadModList.popFront()!;
+        this.loadEndModList = new ModOrderContainer();
+        this.toLoadModList = this.modCache.clone();
+        this.modCache = new ModOrderContainer();
+        while (this.toLoadModList.size > 0) {
+            const modNow = this.toLoadModList.popFront()!;
+            this.newNowMod = modNow;
             await this.do_initModEarlyLoadScript(modNow.name, modNow.mod);
             // to load lazy mod if this mod inject lazy mod
             // `tryInitWaitingLazyLoadMod` will change `modOrder` , so we receive the new list from it
-            [toLoadModList, loadEndModList] = await this.tryInitWaitingLazyLoadMod(modNow, toLoadModList, loadEndModList);
-            console.log('loadEndModList', loadEndModList.clone());
+            /*[toLoadModList, loadEndModList] = */
+            await this.tryInitWaitingLazyLoadMod(modNow/*, toLoadModList, loadEndModList*/);
+            // console.log('loadEndModList', this.loadEndModList.clone());
         }
-        console.log('loadEndModList', loadEndModList.clone());
-        if (!loadEndModList.checkNameUniq()) {
+        this.toLoadModList = undefined;
+        // console.log('loadEndModList', this.loadEndModList.clone());
+        if (!isNil(this.newNowMod)) {
+            // invalid state . never go there
+            console.error('ModLoader ====== initModEarlyLoadScript() invalid state. never go there.', [this.newNowMod]);
+            this.logger.error(`ModLoader ====== initModEarlyLoadScript() invalid state. never go there.`);
+        }
+        if (!this.loadEndModList.checkNameUniq()) {
             // never go there
-            console.error('ModLoader ====== initModEarlyLoadScript() loadEndModList.checkNameUniq() failed. Data consistency check failed.', [loadEndModList]);
+            console.error('ModLoader ====== initModEarlyLoadScript() loadEndModList.checkNameUniq() failed. Data consistency check failed.', [this.loadEndModList]);
             this.logger.error(`ModLoader ====== initModEarlyLoadScript() loadEndModList.checkNameUniq() failed. Data consistency check failed.`);
         }
-        this.modCache = loadEndModList;
+        this.modCache = this.loadEndModList;
+        this.loadEndModList = undefined;
     }
+
+    getModEarlyLoadCache(): ModOrderContainer {
+        if (this.modCache.size > 0) {
+            // we are not in EarlyLoad
+            if (!isNil(this.loadEndModList) || !isNil(this.nowLoadedMod) || !isNil(this.toLoadModList) || !isNil(this.newNowMod) || !isNil(this.replacedNowMod)) {
+                // invalid state, never go there
+                console.error('ModLoader ====== getModEarlyLoadCache() not in EarlyLoad invalid state. never go there.',
+                    [this.loadEndModList, this.nowLoadedMod, this.toLoadModList, this.newNowMod, this.replacedNowMod]);
+                this.logger.error(`ModLoader ====== getModEarlyLoadCache() not in EarlyLoad invalid state. never go there.`);
+            }
+            return this.modCache;
+        }
+        if (isNil(this.loadEndModList) || isNil(this.nowLoadedMod) || isNil(this.toLoadModList) || isNil(this.newNowMod) || isNil(this.replacedNowMod)) {
+            // invalid state, never go there
+            console.error('ModLoader ====== getModEarlyLoadCache() in EarlyLoad invalid state. never go there.',
+                [this.loadEndModList, this.nowLoadedMod, this.toLoadModList, this.newNowMod, this.replacedNowMod]);
+            this.logger.error(`ModLoader ====== getModEarlyLoadCache() in EarlyLoad invalid state. never go there.`);
+        }
+        if (this.replacedNowMod) {
+            return ModOrderContainer.mergeModOrderContainer([
+                this.loadEndModList!,
+                this.newNowMod!,
+                this.nowLoadedMod!,
+            ]);
+        } else {
+            return ModOrderContainer.mergeModOrderContainer([
+                this.loadEndModList!,
+                this.nowLoadedMod!,
+            ]);
+        }
+    }
+
+    getModByNameOne(modName: string): ModOrderItem | undefined {
+        let nn = this.modCache.getByNameOne(modName);
+        // console.log('getModByNameOne modCache', [nn, this.modCache]);
+        if (nn) {
+            return nn;
+        }
+        nn = this.loadEndModList?.getByNameOne(modName);
+        // console.log('getModByNameOne loadEndModList', [nn, this.loadEndModList]);
+        if (nn) {
+            return nn;
+        }
+        nn = this.nowLoadedMod?.getByNameOne(modName);
+        // console.log('getModByNameOne nowLoadedMod', [nn, this.nowLoadedMod]);
+        if (nn) {
+            return nn;
+        }
+        // console.log('getModByNameOne newNowMod', [this.newNowMod]);
+        if (this.newNowMod && this.newNowMod.mod.name === modName) {
+            return this.newNowMod;
+        }
+        return undefined;
+    }
+
+    getModZip(modName: string) {
+        let nn = this.modCache.getByNameOne(modName);
+        if (nn) {
+            return nn.zip;
+        }
+        nn = this.loadEndModList?.getByNameOne(modName);
+        if (nn) {
+            return nn.zip;
+        }
+        nn = this.nowLoadedMod?.getByNameOne(modName);
+        if (nn) {
+            return nn.zip;
+        }
+        if (this.newNowMod && this.newNowMod.mod.name === modName) {
+            return this.newNowMod.zip;
+        }
+        return undefined;
+    }
+
+    private loadEndModList?: ModOrderContainer;
+    private toLoadModList?: ModOrderContainer;
+    private nowLoadedMod?: ModOrderContainer;
+    private newNowMod?: ModOrderItem;
+    private replacedNowMod?: boolean;
 
     private async tryInitWaitingLazyLoadMod(
         nowMod: ModOrderItem,
-        toLoadModList: ModOrderContainer,
-        loadEndModList: ModOrderContainer,
-    ): Promise<[ModOrderContainer, ModOrderContainer]> /* [toLoadModList, endLoadModList] */ {
+        // toLoadModList: ModOrderContainer,
+        // loadEndModList: ModOrderContainer,
+    ): Promise<any/*[ModOrderContainer, ModOrderContainer]*/> /* [toLoadModList, endLoadModList] */ {
+
+        this.replacedNowMod = false;
+
+        if (isNil(this.loadEndModList) || isNil(this.toLoadModList) || isNil(this.newNowMod) || this.modCache.size !== 0) {
+            // invalid state, never go there
+            console.error('ModLoader ====== tryInitWaitingLazyLoadMod() start invalid state. never go there.',
+                [this.loadEndModList, this.toLoadModList, this.newNowMod, this.modCache]);
+            this.logger.error(`ModLoader ====== tryInitWaitingLazyLoadMod() start invalid state. never go there.`);
+        }
+
         if (this.modLazyCache.size > 0) {
             // the nowMod added some Lazy mod. we need load the Lazy mod and it's add Lazy mod.
             //      when this progress, Lazy mod will overwrite the mod that loaded before.
@@ -516,21 +606,25 @@ export class ModLoader {
             await this.gSC2DataManager.getModLoadController().LazyLoad_start(nowMod.name);
             const checkCanSafeOverwriteMod = (mod: ModOrderItem) => {
                 return nowMod.name === mod.name
-                    || toLoadModList.getHasByName(mod.name)
+                    || this.toLoadModList!.getHasByName(mod.name)
                     // || this.modLazyCache.getHasByName(mod.name)  // this cannot detect
                     ;
             }
             const checkCannotSafeOverwriteMod = (mod: ModOrderItem) => {
-                return loadEndModList.getHasByName(mod.name);
+                return this.loadEndModList!.getHasByName(mod.name);
             }
-
-            let replacedNowMod = false;
-            let newNowMod = nowMod;
 
             // filter ban
             this.modLazyCache = await this.filterModCanLoad(this.modLazyCache);
 
-            let nowLoadedMod: ModOrderContainer = new ModOrderContainer();
+            this.nowLoadedMod = new ModOrderContainer();
+
+            if (isNil(this.loadEndModList) || isNil(this.nowLoadedMod) || isNil(this.toLoadModList) || isNil(this.newNowMod) || this.modCache.size !== 0) {
+                // invalid state, never go there
+                console.error('ModLoader ====== tryInitWaitingLazyLoadMod() init invalid state. never go there.',
+                    [this.loadEndModList, this.nowLoadedMod, this.toLoadModList, this.newNowMod, this.modCache]);
+                this.logger.error(`ModLoader ====== tryInitWaitingLazyLoadMod() init invalid state. never go there.`);
+            }
 
             // mod can call add lazy mod on this loop,
             // so we must process the case that overwrite itself.
@@ -538,60 +632,60 @@ export class ModLoader {
             // because in some case , user can load same name mod again and again to do some magic to hidden info.
             while (this.modLazyCache.size > 0) {
                 console.log('modLazyCache', this.modLazyCache.clone());
-                console.log('nowLoadedMod', nowLoadedMod.clone());
-                console.log('loadEndModList', loadEndModList.clone());
+                console.log('nowLoadedMod', this.nowLoadedMod.clone());
+                console.log('loadEndModList', this.loadEndModList!.clone());
                 // remember the loading mod info, then pop-front it
                 const mod = this.modLazyCache.popFront()!;
                 // warning overwrite, but user can in-place overwrite self
                 if (checkCanSafeOverwriteMod(mod)) {
                     console.log('ModLoader ====== tryInitWaitingLazyLoadMod() mod overwrite safe already loaded:',
-                        [nowMod.name, mod.name, toLoadModList]);
+                        [nowMod.name, mod.name, this.toLoadModList]);
                     this.logger.log(`ModLoader ====== tryInitWaitingLazyLoadMod() mod overwrite safe already loaded: [${mod.name}]. when LazyLoad by [${nowMod.name}] . ` +
                         ' be carefully, this will case unexpected behavior .');
                     if (nowMod.name === mod.name) {
-                        replacedNowMod = true;
-                        newNowMod = mod;
+                        this.replacedNowMod = true;
+                        this.newNowMod = mod;
                     }
                 } else if (checkCannotSafeOverwriteMod(mod)) {
                     console.warn('ModLoader ====== tryInitWaitingLazyLoadMod() mod overwrite unsafe already loaded:',
-                        [nowMod.name, mod.name, loadEndModList]);
+                        [nowMod.name, mod.name, this.loadEndModList]);
                     this.logger.warn(`ModLoader ====== tryInitWaitingLazyLoadMod() mod overwrite unsafe already loaded: [${mod.name}]. when LazyLoad by [${nowMod.name}] . ` +
                         'are you sure you want overwrite the mod that was loaded ? this will case unexpected behavior !!!');
                 }
 
-                this.gSC2DataManager.getDependenceChecker().checkFor(mod.mod, [toLoadModList, nowLoadedMod]);
+                this.gSC2DataManager.getDependenceChecker().checkFor(mod.mod, [this.loadEndModList!, this.nowLoadedMod]);
 
                 // overwrite loaded mod
                 // user can overwrite loaded mod, but this is unusual case
-                if (loadEndModList.getHasByName(mod.name)) {
+                if (this.loadEndModList!.getHasByName(mod.name)) {
                     console.warn('ModLoader ====== tryInitWaitingLazyLoadMod() overwrite loaded mod:',
-                        [nowMod.name, mod.name, loadEndModList, toLoadModList, nowLoadedMod]);
+                        [nowMod.name, mod.name, this.loadEndModList, this.toLoadModList, this.nowLoadedMod]);
                     this.logger.warn(`ModLoader ====== tryInitWaitingLazyLoadMod() overwrite loaded mod: [${mod.name}]. when LazyLoad by [${nowMod.name}] . ` +
                         'are you sure you want overwrite a mod that was loaded ? ' +
                         'this is unusual case , will cause js conflict and memory incorrect , and will case unexpected behavior !!!');
-                    loadEndModList.deleteAll(mod.name);
+                    this.loadEndModList!.deleteAll(mod.name);
                 }
                 // replace pending mod
                 // means, the later mod we will overwrite and load early
-                if (toLoadModList.getHasByName(mod.name)) {
+                if (this.toLoadModList!.getHasByName(mod.name)) {
                     console.warn('ModLoader ====== tryInitWaitingLazyLoadMod() overwrite later mod:',
-                        [nowMod.name, mod.name, loadEndModList, toLoadModList, nowLoadedMod]);
+                        [nowMod.name, mod.name, this.loadEndModList, this.toLoadModList, this.nowLoadedMod]);
                     this.logger.warn(`ModLoader ====== tryInitWaitingLazyLoadMod() overwrite later mod: [${mod.name}]. when LazyLoad by [${nowMod.name}] . ` +
                         'are you sure you want overwrite and early load the mod that need later load ? ' +
                         'this is unusual case , will broken mod order system , and will case unexpected behavior !!!');
-                    toLoadModList.deleteAll(mod.name);
+                    this.toLoadModList!.deleteAll(mod.name);
                 }
                 // loop overwrite lazy mod in this loop
                 // user can overwrite self in this loop multi time
-                if (nowLoadedMod.getHasByName(mod.name)) {
+                if (this.nowLoadedMod.getHasByName(mod.name)) {
                     console.log('ModLoader ====== tryInitWaitingLazyLoadMod() overwrite loaded lazy mod:',
-                        [nowMod.name, mod.name, loadEndModList, toLoadModList, nowLoadedMod]);
+                        [nowMod.name, mod.name, this.loadEndModList, this.toLoadModList, this.nowLoadedMod]);
                     this.logger.log(`ModLoader ====== tryInitWaitingLazyLoadMod() overwrite loaded lazy mod: [${mod.name}]. when LazyLoad by [${nowMod.name}] . ` +
                         'are you sure you want overwrite a mod that was loaded in lazy load ? ' +
                         'carefully use this feature, otherwise will case unexpected behavior !!!');
-                    nowLoadedMod.deleteAll(mod.name);
+                    this.nowLoadedMod.deleteAll(mod.name);
                 }
-                nowLoadedMod.pushBack(mod.zip, ModLoadFromSourceType.SideLazy);
+                this.nowLoadedMod.pushBack(mod.zip, ModLoadFromSourceType.SideLazy);
 
                 this.modLoadRecord.push(mod);
                 await this.do_initModInjectEarlyLoadInDomScript(mod.name, mod.mod);
@@ -601,30 +695,40 @@ export class ModLoader {
                 // and maybe add duplicate mod, there maybe case duplicate load, so we must filter it.
                 // in this special case, the duplicate mod will be overwritten by the last one, but will early load in the first one order.
                 this.modLazyCache = await this.filterModCanLoad(this.modLazyCache);
-                console.log('nowLoadedMod', nowLoadedMod.clone());
-                console.log('loadEndModList', loadEndModList.clone());
+                // console.log('nowLoadedMod', this.nowLoadedMod.clone());
+                // console.log('loadEndModList', this.loadEndModList!.clone());
             }
 
             // now the this.modLazyCache empty
 
             // rebuild `modOrder` (loadEndModList)
-            loadEndModList.pushBack(newNowMod.zip, newNowMod.from);
-            for (const mm of nowLoadedMod.get_Array()) {
+            if (!this.replacedNowMod) {
+                this.loadEndModList!.pushBack(this.newNowMod!.zip, this.newNowMod!.from);
+            }
+            for (const mm of this.nowLoadedMod.get_Array()) {
                 if (mm.from !== ModLoadFromSourceType.SideLazy) {
                     // never go there
                     console.error('ModLoader ====== tryInitWaitingLazyLoadMod() (!mm.from). never go there.', [mm]);
                     this.logger.error(`ModLoader ====== tryInitWaitingLazyLoadMod() (!mm.from). never go there.`);
                 }
-                loadEndModList.pushBack(mm.zip, mm.from);
+                this.loadEndModList!.pushBack(mm.zip, mm.from);
             }
+            this.nowLoadedMod = undefined;
 
             await this.gSC2DataManager.getModLoadController().LazyLoad_end(nowMod.name);
 
-            return [toLoadModList, loadEndModList];
+            this.newNowMod = undefined;
+            this.replacedNowMod = undefined;
+            // return [toLoadModList, loadEndModList];
+            return;
         }
 
-        loadEndModList.pushBack(nowMod.zip, nowMod.from);
-        return [toLoadModList, loadEndModList];
+        this.loadEndModList!.pushBack(this.newNowMod!.zip, this.newNowMod!.from);
+
+        this.newNowMod = undefined;
+        this.replacedNowMod = undefined;
+        // return [toLoadModList, loadEndModList];
+        return;
     }
 
 }
