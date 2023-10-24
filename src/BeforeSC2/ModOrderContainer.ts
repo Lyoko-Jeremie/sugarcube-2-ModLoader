@@ -199,13 +199,13 @@ export class ModOrderContainer {
      */
     getByNameOne(name: string): ModOrderItem | undefined {
         const nn = this.container.get(name);
+        this.checkNameUniq();
         if (!nn) {
             console.error('ModOrderContainer getByNameOne() cannot find name.', [name, this.container]);
             return undefined;
         }
         if (nn.size > 1) {
             console.error('ModOrderContainer getByNameOne() has more than one mod.', [name, nn]);
-            return undefined;
         }
         return nn.values().next().value;
     }
