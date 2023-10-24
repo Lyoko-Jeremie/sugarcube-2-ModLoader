@@ -255,7 +255,7 @@ export class SC2DataManager {
             console.error('ModLoader ====== SC2DataManager startInit() checkData() fail. never go there.');
             this.getModLoadController().logError('ModLoader ====== SC2DataManager startInit() checkData() fail. Data consistency check failed.. never go there.');
         }
-        if (this.getModLoader().checkModCacheUniq()) {
+        if (!this.getModLoader().checkModCacheUniq()) {
             console.error('ModLoader ====== SC2DataManager startInit() checkNameUniq() fail. never go there.');
             this.getModLoadController().logError('ModLoader ====== SC2DataManager startInit() checkNameUniq() fail. Data consistency check failed.. never go there.');
         }
