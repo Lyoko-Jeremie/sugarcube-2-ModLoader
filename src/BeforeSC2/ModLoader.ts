@@ -250,6 +250,10 @@ export class ModLoader {
         return this.modRemoteLoader;
     }
 
+    public getLazyLoader() {
+        return this.modLazyLoader;
+    }
+
     loadOrder: ModDataLoadType[] = [];
 
     private addModeReadZip(T: ModZipReader, from: ModLoadFromSourceType) {
