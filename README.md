@@ -290,6 +290,18 @@ _使用此功能可以通过自行注册 `HtmlTagSrcHook` 钩子，或者使用 
 注：游戏 DoL 仍然存在部分没有拦截到的图片，这些图片由 DoL 自行添加了 `Macro.add("icon",` **icon** 标签来实现的。这些代码几乎全是在 link 前使用的标签。
 
 
+【2323-10-23】 BreakChange ： 破坏性变更： v2.0.0 修正mod排序问题； 为Mod加密功能添加 SideLazyLoad API 。
+
+`modOrder` 数据结构发生重大变化。    
+为了保证向后（未来）兼容性，现在开始不允许直接访问`modOrder`。请使用    
+* `ModLoader.getModCacheMap()` 以Map的方式使用modName查询，返回ReadOnlyMap
+* `ModLoader.getModCacheOneArray()`  以Array的方式遍历，对返回的Array的修改不会应用到ModLoader内部数据
+* `ModLoader.getModCacheArray()`
+* `ModLoader.getModCacheByNameOne()` 以modName查询
+* `ModLoader.checkModCacheUniq()`    检查数据是否唯一，请在手动修改后调用此API验证数据
+* `ModLoader.checkModCacheData()`    检查内部数据是否一致，请在手动修改后调用此API验证数据
+
+
 
 
 【2023-09-21】 Delete `imgFileReplaceList`. Now, use the new ImageHookLoader to intercept image requests directly for image replacement. Therefore, images with the same name as the original image files will be overwritten.
