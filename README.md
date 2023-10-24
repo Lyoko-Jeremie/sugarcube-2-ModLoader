@@ -293,7 +293,12 @@ _使用此功能可以通过自行注册 `HtmlTagSrcHook` 钩子，或者使用 
 【2323-10-23】 BreakChange ： 破坏性变更： v2.0.0 修正mod排序问题； 为Mod加密功能添加 SideLazyLoad API 。
 
 `modOrder` 数据结构发生重大变化。    
-为了保证向后（未来）兼容性，现在开始不允许直接访问`modOrder`。请使用    
+为了保证向后（未来）兼容性，现在开始不允许直接访问`modOrder`。请使用以下两个API
+* `ModLoader.getModByNameOne('mod name')` 使用modName查询Mod
+* `ModLoader.getModZip('mod name')` 使用modName查询ModZip
+* `ModLoader.getModEarlyLoadCache()` 在`EarlyLoad`阶段安全地读取已经加载的mod快照
+
+以下是ModCache的低级查询/遍历方法，请注意以下方法不能在`EarlyLoad`阶段使用
 * `ModLoader.getModCacheMap()` 以Map的方式使用modName查询，返回ReadOnlyMap
 * `ModLoader.getModCacheOneArray()`  以Array的方式遍历，对返回的Array的修改不会应用到ModLoader内部数据
 * `ModLoader.getModCacheArray()`
