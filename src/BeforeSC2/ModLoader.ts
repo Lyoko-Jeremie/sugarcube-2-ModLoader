@@ -117,6 +117,7 @@ export interface ModBootJson {
     imgFileList: string[];
     replacePatchList?: string[];
     additionFile: string[];
+    additionBinaryFile?: string[];
     addonPlugin?: ModBootJsonAddonPlugin[];
     dependenceInfo?: DependenceInfo[];
 }
@@ -164,7 +165,8 @@ export class ModLoader {
     private modCache: ModOrderContainer = new ModOrderContainer();
     private modLazyCache: ModOrderContainer = new ModOrderContainer();
 
-    private modLazyOderRecord: ModZipReader[] = [];
+    // it recorded the do_initModInjectEarlyLoadInDomScript call
+    modLoadRecord: ModOrderItem[] = [];
 
     /**
      * O(2n)
@@ -442,6 +444,7 @@ export class ModLoader {
                 continue;
             }
             this.modCache.pushBack(nowMod.zip, nowMod.from);
+            this.modLoadRecord.push(nowMod);
             await this.do_initModInjectEarlyLoadInDomScript(nowMod.name, nowMod.mod);
             // check ban
             // the `canLoadThisMod` will be call in `filterModCanLoad`
@@ -539,7 +542,6 @@ export class ModLoader {
                 console.log('loadEndModList', loadEndModList.clone());
                 // remember the loading mod info, then pop-front it
                 const mod = this.modLazyCache.popFront()!;
-                this.modLazyOderRecord.push(mod.zip);
                 // warning overwrite, but user can in-place overwrite self
                 if (checkCanSafeOverwriteMod(mod)) {
                     console.log('ModLoader ====== tryInitWaitingLazyLoadMod() mod overwrite safe already loaded:',
@@ -591,6 +593,7 @@ export class ModLoader {
                 }
                 nowLoadedMod.pushBack(mod.zip, ModLoadFromSourceType.SideLazy);
 
+                this.modLoadRecord.push(mod);
                 await this.do_initModInjectEarlyLoadInDomScript(mod.name, mod.mod);
                 await this.do_initModEarlyLoadScript(mod.name, mod.mod);
                 // next
