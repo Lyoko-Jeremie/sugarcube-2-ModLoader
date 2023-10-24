@@ -14,6 +14,9 @@ import {
     uniqBy,
     orderBy,
     isEqualWith,
+    isMap,
+    isFunction,
+    isNil,
 } from 'lodash';
 
 export enum ModLoadFromSourceType {
@@ -22,6 +25,16 @@ export enum ModLoadFromSourceType {
     'LocalStorage' = 'LocalStorage',
     'IndexDB' = 'IndexDB',
     'SideLazy' = 'SideLazy',
+}
+
+
+export function isModOrderItem(a: any): a is ModOrderItem {
+    return a
+        && isString(a.name)
+        && isObject(a.mod)
+        && isObject(a.zip)
+        && !isNil(a.from)
+        ;
 }
 
 export interface ModOrderItem {
@@ -134,6 +147,14 @@ export class ModOrderContainer_One_ReadonlyMap implements ReadonlyMap<string, Mo
 
 }
 
+export function isModOrderContainer(a: any): a is ModOrderContainer {
+    return a
+        && isArray(a.order)
+        && isMap(a.container)
+        && isFunction(a.checkData)
+        ;
+}
+
 /**
  * a multi-index container designed for mod load cache list. work like a C++ Boost.MultiIndexContainer
  * can keep mod `order` , optional keep mod `unique` , remember mod load `from source`
@@ -197,11 +218,14 @@ export class ModOrderContainer {
     /**
      * O(1)
      */
-    getByNameOne(name: string): ModOrderItem | undefined {
-        const nn = this.container.get(name);
+    getByNameOne(name: string, noError = false): ModOrderItem | undefined {
         this.checkNameUniq();
+        const nn = this.container.get(name);
         if (!nn) {
-            console.error('ModOrderContainer getByNameOne() cannot find name.', [name, this.container]);
+            if (noError) {
+                return undefined;
+            }
+            console.error('ModOrderContainer getByNameOne() cannot find name.', [name, this.clone()]);
             return undefined;
         }
         if (nn.size > 1) {
@@ -499,6 +523,24 @@ export class ModOrderContainer {
         r.after.order = this.order.slice(index + 1);
         r.before.rebuildContainerFromOrder();
         r.after.rebuildContainerFromOrder();
+        return r;
+    }
+
+    static mergeModOrderContainer(nnn: (ModOrderContainer | ModOrderItem)[]): ModOrderContainer {
+        const r = new ModOrderContainer();
+        r.order = [];
+        for (const n of nnn) {
+            if (isModOrderContainer(n)) {
+                r.order = r.order.concat(n.order);
+            } else if (isModOrderItem(n)) {
+                r.order.push(n);
+            } else {
+                // never go there
+                console.error('ModOrderContainer mergeModOrderContainer() unknown type.', [n]);
+                throw new Error('ModOrderContainer mergeModOrderContainer() unknown type.');
+            }
+        }
+        r.rebuildContainerFromOrder();
         return r;
     }
 
