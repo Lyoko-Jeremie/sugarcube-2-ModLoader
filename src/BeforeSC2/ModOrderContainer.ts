@@ -152,7 +152,7 @@ export class ModOrderContainer {
      *
      * add addition limit that keep mod name unique
      */
-    get_One_Map() {
+    get_One_Map(): ModOrderContainer_One_ReadonlyMap {
         return new ModOrderContainer_One_ReadonlyMap(this);
     }
 
@@ -161,7 +161,7 @@ export class ModOrderContainer {
      *
      * add addition limit that keep mod name unique
      */
-    get_One_Array() {
+    get_One_Array(): ModOrderItem[] {
         this.checkNameUniq();
         return uniqBy(this.order, T => T.name);
     }
@@ -169,21 +169,21 @@ export class ModOrderContainer {
     /**
      * O(n)
      */
-    get_Array() {
+    get_Array(): ModOrderItem[] {
         return clone(this.order);
     }
 
     /**
      * O(1)
      */
-    getHasByName(name: string) {
+    getHasByName(name: string): boolean {
         return this.container.has(name) && this.container.get(name)!.size > 0;
     }
 
     /**
      * O(1)
      */
-    getHasByNameFrom(name: string, from: ModLoadFromSourceType) {
+    getHasByNameFrom(name: string, from: ModLoadFromSourceType): boolean {
         return this.container.has(name) && this.container.get(name)!.has(from);
     }
 
@@ -213,14 +213,14 @@ export class ModOrderContainer {
     /**
      * O(n)
      */
-    getByOrder(name: string) {
+    getByOrder(name: string): ModOrderItem[] {
         return this.order.filter(T => T.name === name);
     }
 
     /**
      * O(n)
      */
-    checkNameUniq() {
+    checkNameUniq(): boolean {
         for (const [name, m] of this.container) {
             if (m.size > 1) {
                 console.error('ModOrderContainer checkNameUniq() name not uniq.', [name, m]);
@@ -233,7 +233,7 @@ export class ModOrderContainer {
     /**
      * O(n+2log(n))
      */
-    checkData() {
+    checkData(): boolean {
         // covert container to order , sort it, then compare order one-by-one to check container==order
         const order: ModOrderItem[] = [];
         for (const [name, m] of this.container) {
@@ -245,8 +245,8 @@ export class ModOrderContainer {
                 }
             }
         }
-        const order1 = orderBy(order, ['name', 'from'], ['asc', 'asc']);
-        const order2 = orderBy(this.order, ['name', 'from'], ['asc', 'asc']);
+        const order1: ModOrderItem[] = orderBy(order, ['name', 'from'], ['asc', 'asc']);
+        const order2: ModOrderItem[] = orderBy(this.order, ['name', 'from'], ['asc', 'asc']);
         if (!isEqualWith(order1, order2, (a, b) => a.name === b.name && a.from === b.from)) {
             console.error('ModOrderContainer checkData() failed.', [order1, order2]);
             return false;
@@ -257,7 +257,7 @@ export class ModOrderContainer {
     /**
      * O(n)
      */
-    delete(name: string, from: ModLoadFromSourceType) {
+    delete(name: string, from: ModLoadFromSourceType): boolean {
         const m = this.container.get(name);
         if (m) {
             if (m.has(from)) {
@@ -276,7 +276,7 @@ export class ModOrderContainer {
     /**
      * O(n)
      */
-    deleteAll(name: string) {
+    deleteAll(name: string): boolean {
         const m = this.container.get(name);
         if (m) {
             this.container.delete(name);
@@ -306,7 +306,7 @@ export class ModOrderContainer {
     /**
      * O(2n)
      */
-    pushFront(zip: ModZipReader, from: ModLoadFromSourceType) {
+    pushFront(zip: ModZipReader, from: ModLoadFromSourceType): boolean {
         const obj = this.createModOrderItem(zip, from);
         if (!obj) {
             console.error('ModOrderContainer pushFront() createModOrderItem() failed.', [zip, from]);
@@ -329,7 +329,7 @@ export class ModOrderContainer {
     /**
      * O(2n)
      */
-    pushBack(zip: ModZipReader, from: ModLoadFromSourceType) {
+    pushBack(zip: ModZipReader, from: ModLoadFromSourceType): boolean {
         const obj = this.createModOrderItem(zip, from);
         if (!obj) {
             console.error('ModOrderContainer pushBack() createModOrderItem() failed.', [zip, from]);
@@ -352,7 +352,7 @@ export class ModOrderContainer {
     /**
      * O(2n)
      */
-    insertReplace(zip: ModZipReader, from: ModLoadFromSourceType) {
+    insertReplace(zip: ModZipReader, from: ModLoadFromSourceType): boolean {
         const obj = this.createModOrderItem(zip, from);
         if (!obj) {
             console.error('ModOrderContainer insertReplace() createModOrderItem() failed.', [zip, from]);
@@ -374,7 +374,7 @@ export class ModOrderContainer {
     /**
      * O(n)
      */
-    popOut(name: string, from: ModLoadFromSourceType) {
+    popOut(name: string, from: ModLoadFromSourceType): ModOrderItem | undefined {
         const m = this.container.get(name);
         if (m) {
             const n = m.get(from);
@@ -394,7 +394,7 @@ export class ModOrderContainer {
     /**
      * O(n)
      */
-    popOutAll(name: string) {
+    popOutAll(name: string): ModOrderItem[] | undefined {
         const m = this.container.get(name);
         if (m) {
             this.container.delete(name);
@@ -408,7 +408,7 @@ export class ModOrderContainer {
     /**
      * O(1)
      */
-    popFront() {
+    popFront(): ModOrderItem | undefined {
         const obj = this.order.shift();
         if (obj) {
             const m = this.container.get(obj.name);
@@ -427,7 +427,7 @@ export class ModOrderContainer {
     /**
      * O(1)
      */
-    clear() {
+    clear(): void {
         this.container.clear();
         this.order = [];
     }
@@ -435,14 +435,14 @@ export class ModOrderContainer {
     /**
      * O(1)
      */
-    get size() {
+    get size(): number {
         return this.order.length;
     }
 
     /**
      * O(2n)
      */
-    clone() {
+    clone(): ModOrderContainer {
         const r = new ModOrderContainer();
         r.container = new Map<string, Map<ModLoadFromSourceType, ModOrderItem>>();
         for (const [name, m] of this.container) {
@@ -463,7 +463,7 @@ export class ModOrderContainer {
     /**
      * O(n)
      */
-    private rebuildContainerFromOrder() {
+    private rebuildContainerFromOrder(): void {
         this.container.clear();
         for (const item of this.order) {
             if (!this.container.has(item.name)) {
@@ -480,7 +480,11 @@ export class ModOrderContainer {
     /**
      * O(2n)
      */
-    splitCloneInArray(name: string, from: ModLoadFromSourceType) {
+    splitCloneInArray(name: string, from: ModLoadFromSourceType): {
+        before: ModOrderContainer,
+        current: ModOrderItem,
+        after: ModOrderContainer,
+    } | undefined {
         // split to 3 piece
         const index = this.order.findIndex(T => T.name === name && T.from === from);
         if (index === -1) {
