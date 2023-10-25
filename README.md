@@ -4,9 +4,35 @@
 ---
 
 请从Release下载预编译版：[Release](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/releases)   
-或下载自动构建版：[DoLModLoaderBuild](https://github.com/Lyoko-Jeremie/DoLModLoaderBuild/actions)   
+或下载DoL自动构建版：[DoLModLoaderBuild](https://github.com/Lyoko-Jeremie/DoLModLoaderBuild/releases)   
 Please download the precompiled version from the Release：[Release](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/releases)   
-Or download the automatic build version：[DoLModLoaderBuild](https://github.com/Lyoko-Jeremie/DoLModLoaderBuild/actions)
+Or download the DoL automatic build version：[DoLModLoaderBuild](https://github.com/Lyoko-Jeremie/DoLModLoaderBuild/releases)
+
+---
+
+为了将与SugarCube2无关的功能与ModLoader核心功能分离，保持低耦合，为ModLoader的通用性提供保障。  
+故将与ModLoader核心功能无关的功能分离为单独的Mod，并将部分常用mod以预置mod的方式提供。
+
+现由ModLoader提供官方支持的Mod列表：
+
+| Mod                                                                              | 状态         | 功能                                                                  |
+|----------------------------------------------------------------------------------|------------|---------------------------------------------------------------------|
+| [ModLoaderGui](mod%2FModLoaderGui)                                               | Usable     | Mod管理器，用于管理Mod的加载顺序，启用/禁用Mod，以及查看Mod加载日志                            |
+| [ConflictChecker](mod%2FConflictChecker)                                         | Stable     | Mod冲突检查器，提供附加的约束条件来检查Mod之间的冲突                                       |
+| [ImageLoaderHook](mod%2FImageLoaderHook)                                         | Stable     | 图片替换功能，用于替换游戏中的图片                                                   |
+| [ReplacePatch](mod%2FReplacePatch)                                               | Stable     | 提供对js/css/passage的简单替换                                              |
+| [TweeReplacer](mod%2FTweeReplacer)                                               | Stable     | 提供对passage的替换，可以使用正则表达式查找以及使用文件存储需替换的字符串                            |
+| [SweetAlert2Mod](mod%2FSweetAlert2Mod)                                           | Stable     | 为mod加密等功能提供通用弹出提示框，简单封装[SweetAlert2](https://sweetalert2.github.io) |
+| [CheckGameVersion](mod%2FCheckGameVersion)                                       | Stable     | 为依赖检查功能中的游戏版本检查功能提供DoL适配                                            |
+| [CheckDoLCompressorDictionaries](mod%2FCheckDoLCompressorDictionaries)           | Stable     | 对DoL的数据压缩字典进行检查，并警告用户字典变更                                           |
+| [Diff3WayMerge](mod%2FDiff3WayMerge)                                             | Developing | 基于git的Diff3Way算法实现的passage合并功能，仍在开发阶段                               |
+| [ModdedClothesAddon](mod%2FModdedClothesAddon)                                   | Stable     | DoL的快速服装添加工具                                                        |
+| [ModdedFeatsAddon](mod%2FModdedFeatsAddon)                                       | Stable     | DoL的快速成就添加工具                                                        |
+| [PhoneDebugToolsEruda](https://github.com/Lyoko-Jeremie/PhoneDebugToolsErudaMod) | Stable     | 手机调试工具，对 [Eruda](https://github.com/liriliri/eruda) 的简单封装           |
+| [i18n](mod%2Fi18n)                                                               | Stable     | i18n中文翻译Mod，其他语种基于此mod进行简单修改即可使用                                    |
+| [CryptoI18n](https://github.com/Lyoko-Jeremie/CryptoI18nMod)                     | Demo       | v2.0.0 版本的mod加密功能的demo。以i18n mod作为范例。                               |
+
+有关各个mod的功能及用法，详见对应mod项目的README.md文件。
 
 ---
 
@@ -290,7 +316,7 @@ _使用此功能可以通过自行注册 `HtmlTagSrcHook` 钩子，或者使用 
 注：游戏 DoL 仍然存在部分没有拦截到的图片，这些图片由 DoL 自行添加了 `Macro.add("icon",` **icon** 标签来实现的。这些代码几乎全是在 link 前使用的标签。
 
 
-【2323-10-23】 BreakChange ： 破坏性变更： v2.0.0 修正mod排序问题； 为Mod加密功能添加 SideLazyLoad API 。
+【2023-10-23】 BreakChange ： 破坏性变更： v2.0.0 修正mod排序问题； 为Mod加密功能添加 SideLazyLoad API 。
 
 `modOrder` 数据结构发生重大变化。    
 为了保证向后（未来）兼容性，现在开始不允许直接访问`modOrder`。请使用以下两个API
@@ -306,7 +332,21 @@ _使用此功能可以通过自行注册 `HtmlTagSrcHook` 钩子，或者使用 
 * `ModLoader.checkModCacheUniq()`    检查数据是否唯一，请在手动修改后调用此API验证数据
 * `ModLoader.checkModCacheData()`    检查内部数据是否一致，请在手动修改后调用此API验证数据
 
+【2023-10-23】 BreakChange: Destructive Change: v2.0.0 fixes the mod sorting issue; introduces the SideLazyLoad API for Mod encryption.
 
+The `modOrder` data structure has undergone significant changes.  
+To ensure backward (future) compatibility, direct access to `modOrder` is now prohibited. Please use the following two APIs:
+* `ModLoader.getModByNameOne('mod name')` - Query a Mod using modName.
+* `ModLoader.getModZip('mod name')` - Query ModZip using modName.
+* `ModLoader.getModEarlyLoadCache()` - Safely read loaded mod snapshots during the `EarlyLoad` phase.
+
+Below are the low-level query/traversal methods for ModCache. Please note that these methods cannot be used during the `EarlyLoad` phase:
+* `ModLoader.getModCacheMap()` - Query using modName in a Map format, returns a ReadOnlyMap.
+* `ModLoader.getModCacheOneArray()` - Traverse in an Array format; modifications to the returned Array won't affect the internal data of ModLoader.
+* `ModLoader.getModCacheArray()`
+* `ModLoader.getModCacheByNameOne()` - Query using modName.
+* `ModLoader.checkModCacheUniq()` - Check if the data is unique; call this API to validate data after manual modifications.
+* `ModLoader.checkModCacheData()` - Check if the internal data is consistent; call this API to validate data after manual modifications.
 
 
 【2023-09-21】 Delete `imgFileReplaceList`. Now, use the new ImageHookLoader to intercept image requests directly for image replacement. Therefore, images with the same name as the original image files will be overwritten.
@@ -616,7 +656,7 @@ TODO
 - [ ] 使用Wikify执行script来注入游戏上下文，注入和拦截js函数和对象   
 - [ ] 提供Passage Prefix/Postfix Addon来实现前后缀模式(可以使用注入script函数并添加一行前后缀标签的方式实现)   
 - [ ] 提供PostPassage Addon来访问输出后的html node   
-- [ ] Mod Zip 加密 ( libsodium + 安全模式 + Mod禁用启用 )   
+- [x] Mod Zip 加密 ( libsodium + 安全模式 + Mod禁用启用 )   
 
 ### addon mod
 
