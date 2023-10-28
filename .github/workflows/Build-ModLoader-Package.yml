@@ -56,7 +56,6 @@ jobs:
 
       - name: Build ModLoader
         run: |
-          rm yarn.lock
           yarn install
           yarn run ts:BeforeSC2
           yarn run webpack:BeforeSC2
