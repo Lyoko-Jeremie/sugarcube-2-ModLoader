@@ -62,116 +62,154 @@ jobs:
           yarn run ts:ForSC2
           yarn run webpack:insertTools
 
-      - name: Build All Mods
+      - name: Build ModLoaderGui
+        working-directory: ${{ github.workspace }}/mod/ModLoaderGui
         run: |
-          yarn workspaces foreach -Ap run build:ts
-          yarn workspaces foreach -Ap run build:webpack
-          yarn workspaces foreach -A  node "../../dist-insertTools/packModZip.js" "boot.json"
-
-#      - name: Build ModLoaderGui
-#        working-directory: ${{ github.workspace }}/mod/ModLoaderGui
-#        run: |
-#          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+          cd ${{ github.workspace }}/mod/ModLoaderGui
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy ModLoaderGui
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
           source: ${{ github.workspace }}/mod/ModLoaderGui/ModLoaderGui.mod.zip
           target: ${{ github.workspace }}/out
 
-#      - name: Build ImageLoaderHook
-#        working-directory: ${{ github.workspace }}/mod/ImageLoaderHook
-#        run: |
-#          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Build ImageLoaderHook
+        working-directory: ${{ github.workspace }}/mod/ImageLoaderHook
+        run: |
+          cd ${{ github.workspace }}/mod/ImageLoaderHook
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy ImageLoaderHook
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
           source: ${{ github.workspace }}/mod/ImageLoaderHook/ModLoader DoL ImageLoaderHook.mod.zip
           target: ${{ github.workspace }}/out
 
-#      - name: Build ReplacePatch
-#        working-directory: ${{ github.workspace }}/mod/ReplacePatch
-#        run: |
-#          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Build ReplacePatch
+        working-directory: ${{ github.workspace }}/mod/ReplacePatch
+        run: |
+          cd ${{ github.workspace }}/mod/ReplacePatch
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy ReplacePatch
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
           source: ${{ github.workspace }}/mod/ReplacePatch/ReplacePatcher.mod.zip
           target: ${{ github.workspace }}/out
 
-#      - name: Build TweeReplacer
-#        working-directory: ${{ github.workspace }}/mod/TweeReplacer
-#        run: |
-#          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Build TweeReplacer
+        working-directory: ${{ github.workspace }}/mod/TweeReplacer
+        run: |
+          cd ${{ github.workspace }}/mod/TweeReplacer
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy TweeReplacer
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
           source: ${{ github.workspace }}/mod/TweeReplacer/TweeReplacer.mod.zip
           target: ${{ github.workspace }}/out
 
-#      - name: Build CheckDoLCompressorDictionaries
-#        working-directory: ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries
-#        run: |
-#          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Build CheckDoLCompressorDictionaries
+        working-directory: ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries
+        run: |
+          cd ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy CheckDoLCompressorDictionaries
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
           source: ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries/CheckDoLCompressorDictionaries.mod.zip
           target: ${{ github.workspace }}/out
 
-#      - name: Build CheckGameVersion
-#        working-directory: ${{ github.workspace }}/mod/CheckGameVersion
-#        run: |
-#          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Build CheckGameVersion
+        working-directory: ${{ github.workspace }}/mod/CheckGameVersion
+        run: |
+          cd ${{ github.workspace }}/mod/CheckGameVersion
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy CheckGameVersion
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
           source: ${{ github.workspace }}/mod/CheckGameVersion/CheckGameVersion.mod.zip
           target: ${{ github.workspace }}/out
 
-#      - name: Build Diff3WayMerge
-#        working-directory: ${{ github.workspace }}/mod/Diff3WayMerge
-#        run: |
-#          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Build Diff3WayMerge
+        working-directory: ${{ github.workspace }}/mod/Diff3WayMerge
+        run: |
+          cd ${{ github.workspace }}/mod/Diff3WayMerge
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy Diff3WayMerge
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
           source: ${{ github.workspace }}/mod/Diff3WayMerge/Diff3WayMerge.mod.zip
           target: ${{ github.workspace }}/out
 
-#      - name: Build ModdedClothesAddon
-#        working-directory: ${{ github.workspace }}/mod/ModdedClothesAddon
-#        run: |
-#          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Build ModdedClothesAddon
+        working-directory: ${{ github.workspace }}/mod/ModdedClothesAddon
+        run: |
+          cd ${{ github.workspace }}/mod/ModdedClothesAddon
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy ModdedClothesAddon
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
           source: ${{ github.workspace }}/mod/ModdedClothesAddon/ModdedClothesAddon.mod.zip
           target: ${{ github.workspace }}/out
 
-#      - name: Build ModdedFeatsAddon
-#        working-directory: ${{ github.workspace }}/mod/ModdedFeatsAddon
-#        run: |
-#          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Build ModdedFeatsAddon
+        working-directory: ${{ github.workspace }}/mod/ModdedFeatsAddon
+        run: |
+          cd ${{ github.workspace }}/mod/ModdedFeatsAddon
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy ModdedFeatsAddon
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
           source: ${{ github.workspace }}/mod/ModdedFeatsAddon/ModdedFeatsAddon.mod.zip
           target: ${{ github.workspace }}/out
 
-#      - name: Build ConflictChecker
-#        working-directory: ${{ github.workspace }}/mod/ConflictChecker
-#        run: |
-#          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Build ConflictChecker
+        working-directory: ${{ github.workspace }}/mod/ConflictChecker
+        run: |
+          cd ${{ github.workspace }}/mod/ConflictChecker
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy ConflictChecker
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
           source: ${{ github.workspace }}/mod/ConflictChecker/ConflictChecker.mod.zip
           target: ${{ github.workspace }}/out
 
-#      - name: Build SweetAlert2Mod
-#        working-directory: ${{ github.workspace }}/mod/SweetAlert2Mod
-#        run: |
-#          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Build SweetAlert2Mod
+        working-directory: ${{ github.workspace }}/mod/SweetAlert2Mod
+        run: |
+          cd ${{ github.workspace }}/mod/SweetAlert2Mod
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy SweetAlert2Mod
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
