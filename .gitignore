@@ -12,16 +12,15 @@
 
 node_modules
 dist
-img
 !img/.gitkeep
-label
+img
 !label/type.json5
 !label/.gitkeep
+label
 dist*
 
 src/insertTools/**/*.zip
 
-mod
 !mod/.gitkeep
 !mod/i18n
 !mod/ImageLoaderHook
@@ -33,4 +32,5 @@ mod
 !mod/ModdedFeatsAddon
 !mod/ConflictChecker
 !mod/SweetAlert2Mod
+mod
 
