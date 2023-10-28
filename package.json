@@ -14,7 +14,7 @@
     "ts:ForSC2": "tsc -p ./src/ForSC2/tsconfig.json",
     "webpack:insertTools": "webpack -c ./webpack-insertTools.config.js"
   },
-  "packageManager": "yarn@3.4.1",
+  "packageManager": "yarn@4.0.0",
   "dependencies": {
     "idb-keyval": "^6.2.1",
     "jquery": "^3.7.1",
@@ -48,5 +48,8 @@
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1"
-  }
+  },
+  "workspaces": [
+    "mod/*"
+  ]
 }
