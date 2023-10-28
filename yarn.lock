@@ -573,6 +573,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sweetalert2/themes@npm:^5.0.15":
+  version: 5.0.15
+  resolution: "@sweetalert2/themes@npm:5.0.15"
+  peerDependencies:
+    sweetalert2: ^11.0.0
+  checksum: 57d979ee71e6102f2e1429e5514b7f226c03911ddba33f0ad7d143d557e021383fef9ac38d3411552bb045e7772ef330a8d6cf7c9db003ef6ba847e9c314c868
+  languageName: node
+  linkType: hard
+
 "@tootallnate/once@npm:1":
   version: 1.1.2
   resolution: "@tootallnate/once@npm:1.1.2"
@@ -639,6 +648,20 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 4dee3d966fb527b98f0cbbdcf6977c9193fc3204ed539b7522fe5e64dfa45f9017bdda4ffb1f760062262fce7701a0ee1c2f6ce2e50af36c74d4e37052303172
+  languageName: node
+  linkType: hard
+
+"@types/diff3@npm:^0.0.0":
+  version: 0.0.0
+  resolution: "@types/diff3@npm:0.0.0"
+  checksum: 70cf9874421d2d8c6bd9657278c912b6c9459d79398b67aa01aeb9a7796598ce8467cf75f242e306eb24f4c22dd0d5fba6557912358287c8657fabebf50d1096
+  languageName: node
+  linkType: hard
+
+"@types/diff@npm:^5.0.5":
+  version: 5.0.7
+  resolution: "@types/diff@npm:5.0.7"
+  checksum: 38cad7b1e19789a11bfab2428409476ea204705e92c39dd13a9ba26b604930efcffb553352512296cb179adfb028e2d95e51f9df2b7443bb0a6ba306c8bc84d0
   languageName: node
   linkType: hard
 
@@ -723,6 +746,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/jquery@npm:^3.5.19":
+  version: 3.5.25
+  resolution: "@types/jquery@npm:3.5.25"
+  dependencies:
+    "@types/sizzle": "*"
+  checksum: 912ce4212447a7c640147345c6b46bde5b12bafc2c97e1abc76939174c3109e3dbb361a534af717be2da4e907bc257558a6bc631971fcc47f7e5f044d315183e
+  languageName: node
+  linkType: hard
+
 "@types/jquery@npm:^3.5.20":
   version: 3.5.20
   resolution: "@types/jquery@npm:3.5.20"
@@ -736,6 +768,22 @@ __metadata:
   version: 7.0.12
   resolution: "@types/json-schema@npm:7.0.12"
   checksum: 00239e97234eeb5ceefb0c1875d98ade6e922bfec39dd365ec6bd360b5c2f825e612ac4f6e5f1d13601b8b30f378f15e6faa805a3a732f4a1bbe61915163d293
+  languageName: node
+  linkType: hard
+
+"@types/libsodium-wrappers-sumo@npm:^0.7.7":
+  version: 0.7.7
+  resolution: "@types/libsodium-wrappers-sumo@npm:0.7.7"
+  dependencies:
+    "@types/libsodium-wrappers": "*"
+  checksum: 9aa7caadbedd35f0efd8b0b1fe54675e02ab1e1d14c8fb1f7e50de85a30641d157247228be764cf14ae2a86035a8e3ce581c0f13e244a808e30a692b25f7d18a
+  languageName: node
+  linkType: hard
+
+"@types/libsodium-wrappers@npm:*":
+  version: 0.7.12
+  resolution: "@types/libsodium-wrappers@npm:0.7.12"
+  checksum: 8f25b4ffe6b60c36f3c59b3dea2e952b8790c9b8375ee5235e6d294c1519a578b7882d773f168005eb0f3fdb4f11e06ba27b30b89d2c3b8be3f985c7eedd0491
   languageName: node
   linkType: hard
 
@@ -1110,6 +1158,373 @@ __metadata:
   languageName: node
   linkType: hard
 
+"CheckDoLCompressorDictionaries@workspace:mod/CheckDoLCompressorDictionaries":
+  version: 0.0.0-use.local
+  resolution: "CheckDoLCompressorDictionaries@workspace:mod/CheckDoLCompressorDictionaries"
+  dependencies:
+    "@types/jquery": ^3.5.19
+    "@types/lodash": ^4.14.198
+    "@types/node": ^20.6.0
+    "@webpack-cli/generators": ^3.0.7
+    bootstrap: ^5.3.1
+    css-loader: ^6.8.1
+    fork-ts-checker-webpack-plugin: ^8.0.0
+    html-webpack-plugin: ^5.5.3
+    json5: ^2.2.3
+    jszip: ^3.10.1
+    lodash: ^4.17.21
+    moment: ^2.29.4
+    nodemon: ^3.0.1
+    sass: ^1.66.1
+    sass-loader: ^13.3.2
+    style-loader: ^3.3.3
+    ts-loader: ^9.4.4
+    ts-mixer: ^6.0.3
+    tsconfig-paths-webpack-plugin: ^4.1.0
+    typescript: ^5.1.6
+    webpack: ^5.88.2
+    webpack-cli: ^5.1.4
+    webpack-dev-server: ^4.15.1
+  languageName: unknown
+  linkType: soft
+
+"ConflictChecker@workspace:mod/ConflictChecker":
+  version: 0.0.0-use.local
+  resolution: "ConflictChecker@workspace:mod/ConflictChecker"
+  dependencies:
+    "@types/jquery": ^3.5.19
+    "@types/lodash": ^4.14.198
+    "@types/node": ^20.6.0
+    "@webpack-cli/generators": ^3.0.7
+    bootstrap: ^5.3.1
+    css-loader: ^6.8.1
+    fork-ts-checker-webpack-plugin: ^8.0.0
+    html-webpack-plugin: ^5.5.3
+    json5: ^2.2.3
+    jszip: ^3.10.1
+    lodash: ^4.17.21
+    moment: ^2.29.4
+    nodemon: ^3.0.1
+    sass: ^1.66.1
+    sass-loader: ^13.3.2
+    style-loader: ^3.3.3
+    ts-loader: ^9.4.4
+    ts-mixer: ^6.0.3
+    tsconfig-paths-webpack-plugin: ^4.1.0
+    typescript: ^5.1.6
+    webpack: ^5.88.2
+    webpack-cli: ^5.1.4
+    webpack-dev-server: ^4.15.1
+  languageName: unknown
+  linkType: soft
+
+"CryptoI18n@workspace:mod/CryptoI18n":
+  version: 0.0.0-use.local
+  resolution: "CryptoI18n@workspace:mod/CryptoI18n"
+  dependencies:
+    "@types/jquery": ^3.5.19
+    "@types/libsodium-wrappers-sumo": ^0.7.7
+    "@types/lodash": ^4.14.198
+    "@types/node": ^20.6.0
+    "@webpack-cli/generators": ^3.0.7
+    bootstrap: ^5.3.1
+    css-loader: ^6.8.1
+    eruda: ^3.0.1
+    eruda-code: ^2.1.0
+    fork-ts-checker-webpack-plugin: ^8.0.0
+    html-webpack-plugin: ^5.5.3
+    json5: ^2.2.3
+    jszip: ^3.10.1
+    libsodium-wrappers-sumo: ^0.7.13
+    lodash: ^4.17.21
+    moment: ^2.29.4
+    nodemon: ^3.0.1
+    sass: ^1.66.1
+    sass-loader: ^13.3.2
+    style-loader: ^3.3.3
+    ts-loader: ^9.4.4
+    ts-mixer: ^6.0.3
+    tsconfig-paths-webpack-plugin: ^4.1.0
+    typescript: ^5.1.6
+    webpack: ^5.88.2
+    webpack-cli: ^5.1.4
+    webpack-dev-server: ^4.15.1
+  languageName: unknown
+  linkType: soft
+
+"Diff3WayMerge@workspace:mod/Diff3WayMerge":
+  version: 0.0.0-use.local
+  resolution: "Diff3WayMerge@workspace:mod/Diff3WayMerge"
+  dependencies:
+    "@types/diff": ^5.0.5
+    "@types/diff3": ^0.0.0
+    "@types/jquery": ^3.5.19
+    "@types/lodash": ^4.14.198
+    "@types/node": ^20.6.0
+    "@webpack-cli/generators": ^3.0.7
+    bootstrap: ^5.3.1
+    css-loader: ^6.8.1
+    diff: ^5.1.0
+    diff3: ^0.0.4
+    fork-ts-checker-webpack-plugin: ^8.0.0
+    html-webpack-plugin: ^5.5.3
+    json5: ^2.2.3
+    jszip: ^3.10.1
+    lodash: ^4.17.21
+    moment: ^2.29.4
+    nodemon: ^3.0.1
+    sass: ^1.66.1
+    sass-loader: ^13.3.2
+    style-loader: ^3.3.3
+    ts-loader: ^9.4.4
+    ts-mixer: ^6.0.3
+    tsconfig-paths-webpack-plugin: ^4.1.0
+    typescript: ^5.1.6
+    webpack: ^5.88.2
+    webpack-cli: ^5.1.4
+    webpack-dev-server: ^4.15.1
+  languageName: unknown
+  linkType: soft
+
+"ModdedClothesAddon@workspace:mod/ModdedClothesAddon":
+  version: 0.0.0-use.local
+  resolution: "ModdedClothesAddon@workspace:mod/ModdedClothesAddon"
+  dependencies:
+    "@types/jquery": ^3.5.19
+    "@types/lodash": ^4.14.198
+    "@types/node": ^20.6.0
+    "@webpack-cli/generators": ^3.0.7
+    bootstrap: ^5.3.1
+    css-loader: ^6.8.1
+    fork-ts-checker-webpack-plugin: ^8.0.0
+    html-webpack-plugin: ^5.5.3
+    json5: ^2.2.3
+    jszip: ^3.10.1
+    lodash: ^4.17.21
+    moment: ^2.29.4
+    nodemon: ^3.0.1
+    sass: ^1.66.1
+    sass-loader: ^13.3.2
+    style-loader: ^3.3.3
+    ts-loader: ^9.4.4
+    ts-mixer: ^6.0.3
+    tsconfig-paths-webpack-plugin: ^4.1.0
+    typescript: ^5.1.6
+    webpack: ^5.88.2
+    webpack-cli: ^5.1.4
+    webpack-dev-server: ^4.15.1
+  languageName: unknown
+  linkType: soft
+
+"ModdedFeatsAddon@workspace:mod/ModdedFeatsAddon":
+  version: 0.0.0-use.local
+  resolution: "ModdedFeatsAddon@workspace:mod/ModdedFeatsAddon"
+  dependencies:
+    "@types/jquery": ^3.5.19
+    "@types/lodash": ^4.14.198
+    "@types/node": ^20.6.0
+    "@webpack-cli/generators": ^3.0.7
+    bootstrap: ^5.3.1
+    css-loader: ^6.8.1
+    fork-ts-checker-webpack-plugin: ^8.0.0
+    html-webpack-plugin: ^5.5.3
+    json5: ^2.2.3
+    jszip: ^3.10.1
+    lodash: ^4.17.21
+    moment: ^2.29.4
+    nodemon: ^3.0.1
+    sass: ^1.66.1
+    sass-loader: ^13.3.2
+    style-loader: ^3.3.3
+    ts-loader: ^9.4.4
+    ts-mixer: ^6.0.3
+    tsconfig-paths-webpack-plugin: ^4.1.0
+    typescript: ^5.1.6
+    webpack: ^5.88.2
+    webpack-cli: ^5.1.4
+    webpack-dev-server: ^4.15.1
+  languageName: unknown
+  linkType: soft
+
+"PhoneDebugToolsEruda@workspace:mod/PhoneDebugToolsEruda":
+  version: 0.0.0-use.local
+  resolution: "PhoneDebugToolsEruda@workspace:mod/PhoneDebugToolsEruda"
+  dependencies:
+    "@types/jquery": ^3.5.19
+    "@types/lodash": ^4.14.198
+    "@types/node": ^20.6.0
+    "@webpack-cli/generators": ^3.0.7
+    bootstrap: ^5.3.1
+    css-loader: ^6.8.1
+    eruda: ^3.0.1
+    eruda-code: ^2.1.0
+    fork-ts-checker-webpack-plugin: ^8.0.0
+    html-webpack-plugin: ^5.5.3
+    json5: ^2.2.3
+    jszip: ^3.10.1
+    lodash: ^4.17.21
+    moment: ^2.29.4
+    nodemon: ^3.0.1
+    sass: ^1.66.1
+    sass-loader: ^13.3.2
+    style-loader: ^3.3.3
+    ts-loader: ^9.4.4
+    ts-mixer: ^6.0.3
+    tsconfig-paths-webpack-plugin: ^4.1.0
+    typescript: ^5.1.6
+    webpack: ^5.88.2
+    webpack-cli: ^5.1.4
+    webpack-dev-server: ^4.15.1
+  languageName: unknown
+  linkType: soft
+
+"ReplacePatcher@workspace:mod/ReplacePatch":
+  version: 0.0.0-use.local
+  resolution: "ReplacePatcher@workspace:mod/ReplacePatch"
+  dependencies:
+    "@types/jquery": ^3.5.19
+    "@types/lodash": ^4.14.198
+    "@types/node": ^20.6.0
+    "@webpack-cli/generators": ^3.0.7
+    bootstrap: ^5.3.1
+    css-loader: ^6.8.1
+    fork-ts-checker-webpack-plugin: ^8.0.0
+    html-webpack-plugin: ^5.5.3
+    json5: ^2.2.3
+    jszip: ^3.10.1
+    lodash: ^4.17.21
+    moment: ^2.29.4
+    nodemon: ^3.0.1
+    sass: ^1.66.1
+    sass-loader: ^13.3.2
+    style-loader: ^3.3.3
+    ts-loader: ^9.4.4
+    ts-mixer: ^6.0.3
+    tsconfig-paths-webpack-plugin: ^4.1.0
+    typescript: ^5.1.6
+    webpack: ^5.88.2
+    webpack-cli: ^5.1.4
+    webpack-dev-server: ^4.15.1
+  languageName: unknown
+  linkType: soft
+
+"SC2-ModLoader-DoL-CheckGameVersion@workspace:mod/CheckGameVersion":
+  version: 0.0.0-use.local
+  resolution: "SC2-ModLoader-DoL-CheckGameVersion@workspace:mod/CheckGameVersion"
+  dependencies:
+    "@types/jquery": ^3.5.19
+    "@types/lodash": ^4.14.198
+    "@types/node": ^20.6.0
+    "@webpack-cli/generators": ^3.0.7
+    bootstrap: ^5.3.1
+    css-loader: ^6.8.1
+    fork-ts-checker-webpack-plugin: ^8.0.0
+    html-webpack-plugin: ^5.5.3
+    json5: ^2.2.3
+    jszip: ^3.10.1
+    lodash: ^4.17.21
+    nodemon: ^3.0.1
+    sass: ^1.66.1
+    sass-loader: ^13.3.2
+    style-loader: ^3.3.3
+    ts-loader: ^9.4.4
+    ts-mixer: ^6.0.3
+    tsconfig-paths-webpack-plugin: ^4.1.0
+    typescript: ^5.1.6
+    webpack: ^5.88.2
+    webpack-cli: ^5.1.4
+    webpack-dev-server: ^4.15.1
+  languageName: unknown
+  linkType: soft
+
+"SC2-ModLoader-DoL-ImageLoaderHook@workspace:mod/ImageLoaderHook":
+  version: 0.0.0-use.local
+  resolution: "SC2-ModLoader-DoL-ImageLoaderHook@workspace:mod/ImageLoaderHook"
+  dependencies:
+    "@types/jquery": ^3.5.19
+    "@types/lodash": ^4.14.198
+    "@types/node": ^20.6.0
+    "@webpack-cli/generators": ^3.0.7
+    bootstrap: ^5.3.1
+    css-loader: ^6.8.1
+    fork-ts-checker-webpack-plugin: ^8.0.0
+    html-webpack-plugin: ^5.5.3
+    json5: ^2.2.3
+    jszip: ^3.10.1
+    lodash: ^4.17.21
+    nodemon: ^3.0.1
+    sass: ^1.66.1
+    sass-loader: ^13.3.2
+    style-loader: ^3.3.3
+    ts-loader: ^9.4.4
+    ts-mixer: ^6.0.3
+    tsconfig-paths-webpack-plugin: ^4.1.0
+    typescript: ^5.1.6
+    webpack: ^5.88.2
+    webpack-cli: ^5.1.4
+    webpack-dev-server: ^4.15.1
+  languageName: unknown
+  linkType: soft
+
+"SC2-ModLoader-Gui@workspace:mod/ModLoaderGui":
+  version: 0.0.0-use.local
+  resolution: "SC2-ModLoader-Gui@workspace:mod/ModLoaderGui"
+  dependencies:
+    "@types/jquery": ^3.5.19
+    "@types/lodash": ^4.14.198
+    "@types/node": ^20.6.0
+    "@webpack-cli/generators": ^3.0.7
+    bootstrap: ^5.3.1
+    css-loader: ^6.8.1
+    fork-ts-checker-webpack-plugin: ^8.0.0
+    html-webpack-plugin: ^5.5.3
+    json5: ^2.2.3
+    jszip: ^3.10.1
+    lodash: ^4.17.21
+    moment: ^2.29.4
+    nodemon: ^3.0.1
+    rxjs: ^7.8.1
+    sass: ^1.66.1
+    sass-loader: ^13.3.2
+    style-loader: ^3.3.3
+    ts-loader: ^9.4.4
+    ts-mixer: ^6.0.3
+    tsconfig-paths-webpack-plugin: ^4.1.0
+    typescript: ^5.1.6
+    webpack: ^5.88.2
+    webpack-cli: ^5.1.4
+    webpack-dev-server: ^4.15.1
+  languageName: unknown
+  linkType: soft
+
+"SC2-i18n-Mod@workspace:mod/i18n":
+  version: 0.0.0-use.local
+  resolution: "SC2-i18n-Mod@workspace:mod/i18n"
+  dependencies:
+    "@types/jquery": ^3.5.19
+    "@types/lodash": ^4.14.198
+    "@types/node": ^20.6.0
+    "@webpack-cli/generators": ^3.0.7
+    css-loader: ^6.8.1
+    fork-ts-checker-webpack-plugin: ^8.0.0
+    html-webpack-plugin: ^5.5.3
+    json5: ^2.2.3
+    jszip: ^3.10.1
+    lodash: ^4.17.21
+    nodemon: ^3.0.1
+    sass: ^1.66.1
+    sass-loader: ^13.3.2
+    style-loader: ^3.3.3
+    ts-loader: ^9.4.4
+    ts-mixer: ^6.0.3
+    tsconfig-paths-webpack-plugin: ^4.1.0
+    typescript: ^5.1.6
+    webpack: ^5.88.2
+    webpack-cli: ^5.1.4
+    webpack-dev-server: ^4.15.1
+  languageName: unknown
+  linkType: soft
+
 "SC2-mod-loader-framework@workspace:.":
   version: 0.0.0-use.local
   resolution: "SC2-mod-loader-framework@workspace:."
@@ -1136,6 +1551,68 @@ __metadata:
     sass: ^1.66.1
     sass-loader: ^13.3.2
     semver: ^7.5.4
+    style-loader: ^3.3.3
+    ts-loader: ^9.4.4
+    ts-mixer: ^6.0.3
+    tsconfig-paths-webpack-plugin: ^4.1.0
+    typescript: ^5.1.6
+    webpack: ^5.88.2
+    webpack-cli: ^5.1.4
+    webpack-dev-server: ^4.15.1
+  languageName: unknown
+  linkType: soft
+
+"SweetAlert2Mod@workspace:mod/SweetAlert2Mod":
+  version: 0.0.0-use.local
+  resolution: "SweetAlert2Mod@workspace:mod/SweetAlert2Mod"
+  dependencies:
+    "@sweetalert2/themes": ^5.0.15
+    "@types/jquery": ^3.5.19
+    "@types/lodash": ^4.14.198
+    "@types/node": ^20.6.0
+    "@webpack-cli/generators": ^3.0.7
+    bootstrap: ^5.3.1
+    css-loader: ^6.8.1
+    fork-ts-checker-webpack-plugin: ^8.0.0
+    html-webpack-plugin: ^5.5.3
+    json5: ^2.2.3
+    jszip: ^3.10.1
+    lodash: ^4.17.21
+    moment: ^2.29.4
+    nodemon: ^3.0.1
+    sass: ^1.66.1
+    sass-loader: ^13.3.2
+    style-loader: ^3.3.3
+    sweetalert2: ^11.7.32
+    ts-loader: ^9.4.4
+    ts-mixer: ^6.0.3
+    tsconfig-paths-webpack-plugin: ^4.1.0
+    typescript: ^5.1.6
+    webpack: ^5.88.2
+    webpack-cli: ^5.1.4
+    webpack-dev-server: ^4.15.1
+  languageName: unknown
+  linkType: soft
+
+"TweeReplacer@workspace:mod/TweeReplacer":
+  version: 0.0.0-use.local
+  resolution: "TweeReplacer@workspace:mod/TweeReplacer"
+  dependencies:
+    "@types/jquery": ^3.5.19
+    "@types/lodash": ^4.14.198
+    "@types/node": ^20.6.0
+    "@webpack-cli/generators": ^3.0.7
+    bootstrap: ^5.3.1
+    css-loader: ^6.8.1
+    fork-ts-checker-webpack-plugin: ^8.0.0
+    html-webpack-plugin: ^5.5.3
+    json5: ^2.2.3
+    jszip: ^3.10.1
+    lodash: ^4.17.21
+    moment: ^2.29.4
+    nodemon: ^3.0.1
+    sass: ^1.66.1
+    sass-loader: ^13.3.2
     style-loader: ^3.3.3
     ts-loader: ^9.4.4
     ts-mixer: ^6.0.3
@@ -1532,6 +2009,15 @@ __metadata:
   version: 1.0.0
   resolution: "boolbase@npm:1.0.0"
   checksum: 3e25c80ef626c3a3487c73dbfc70ac322ec830666c9ad915d11b701142fab25ec1e63eff2c450c74347acfd2de854ccde865cd79ef4db1683f7c7b046ea43bb0
+  languageName: node
+  linkType: hard
+
+"bootstrap@npm:^5.3.1":
+  version: 5.3.2
+  resolution: "bootstrap@npm:5.3.2"
+  peerDependencies:
+    "@popperjs/core": ^2.11.8
+  checksum: d5580b253d121ffc137388d41da58dce8d15f1ccd574e12f28d4a08e7649ca15e95db645b2b677cb8025bccd446bff04138fc0fe64f8cba0ccc5dc004a8644cf
   languageName: node
   linkType: hard
 
@@ -2300,7 +2786,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"diff@npm:^5.0.0":
+"diff3@npm:^0.0.4":
+  version: 0.0.4
+  resolution: "diff3@npm:0.0.4"
+  checksum: f6c9fedae11e7bec103bc9ce347e6d3c2e3cc5bd051f117307333ec5a60cd4ce944ff0c475ef7da2add0d1c828357c105b3728fdf90c2473853083e379d380dc
+  languageName: node
+  linkType: hard
+
+"diff@npm:^5.0.0, diff@npm:^5.1.0":
   version: 5.1.0
   resolution: "diff@npm:5.1.0"
   checksum: c7bf0df7c9bfbe1cf8a678fd1b2137c4fb11be117a67bc18a0e03ae75105e8533dbfb1cda6b46beb3586ef5aed22143ef9d70713977d5fb1f9114e21455fba90
@@ -2504,6 +2997,20 @@ __metadata:
   version: 10.4.0
   resolution: "error@npm:10.4.0"
   checksum: 26c9ecb7af8de775c7f8c143aa2557cf42bf6dddbef1d68db8ad3501a29af872bea53ca4e2af20ac464bf7475a2827bd37898846fea27692c3ce66500a3e3fc2
+  languageName: node
+  linkType: hard
+
+"eruda-code@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "eruda-code@npm:2.1.0"
+  checksum: 4b7044372d7b8b3428e6df18e47e81293d44e857f1169b34ec1ea3dbc802baf06c673e0f26f94f71f9da631c5d1f9200854230d64759da66ce3c20f412ccce32
+  languageName: node
+  linkType: hard
+
+"eruda@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "eruda@npm:3.0.1"
+  checksum: 94ffa1be8ac445bb99347ae6ad8bf432c13016dcf8fc9b2f4eb818c79ee38b4a391dd0e0d9548eea7f7f36f6aa9e094479e949c82d5c28eac25dc412dad9e3c2
   languageName: node
   linkType: hard
 
@@ -3935,6 +4442,22 @@ __metadata:
     picocolors: ^1.0.0
     shell-quote: ^1.7.3
   checksum: 48e4230643e8fdb5c14c11314706d58d9f3fbafe2606be3d6e37da1918ad8bfe39dd87875c726a1b59b9f4da99d87ec3e36d4c528464f0b820f9e91e5cb1c02d
+  languageName: node
+  linkType: hard
+
+"libsodium-sumo@npm:^0.7.13":
+  version: 0.7.13
+  resolution: "libsodium-sumo@npm:0.7.13"
+  checksum: d0905530c53c27a0c01348eed8abc2ecf3725c0647545cc528ea4bbd0ee63b7a471b56abefec5b293086ee64b5ba7cf911a655cd2c36f400a4bfec6e2d152ebd
+  languageName: node
+  linkType: hard
+
+"libsodium-wrappers-sumo@npm:^0.7.13":
+  version: 0.7.13
+  resolution: "libsodium-wrappers-sumo@npm:0.7.13"
+  dependencies:
+    libsodium-sumo: ^0.7.13
+  checksum: cdaa7ae5d64e71e860b40b5f2fbaec156adc7bc5606f7d32655b6ab84c9878fd90b3a41e99cb96380f0b5727d1ee1c6ad5b440bff35ce8289832e5c8cac99973
   languageName: node
   linkType: hard
 
@@ -5816,7 +6339,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:^7.5.5":
+"rxjs@npm:^7.5.5, rxjs@npm:^7.8.1":
   version: 7.8.1
   resolution: "rxjs@npm:7.8.1"
   dependencies:
@@ -6467,6 +6990,13 @@ __metadata:
   version: 1.0.0
   resolution: "supports-preserve-symlinks-flag@npm:1.0.0"
   checksum: 53b1e247e68e05db7b3808b99b892bd36fb096e6fba213a06da7fab22045e97597db425c724f2bbd6c99a3c295e1e73f3e4de78592289f38431049e1277ca0ae
+  languageName: node
+  linkType: hard
+
+"sweetalert2@npm:^11.7.32":
+  version: 11.7.32
+  resolution: "sweetalert2@npm:11.7.32"
+  checksum: 3143c1d39acfc381a28945184a95b7c062523f3b1fcb1ab2fa1b47f8cbf9a04d71f4f53beb6915c41ddcbabe5741d4839af02c80427f93d2f2abcb62176ea710
   languageName: node
   linkType: hard
 
