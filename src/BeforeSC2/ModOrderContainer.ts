@@ -44,12 +44,13 @@ export interface ModOrderItem {
     zip: ModZipReader;
 }
 
-class CustomIterableIterator<T, Parent> implements IterableIterator<T> {
+class CustomIterableIterator<T, Parent, CacheType> implements IterableIterator<T> {
     index = 0;
 
     constructor(
         public parent: Parent,
-        public nextF: (index: number, p: Parent, ito: CustomIterableIterator<T, Parent>) => IteratorResult<T>,
+        public nextF: (index: number, p: Parent, ito: CustomIterableIterator<T, Parent, CacheType>) => IteratorResult<T>,
+        public cache: CacheType,
     ) {
     }
 
@@ -68,10 +69,59 @@ class CustomIterableIterator<T, Parent> implements IterableIterator<T> {
     }
 }
 
-export class ModOrderContainer_One_ReadonlyMap implements ReadonlyMap<string, ModOrderItem> {
+abstract class CustomReadonlyMapHelper<K, V> implements ReadonlyMap<K, V> {
+
+    abstract get size(): number;
+
+    abstract get(key: K): V | undefined;
+
+    abstract has(key: K): boolean;
+
+    abstract entries(): IterableIterator<[K, V]>;
+
+    [Symbol.iterator](): IterableIterator<[K, V]> {
+        return this.entries();
+    }
+
+    forEach(callback: (value: V, key: K, map: ReadonlyMap<K, V>) => void, thisArg?: any): void {
+        for (const nn of this.entries()) {
+            callback(this.get(nn[0])!, nn[0], this);
+        }
+    }
+
+    keys(): IterableIterator<K> {
+        return new CustomIterableIterator<K, typeof this, [K, V][]>(
+            this,
+            (index, p, ito) => {
+                return {
+                    done: index >= this.size,
+                    value: ito.cache[index][0],
+                };
+            },
+            Array.from(this.entries()),
+        );
+    }
+
+    values(): IterableIterator<V> {
+        return new CustomIterableIterator<V, typeof this, [K, V][]>(
+            this,
+            (index, p, ito) => {
+                return {
+                    done: index >= this.size,
+                    value: ito.cache[index][1],
+                };
+            },
+            Array.from(this.entries()),
+        );
+    }
+
+}
+
+export class ModOrderContainer_One_ReadonlyMap extends CustomReadonlyMapHelper<string, ModOrderItem> {
     constructor(
         public parent: ModOrderContainer,
     ) {
+        super();
         parent.checkNameUniq();
     }
 
@@ -79,18 +129,14 @@ export class ModOrderContainer_One_ReadonlyMap implements ReadonlyMap<string, Mo
         return this.parent.container.size;
     };
 
-    [Symbol.iterator](): IterableIterator<[string, ModOrderItem]> {
-        return this.entries();
-    }
-
     entries(): IterableIterator<[string, ModOrderItem]> {
-        return new CustomIterableIterator<[string, ModOrderItem], ModOrderContainer>(
+        return new CustomIterableIterator<[string, ModOrderItem], ModOrderContainer, string[]>(
             this.parent,
             (index, p, ito) => {
                 if (index >= p.container.size) {
                     return {done: true, value: undefined};
                 } else {
-                    const it = Array.from(p.container.keys())[index];
+                    const it = ito.cache[index];
                     const itt = this.get(it);
                     // console.log('entries()', index, it, itt);
                     if (!it || !itt) {
@@ -99,16 +145,9 @@ export class ModOrderContainer_One_ReadonlyMap implements ReadonlyMap<string, Mo
                     }
                     return {done: false, value: [it, itt]};
                 }
-            }
+            },
+            Array.from(this.parent.container.keys()),
         );
-    }
-
-    forEach(callback: (value: ModOrderItem, key: string, map: ReadonlyMap<string, ModOrderItem>) => void, thisArg?: any): void {
-        for (const nn of this.parent.container) {
-            for (const nnn of nn[1]) {
-                callback(nnn[1], nn[0], this);
-            }
-        }
     }
 
     get(key: string): ModOrderItem | undefined {
@@ -117,32 +156,6 @@ export class ModOrderContainer_One_ReadonlyMap implements ReadonlyMap<string, Mo
 
     has(key: string): boolean {
         return this.parent.container.has(key) && this.parent.container.get(key)!.size > 0;
-    }
-
-    keys(): IterableIterator<string> {
-        return new CustomIterableIterator<string, ModOrderContainer>(
-            this.parent,
-            (index, p, ito) => {
-                const name = Array.from(p.container.keys())[index];
-                return {
-                    done: index >= p.container.size,
-                    value: name,
-                };
-            },
-        );
-    }
-
-    values(): IterableIterator<ModOrderItem> {
-        return new CustomIterableIterator<ModOrderItem, ModOrderContainer>(
-            this.parent,
-            (index, p, ito) => {
-                const name = Array.from(p.container.keys())[index];
-                return {
-                    done: index >= p.container.size,
-                    value: p.container.get(name)!.values().next().value,
-                };
-            },
-        );
     }
 
 }
