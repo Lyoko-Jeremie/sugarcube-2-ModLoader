@@ -6,6 +6,7 @@ import {checkDependenceInfo, checkModBootJsonAddonPlugin, ModBootJson, ModImgGet
 import {getLogFromModLoadControllerCallback, LogWrapper, ModLoadControllerCallback} from "./ModLoadController";
 import {extname} from "./extname";
 import {ReplacePatcher, checkPatchInfo} from "./ReplacePatcher";
+import JSON5 from 'json5';
 
 export interface Twee2PassageR {
     name: string;
@@ -159,7 +160,7 @@ export class ModZipReader {
             return false;
         }
         const bootJson = await bootJsonFile.async('string')
-        const bootJ = JSON.parse(bootJson);
+        const bootJ = JSON5.parse(bootJson);
         // console.log('ModZipReader init() bootJ', bootJ);
         // console.log('ModZipReader init() bootJ', this.validateBootJson(bootJ));
         // console.log('ModZipReader init() bootJ', [
@@ -216,7 +217,7 @@ export class ModZipReader {
                 if (replacePatchFile) {
                     const data = await replacePatchFile.async('string');
                     try {
-                        const d = JSON.parse(data);
+                        const d = JSON5.parse(data);
                         if (checkPatchInfo(d)) {
                             this.modInfo.replacePatcher.push(new ReplacePatcher(
                                 this.log,
@@ -404,7 +405,7 @@ export class LocalStorageLoader extends LoaderBase {
         }
         let list: string[];
         try {
-            list = JSON.parse(listFile);
+            list = JSON5.parse(listFile);
         } catch (e) {
             console.error(e);
             return Promise.resolve(false);
@@ -444,7 +445,7 @@ export class LocalStorageLoader extends LoaderBase {
             return undefined;
         }
         try {
-            const l = JSON.parse(ls);
+            const l = JSON5.parse(ls);
             console.log('ModLoader ====== LocalStorageLoader listMod() modDataLocalStorageZipList', l);
             if (Array.isArray(l) && l.every(isString)) {
                 return l;
@@ -486,7 +487,7 @@ export class LocalStorageLoader extends LoaderBase {
                 return `bootJsonFile ${ModZipReader.modBootFilePath} Invalid`;
             }
             const bootJson = await bootJsonFile.async('string')
-            const bootJ = JSON.parse(bootJson);
+            const bootJ = JSON5.parse(bootJson);
             if (ModZipReader.validateBootJson(bootJ)) {
                 return bootJ;
             }
@@ -523,7 +524,7 @@ export class IndexDBLoader extends LoaderBase {
         }
         let list: string[];
         try {
-            list = JSON.parse(listFile);
+            list = JSON5.parse(listFile);
         } catch (e) {
             console.error(e);
             return Promise.resolve(false);
@@ -563,7 +564,7 @@ export class IndexDBLoader extends LoaderBase {
             return undefined;
         }
         try {
-            const l = JSON.parse(ls);
+            const l = JSON5.parse(ls);
             console.log('ModLoader ====== IndexDBLoader listMod() modDataIndexDBZipList', l);
             if (Array.isArray(l) && l.every(isString)) {
                 return l;
@@ -611,7 +612,7 @@ export class IndexDBLoader extends LoaderBase {
                 return `bootJsonFile ${ModZipReader.modBootFilePath} Invalid`;
             }
             const bootJson = await bootJsonFile.async('string')
-            const bootJ = JSON.parse(bootJson);
+            const bootJ = JSON5.parse(bootJson);
             if (ModZipReader.validateBootJson(bootJ)) {
                 return bootJ;
             }
