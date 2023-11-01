@@ -17,6 +17,7 @@ import {SC2JsEvalContext} from "./SC2JsEvalContext";
 import {ModUtils} from "./Utils";
 import {JsPreloader} from "./JsPreloader";
 import {HtmlTagSrcHook} from "./HtmlTagSrcHook";
+import {LanguageManager} from "./LanguageManager";
 
 export class SC2DataManager {
 
@@ -175,6 +176,12 @@ export class SC2DataManager {
 
     getPassageTracer() {
         return this.passageTracer;
+    }
+
+    private languageManager = new LanguageManager(this.thisWin, this);
+
+    getLanguageManager() {
+        return this.languageManager;
     }
 
     private sc2EventTracer = new Sc2EventTracer(this.thisWin, this);
