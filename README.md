@@ -33,6 +33,7 @@ Or download the DoL automatic build version：[DoLModLoaderBuild](https://github
 | [PhoneDebugToolsEruda](https://github.com/Lyoko-Jeremie/PhoneDebugToolsErudaMod) | Stable     | 手机调试工具，对 [Eruda](https://github.com/liriliri/eruda) 的简单封装           |
 | [i18n](mod%2Fi18n)                                                               | Stable     | i18n中文翻译Mod，其他语种基于此mod进行简单修改即可使用                                    |
 | [CryptoI18n](https://github.com/Lyoko-Jeremie/CryptoI18nMod)                     | Demo       | v2.0.0 版本的mod加密功能的demo。以i18n mod作为范例。                               |
+| [ExampleModModifyMod](https://github.com/Lyoko-Jeremie/ExampleModModifyMod)      | Demo       | 关于如何使用Mod B读取并修改Mod A的数据和行为的示范Mod                                   |
 
 有关各个mod的功能及用法，详见对应mod项目的README.md文件。
 
@@ -651,7 +652,7 @@ TODO
 - [ ] Mod排序(ModLoaderGUI) Mod sorting
 - [ ] Mod禁用启用(可选加载)  
 - [ ] 游戏内Mod设置界面  
-- [ ] 修改其他Mod(Mod i18n pack(eg. english a cn mod))  Modify other mods   
+- [x] 修改其他Mod(Mod i18n pack(eg. english a cn mod))  Modify other mods   
 - [ ] 在线编辑passage   
 - [ ] 查看Diff   
 - [x] Mod-游戏版本兼容性检查   
