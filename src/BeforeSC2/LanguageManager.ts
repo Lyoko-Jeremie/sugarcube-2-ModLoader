@@ -1,6 +1,10 @@
 import {SC2DataManager} from "./SC2DataManager";
 import {LogWrapper} from "./ModLoadController";
 
+export const MainLanguageTypeEnum = [
+    'en',
+    'zh',
+] as const;
 
 export class LanguageManager {
     private logger: LogWrapper;
@@ -23,5 +27,8 @@ export class LanguageManager {
         const w = this.thisWin;
         return w.navigator.language;
     }
+
+    mainLanguage: typeof MainLanguageTypeEnum[number] = "en";
+
 }
 
