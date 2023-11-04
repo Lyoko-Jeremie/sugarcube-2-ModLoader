@@ -12,7 +12,7 @@ import {AddonPluginManager} from "./AddonPlugin";
 
 export class ModUtils {
 
-    version = '2.3.0';
+    version = '2.3.1';
 
     constructor(
         public pSC2DataManager: SC2DataManager,
