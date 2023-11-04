@@ -45,3 +45,7 @@
 	path = mod/SweetAlert2Mod
 	url = https://github.com/Lyoko-Jeremie/SweetAlert2Mod.git
 	branch = master
+[submodule "mod/ModuleCssReplacer"]
+	path = mod/ModuleCssReplacer
+	url = https://github.com/Lyoko-Jeremie/DoL_ModuleCssReplacerAddon.git
+	branch = master
