@@ -230,6 +230,21 @@ jobs:
           source: ${{ github.workspace }}/mod/ModuleCssReplacer/ModuleCssReplacer.mod.zip
           target: ${{ github.workspace }}/out
 
+
+      - name: Build I18nTweeReplacer
+        working-directory: ${{ github.workspace }}/mod/I18nTweeReplacer
+        run: |
+          cd ${{ github.workspace }}/mod/I18nTweeReplacer
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Copy I18nTweeReplacer
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/I18nTweeReplacer/I18nTweeReplacer.mod.zip
+          target: ${{ github.workspace }}/out
+
       - name: Copy dist-BeforeSC2
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:

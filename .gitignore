@@ -33,5 +33,6 @@ src/insertTools/**/*.zip
 !mod/ConflictChecker
 !mod/SweetAlert2Mod
 !mod/ModuleCssReplacer
+!mod/I18nTweeReplacer
 mod
 

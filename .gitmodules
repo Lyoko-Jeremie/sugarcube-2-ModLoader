@@ -49,3 +49,7 @@
 	path = mod/ModuleCssReplacer
 	url = https://github.com/Lyoko-Jeremie/DoL_ModuleCssReplacerAddon.git
 	branch = master
+[submodule "mod/I18nTweeReplacer"]
+	path = mod/I18nTweeReplacer
+	url = https://github.com/Lyoko-Jeremie/I18nTweeReplacerMod.git
+	branch = master
