@@ -74,6 +74,7 @@ export class JsPreloader {
             console.error('ModLoader ====== JsPreloader startLoad() checkNameUniq() failed. Data consistency check failed.');
             this.logger.error('ModLoader ====== JsPreloader startLoad() checkNameUniq() failed. Data consistency check failed.');
         }
+        await this.pSC2DataManager.getAddonPluginManager().triggerHook('afterPreload');
         this.logger.log('ModLoader ====== ModLoader Start End. To Start SugarCube2 Engine.....');
         await this.pSC2DataManager.getModLoadController().ModLoaderLoadEnd();
     }
