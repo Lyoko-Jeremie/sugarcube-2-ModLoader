@@ -21,7 +21,6 @@ dist*
 
 src/insertTools/**/*.zip
 
-mod
 !mod/.gitkeep
 !mod/i18n
 !mod/ImageLoaderHook
@@ -33,4 +32,6 @@ mod
 !mod/ModdedFeatsAddon
 !mod/ConflictChecker
 !mod/SweetAlert2Mod
+!mod/ModuleCssReplacer
+mod
 
