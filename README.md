@@ -22,12 +22,14 @@ Or download the DoL automatic build version：[DoLModLoaderBuild](https://github
 | [ImageLoaderHook](mod%2FImageLoaderHook)                                         | Stable     | 图片替换功能，用于替换游戏中的图片                                                   |
 | [ReplacePatch](mod%2FReplacePatch)                                               | Stable     | 提供对js/css/passage的简单替换                                              |
 | [TweeReplacer](mod%2FTweeReplacer)                                               | Stable     | 提供对passage的替换，可以使用正则表达式查找以及使用文件存储需替换的字符串                            |
+| [I18nTweeReplacer](mod%2FI18nTweeReplacer)                                       | Testing    | TweeReplacer的原生I18n支持版，可以为Mod作者提供原生i18n支持                           |
 | [SweetAlert2Mod](mod%2FSweetAlert2Mod)                                           | Stable     | 为mod加密等功能提供通用弹出提示框，简单封装[SweetAlert2](https://sweetalert2.github.io) |
 | [CheckGameVersion](mod%2FCheckGameVersion)                                       | Stable     | 为依赖检查功能中的游戏版本检查功能提供DoL适配                                            |
 | [CheckDoLCompressorDictionaries](mod%2FCheckDoLCompressorDictionaries)           | Stable     | 对DoL的数据压缩字典进行检查，并警告用户字典变更                                           |
 | [Diff3WayMerge](mod%2FDiff3WayMerge)                                             | Developing | 基于git的Diff3Way算法实现的passage合并功能，仍在开发阶段                               |
 | [ModdedClothesAddon](mod%2FModdedClothesAddon)                                   | Stable     | DoL的快速服装添加工具                                                        |
 | [ModdedFeatsAddon](mod%2FModdedFeatsAddon)                                       | Stable     | DoL的快速成就添加工具                                                        |
+| [ModuleCssReplacer](mod%2FModuleCssReplacer)                                     | Testing    | Css替换器，解决无法使用标准方法替换DoL使用的Module/css问题而专门设计                          |
 | [PhoneDebugToolsEruda](https://github.com/Lyoko-Jeremie/PhoneDebugToolsErudaMod) | Stable     | 手机调试工具，对 [Eruda](https://github.com/liriliri/eruda) 的简单封装           |
 | [i18n](mod%2Fi18n)                                                               | Stable     | i18n中文翻译Mod，其他语种基于此mod进行简单修改即可使用                                    |
 | [CryptoI18n](https://github.com/Lyoko-Jeremie/CryptoI18nMod)                     | Demo       | v2.0.0 版本的mod加密功能的demo。以i18n mod作为范例。                               |
