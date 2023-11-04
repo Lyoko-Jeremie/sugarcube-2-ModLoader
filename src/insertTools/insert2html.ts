@@ -3,8 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import {promisify} from 'util';
 import {isArray, isString} from 'lodash';
+import JSON5 from 'json5';
 
-// TODO insert zip to html top first script tag, then insert BeforeSC2 in second script tag.
+// insert zip to html top first script tag, then insert BeforeSC2 in second script tag.
 
 
 export async function loadFileAsBase64(fPath: string) {
@@ -42,7 +43,7 @@ export async function loadFileAsBase64(fPath: string) {
     const jsonF = await promisify(fs.readFile)(jsonPath, {encoding: 'utf-8'});
     const jsF = await promisify(fs.readFile)(jsPath, {encoding: 'utf-8'});
     // console.log('jsonF', jsonF.slice(0, 10));
-    const data: string[] = JSON.parse(jsonF);
+    const data: string[] = JSON5.parse(jsonF);
     // data: path[]
     if (!(data && isArray(data) && data.every(isString))) {
         console.error('(!(data && isArray(data) && data.every(isString))), json format invalid.');
