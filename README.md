@@ -642,7 +642,7 @@ Addon是一种特殊的Mod，作为一种功能扩展的形式存在，通过将
 
 为了满足部分Mod作者对内容保护的要求，设计了基于 libsodium 的 Mod 内容保护框架
 
-TODO
+v2.1.0 开始对加密 Mod 提供正式支持。有关加密 Mod 如何工作以及如何设计一个加密 Mod ，请参见样例 [CryptoI18nMod](https://github.com/Lyoko-Jeremie/CryptoI18nMod)
 
 ---
 
