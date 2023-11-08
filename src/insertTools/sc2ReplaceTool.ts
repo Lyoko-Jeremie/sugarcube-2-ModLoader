@@ -43,8 +43,19 @@ import {has} from 'lodash';
         process.exit(-1);
         return;
     }
-    const sc2s = cheerio.load(sc2Json.source);
 
+    const ht = cheerio.load(htmlF);
+
+    const title = ht('title');
+    if (title.length !== 1) {
+        console.error('oldSC2.length !== 1');
+        process.exit(-1);
+        return;
+    }
+
+    // {{STORY_NAME}} ->> title
+
+    const sc2s = cheerio.load(sc2Json.source.replaceAll('{{STORY_NAME}}', title.text()));
 
     // const sc2sS: string | null = sc2s.root().html();
     // if (!sc2sS) {
@@ -66,8 +77,6 @@ import {has} from 'lodash';
         process.exit(-1);
         return;
     }
-
-    const ht = cheerio.load(htmlF);
 
     // <script id="script-sugarcube" type="text/javascript">
     const oldSC2Script = ht('script#script-sugarcube[type="text/javascript"]');
