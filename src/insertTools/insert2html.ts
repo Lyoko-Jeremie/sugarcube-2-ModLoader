@@ -78,6 +78,7 @@ export async function loadFileAsBase64(fPath: string) {
 
     await promisify(fs.writeFile)(htmlPath + '.mod.html', newHtmlF, {encoding: 'utf-8'});
 
+    console.log('=== Congratulation! insert2html done! Everything is ok. ===');
 })().catch((e) => {
     console.error(e);
     process.exit(1);
