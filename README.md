@@ -3,10 +3,10 @@
 
 ---
 
-请从Release下载预编译版：[Release](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/releases)   
-或下载DoL自动构建版：[DoLModLoaderBuild](https://github.com/Lyoko-Jeremie/DoLModLoaderBuild/releases)   
-Please download the precompiled version from the Release：[Release](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/releases)   
-Or download the DoL automatic build version：[DoLModLoaderBuild](https://github.com/Lyoko-Jeremie/DoLModLoaderBuild/releases)
+请从ModLoader/actions下载预编译版ModLoader：[ModLoader/actions](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/actions)   
+或下载附带ModLoader的自动构建版DoL：[DoLModLoaderBuild](https://github.com/Lyoko-Jeremie/DoLModLoaderBuild/releases)   
+Please download the precompiled version ModLoader from the ModLoader/actions：[ModLoader/actions](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/actions)    
+Or download the DoL with ModLoader version automatic build ：[DoLModLoaderBuild](https://github.com/Lyoko-Jeremie/DoLModLoaderBuild/releases)
 
 ---
 
@@ -49,6 +49,7 @@ Or download the DoL automatic build version：[DoLModLoaderBuild](https://github
     * [自动打包方法](#自动打包方法)
   * [ModLoader开发及修改方法](#ModLoader开发及修改方法)
   * [有关SC2注入点](#有关SC2注入点)
+  * [如何不重新编译直接替换编译后游戏的SC2引擎](#如何不重新编译直接替换编译后游戏的sc2引擎)
 
 ---
 
@@ -643,6 +644,70 @@ Addon是一种特殊的Mod，作为一种功能扩展的形式存在，通过将
 为了满足部分Mod作者对内容保护的要求，设计了基于 libsodium 的 Mod 内容保护框架
 
 v2.1.0 开始对加密 Mod 提供正式支持。有关加密 Mod 如何工作以及如何设计一个加密 Mod ，请参见样例 [CryptoI18nMod](https://github.com/Lyoko-Jeremie/CryptoI18nMod)
+
+---
+
+## 如何不重新编译直接替换编译后游戏的SC2引擎
+
+How to replace the SC2 engine of a compiled game without recompiling
+
+以 `node sc2ReplaceTool.js  "<编译后的游戏html>" "<新的SC2引擎format.js文件路径>"` 的方式可以使用sc2ReplaceTool将已编译的新SC2引擎替换到编译后的游戏html中，这样可以避免重新编译整个游戏  
+编译后的html文件名将被添加 `.sc2replace.html` 的后缀，可以再按照上面的方法使用`insert2html`来将ModLoader注入到替换后的游戏html中
+
+You can use sc2ReplaceTool to replace the compiled new SC2 engine into the compiled game's HTML by using `node sc2ReplaceTool.js "<compiled game's HTML>" "<path to the new SC2 engine 'format.js' file>"`, this way you can avoid recompiling the entire game.  
+The compiled HTML filename will be appended with the suffix `.sc2replace.html`, and you can then use the `insert2html` method mentioned above to inject the ModLoader into the replaced game HTML.
+
+
+格式 format ：
+
+```shell
+node "<sc2ReplaceTool.js 文件路径>" "<编译后的游戏html>" "<新的SC2引擎format.js文件路径>"
+```
+
+例子 example :
+
+```shell
+node "H:\Code\sugarcube-2\ModLoader\dist-insertTools\sc2ReplaceTool.js" "H:\Code\degrees-of-lewdity\Degrees of Lewdity VERSION.html" "h:\Code\DoL\sugarcube-2\build\twine2\sugarcube-2\format.js"
+```
+
+会在原始html文件同目录下生成一个同名的html.sc2replace.html文件，例如：  
+A new file with the name `html.sc2replace.html` will be generated in the same directory as the original HTML file. For example:
+```
+Degrees of Lewdity VERSION.html.sc2replace.html
+```
+
+
+之后使用 `insert2html` 将ModLoader注入到替换后的游戏html中  
+Afterwards, use `insert2html` to inject the ModLoader into the HTML of the game that has been replaced with the new SC2 engine.
+
+切换到 modList.json 所在文件夹  
+Switch to the directory where `modList.json` is located.
+
+```shell
+cd ./src/insertTools/modList.json
+```
+
+运行 (run command)：
+
+```shell
+node "<insert2html.js 文件路径>" "<Degrees of Lewdity VERSION.html 文件路径>" "<modList.json 文件>" "<BeforeSC2.js 文件路径>"
+```
+
+例如 example：
+
+```shell
+node "H:\Code\sugarcube-2\ModLoader\dist-insertTools\insert2html.js" "H:\Code\degrees-of-lewdity\Degrees of Lewdity VERSION.html.sc2replace.html" "modList.json" "H:\Code\sugarcube-2\ModLoader\dist-BeforeSC2\BeforeSC2.js"
+```
+
+会在原始html文件同目录下生成一个同名的html.mod.html文件，例如：  
+A new file with the name `html.mod.html` will be generated in the same directory as the original HTML file. For example:
+```
+Degrees of Lewdity VERSION.html.sc2replace.html.mod.html
+```
+打开`Degrees of Lewdity VERSION.html.sc2replace.html.mod.html`文件， play   
+open file and play it.
+
+
 
 ---
 
