@@ -267,11 +267,17 @@ jobs:
           source: ${{ github.workspace }}/README.md
           target: ${{ github.workspace }}/out
 
-      - name: Upload
+      - name: Upload ModLoader Package
         uses: actions/upload-artifact@v3
         with:
           name: ModLoader Package
           path: ${{ github.workspace }}/out
+
+      - name: Upload insertTools
+        uses: actions/upload-artifact@v3
+        with:
+          name: insertTools
+          path: ${{ github.workspace }}/dist-insertTools
 
 
 
