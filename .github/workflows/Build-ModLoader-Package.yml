@@ -59,8 +59,10 @@ jobs:
           yarn install
           yarn run ts:BeforeSC2
           yarn run webpack:BeforeSC2
+          yarn run webpack:BeforeSC2-comp
           yarn run ts:ForSC2
           yarn run webpack:insertTools
+          yarn run tras:babel
 
       - name: Build ModLoaderGui
         working-directory: ${{ github.workspace }}/mod/ModLoaderGui
@@ -250,6 +252,16 @@ jobs:
         with:
           source: ${{ github.workspace }}/dist-BeforeSC2/**/*
           target: ${{ github.workspace }}/out/dist-BeforeSC2/
+      - name: Copy dist-BeforeSC2-comp
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/dist-BeforeSC2-comp/**/*
+          target: ${{ github.workspace }}/out/dist-BeforeSC2-comp/
+      - name: Copy dist-BeforeSC2-comp-babel
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/dist-BeforeSC2-comp-babel/**/*
+          target: ${{ github.workspace }}/out/dist-BeforeSC2-comp-babel/
       - name: Copy dist-ForSC2
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
