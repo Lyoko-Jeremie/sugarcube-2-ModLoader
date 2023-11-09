@@ -1,6 +1,10 @@
 import {SC2DataManager} from "./SC2DataManager";
+import {getGlobal} from "./getGlobal";
 // import {Inject4Jquery} from "./JqueryInjector";
 
+console.warn('getGlobal()', getGlobal());
+console.warn('getGlobal().document', getGlobal().document);
+console.warn('getGlobal().jQuery', getGlobal().jQuery);
 
 // @ts-ignore
 window.modSC2DataManager = new SC2DataManager(window);
