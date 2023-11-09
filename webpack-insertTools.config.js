@@ -19,6 +19,7 @@ const config = {
     packModZip: './src/insertTools/packModZip.ts',
     insert2html: './src/insertTools/insert2html.ts',
     sc2ReplaceTool: './src/insertTools/sc2ReplaceTool.ts',
+    polyfillInsert: './src/insertTools/polyfillInsert.ts',
   },
   output: {
     path: path.resolve(__dirname, 'dist-insertTools'),
