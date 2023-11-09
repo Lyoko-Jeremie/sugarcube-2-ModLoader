@@ -112,15 +112,19 @@ export class CacheRecord<T extends { name: string, content: string }> {
 }
 
 export class SC2DataInfo {
-    styleFileItems: CacheRecord<StyleTextFileItem> = new CacheRecord<StyleTextFileItem>(this.log, this.dataSource, 'styleFileItems');
-    scriptFileItems: CacheRecord<ScriptTextFileItem> = new CacheRecord<ScriptTextFileItem>(this.log, this.dataSource, 'scriptFileItems');
-    passageDataItems: CacheRecord<PassageDataItem> = new CacheRecord<PassageDataItem>(this.log, this.dataSource, 'passageDataItems');
+    styleFileItems: CacheRecord<StyleTextFileItem>; // = new CacheRecord<StyleTextFileItem>(this.log, this.dataSource, 'styleFileItems');
+    scriptFileItems: CacheRecord<ScriptTextFileItem>; // = new CacheRecord<ScriptTextFileItem>(this.log, this.dataSource, 'scriptFileItems');
+    passageDataItems: CacheRecord<PassageDataItem>; // = new CacheRecord<PassageDataItem>(this.log, this.dataSource, 'passageDataItems');
 
     constructor(
         public log: LogWrapper,
         // 'orgin' OR modName
         public dataSource: string,
     ) {
+        // init on there for fix babel https://github.com/babel/babel/issues/13779
+        this.styleFileItems = new CacheRecord<StyleTextFileItem>(this.log, this.dataSource, 'styleFileItems');
+        this.scriptFileItems = new CacheRecord<ScriptTextFileItem>(this.log, this.dataSource, 'scriptFileItems');
+        this.passageDataItems = new CacheRecord<PassageDataItem>(this.log, this.dataSource, 'passageDataItems');
     }
 
     clean() {
