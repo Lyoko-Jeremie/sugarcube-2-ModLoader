@@ -25,15 +25,16 @@ export class SC2JsEvalContext {
         return context.contextThis;
     }
 
-    findValue(key: string) {
-        const cc: SC2JsEvalContextInfo[] = [];
-        for (const context of this.contextSet) {
-            if (Object.hasOwn(context.contextThis, key)) {
-                cc.push(context);
-            }
-        }
-        return cc;
-    }
+    // findValue(key: string) {
+    //     const cc: SC2JsEvalContextInfo[] = [];
+    //     for (const context of this.contextSet) {
+    //         // es2022.object.hasOwn
+    //         if (Object.hasOwn(context.contextThis, key)) {
+    //             cc.push(context);
+    //         }
+    //     }
+    //     return cc;
+    // }
 
 }
 
