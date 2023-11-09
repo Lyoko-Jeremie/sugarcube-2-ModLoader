@@ -74,31 +74,31 @@ const config = {
   ],
   module: {
     rules: [
-      {
-        test: /\.(ts|tsx)$/i,
-        loader: 'ts-loader',
-        exclude: ['/node_modules/'],
-      },
       // {
       //   test: /\.(ts|tsx)$/i,
+      //   loader: 'ts-loader',
       //   exclude: ['/node_modules/'],
-      //   use: {
-      //     loader: "babel-loader",
-      //     options: {
-      //       presets: [["@babel/preset-typescript", { targets: "> 99% and not ie <= 12"}]]
-      //     }
-      //   }
       // },
-      // {
-      //   test: /\.m?js$/,
-      //   // exclude: /node_modules/,
-      //   use: {
-      //     loader: "babel-loader",
-      //     options: {
-      //       presets: [['@babel/preset-env', { targets: "> 99% and not ie <= 12"}]]
-      //     }
-      //   }
-      // },
+      {
+        test: /\.(ts|tsx)$/i,
+        exclude: ['/node_modules/'],
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [["@babel/preset-typescript", { targets: "> 99% and not ie <= 12"}]]
+          }
+        }
+      },
+      {
+        test: /\.m?js$/,
+        // exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [['@babel/preset-env', { targets: "> 99% and not ie <= 12"}]]
+          }
+        }
+      },
       // {
       //   test: /\.css$/i,
       //   use: [stylesHandler, 'css-loader'],
