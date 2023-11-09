@@ -17,6 +17,7 @@ const config = {
   // https://webpack.js.org/configuration/entry-context/#entry
   entry: {
     BeforeSC2: './src/BeforeSC2/init.ts',
+    polyfillWebpack: './src/BeforeSC2/polyfill.ts',
   },
   output: {
     path: path.resolve(__dirname, 'dist-BeforeSC2'),

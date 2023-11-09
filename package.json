@@ -17,6 +17,7 @@
   "packageManager": "yarn@3.4.1",
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
+    "core-js": "^3.33.2",
     "idb-keyval": "^6.2.1",
     "jquery": "^3.7.1",
     "json5": "^2.2.3",
@@ -29,6 +30,7 @@
     "ts-mixer": "^6.0.3"
   },
   "devDependencies": {
+    "@types/core-js": "^2.5.8",
     "@types/jquery": "^3.5.20",
     "@types/libsodium-wrappers": "^0.7.11",
     "@types/lodash": "^4.14.198",
