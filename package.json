@@ -14,7 +14,9 @@
     "webpack:BeforeSC2": "webpack -c ./webpack.config.js",
     "webpack:BeforeSC2-comp": "webpack -c ./webpack-comp.config.js",
     "ts:ForSC2": "tsc -p ./src/ForSC2/tsconfig.json",
-    "webpack:insertTools": "webpack -c ./webpack-insertTools.config.js"
+    "webpack:insertTools": "webpack -c ./webpack-insertTools.config.js",
+    "=========babel=============": "",
+    "tras:babel": "babel dist-BeforeSC2-comp -d dist-BeforeSC2-comp-babel"
   },
   "packageManager": "yarn@3.4.1",
   "dependencies": {
@@ -32,6 +34,10 @@
     "ts-mixer": "^6.0.3"
   },
   "devDependencies": {
+    "@babel/cli": "^7.23.0",
+    "@babel/core": "^7.23.2",
+    "@babel/preset-env": "^7.23.2",
+    "@babel/preset-typescript": "^7.23.2",
     "@types/core-js": "^2.5.8",
     "@types/jquery": "^3.5.20",
     "@types/libsodium-wrappers": "^0.7.11",
@@ -39,6 +45,8 @@
     "@types/node": "^20.6.0",
     "@types/semver": "^7.5.2",
     "@webpack-cli/generators": "^3.0.7",
+    "babel-loader": "^9.1.3",
+    "browserslist": "^4.22.1",
     "css-loader": "^6.8.1",
     "expose-loader": "^4.1.0",
     "fork-ts-checker-webpack-plugin": "^8.0.0",
