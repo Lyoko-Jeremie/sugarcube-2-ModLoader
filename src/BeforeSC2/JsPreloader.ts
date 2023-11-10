@@ -2,6 +2,39 @@ import {SC2DataManager} from "./SC2DataManager";
 import {ModUtils} from "./Utils";
 import {LogWrapper} from "./ModLoadController";
 
+export class StackLike<T> {
+    private _data: T[] = [];
+
+    push(v: T) {
+        this._data.push(v);
+    }
+
+    pop(): T | undefined {
+        return this.empty ? undefined : this._data.pop();
+    }
+
+    peek(): T | undefined {
+        return this.empty ? undefined : this._data[this._data.length - 1];
+    }
+
+    get length(): number {
+        return this._data.length;
+    }
+
+    get data(): T[] {
+        return this._data;
+    }
+
+    get empty(): boolean {
+        return this._data.length === 0;
+    }
+
+    clear() {
+        this._data = [];
+    }
+
+}
+
 export class JsPreloader {
     logger: LogWrapper;
 
@@ -39,7 +72,7 @@ export class JsPreloader {
                 await this.pSC2DataManager.getModLoadController().Load_start(modName, T[0]);
                 try {
                     // const R = await Function(`return ${T[1]}`)();
-                    const R = await JsPreloader.JsRunner(
+                    const R = await this.JsRunner(
                         T[1],
                         T[0],
                         modName,
@@ -79,57 +112,67 @@ export class JsPreloader {
         await this.pSC2DataManager.getModLoadController().ModLoaderLoadEnd();
     }
 
-    static async JsRunner(content: string, name: string, modName: string, stage: string, pSC2DataManager: SC2DataManager, thisWin: Window, logger: LogWrapper) {
-        const script = thisWin.document.createElement('script');
+    runningMod: StackLike<string> = new StackLike<string>();
 
-        script.innerHTML = `(async () => {return ${content}\n})()
+    async JsRunner(content: string, name: string, modName: string, stage: string, pSC2DataManager: SC2DataManager, thisWin: Window, logger: LogWrapper) {
+        try {
+            this.runningMod.push(modName);
+
+            const script = thisWin.document.createElement('script');
+
+            script.innerHTML = `(async () => {return ${content}\n})()
         .then((R)=>{
          console.log('ModLoader ====== JsRunner ${name} ${modName} ${stage} end');
          document.dispatchEvent(new CustomEvent('${
-            `JsRunner:ok:${stage}-${modName}-${name}`
-        }', {"detail":{"R":R}}));})
+                `JsRunner:ok:${stage}-${modName}-${name}`
+            }', {"detail":{"R":R}}));})
         .catch((e)=>{
          console.error('ModLoader ====== JsRunner ${name} ${modName} ${stage} error',e);
          document.dispatchEvent(new CustomEvent('${
-            `JsRunner:error:${stage}-${modName}-${name}`
-        }', {"detail":{"E":e}}));});`;
+                `JsRunner:error:${stage}-${modName}-${name}`
+            }', {"detail":{"E":e}}));});`;
 
-        script.setAttribute('scriptName', (name));
-        script.setAttribute('modName', (modName));
-        script.setAttribute('stage', (stage));
-        const p = new Promise<any>((resolve, reject) => {
-            const co = (EV: any) => {
-                // console.log('ModLoader ====== JsRunner ${name} ${modName} ${stage} ok', EV);
-                // logger.log(`ModLoader ====== JsRunner ${name} ${modName} ${stage} ok`);
-                thisWin.document.removeEventListener(`JsRunner:ok:${stage}-${modName}-${name}`, co);
-                thisWin.document.removeEventListener(`JsRunner:error:${stage}-${modName}-${name}`, ce);
-                resolve(EV.detail.R);
-            };
-            const ce = (EV: any) => {
-                // console.error('ModLoader ====== JsRunner ${name} ${modName} ${stage} error', EV);
-                // logger.error(`ModLoader ====== JsRunner ${name} ${modName} ${stage} error`);
-                thisWin.document.removeEventListener(`JsRunner:ok:${stage}-${modName}-${name}`, co);
-                thisWin.document.removeEventListener(`JsRunner:error:${stage}-${modName}-${name}`, ce);
-                reject(EV.detail.E);
-            };
-            thisWin.document.addEventListener(`JsRunner:ok:${stage}-${modName}-${name}`, co);
-            thisWin.document.addEventListener(`JsRunner:error:${stage}-${modName}-${name}`, ce);
-        });
+            script.setAttribute('scriptName', (name));
+            script.setAttribute('modName', (modName));
+            script.setAttribute('stage', (stage));
+            const p = new Promise<any>((resolve, reject) => {
+                const co = (EV: any) => {
+                    // console.log('ModLoader ====== JsRunner ${name} ${modName} ${stage} ok', EV);
+                    // logger.log(`ModLoader ====== JsRunner ${name} ${modName} ${stage} ok`);
+                    thisWin.document.removeEventListener(`JsRunner:ok:${stage}-${modName}-${name}`, co);
+                    thisWin.document.removeEventListener(`JsRunner:error:${stage}-${modName}-${name}`, ce);
+                    resolve(EV.detail.R);
+                };
+                const ce = (EV: any) => {
+                    // console.error('ModLoader ====== JsRunner ${name} ${modName} ${stage} error', EV);
+                    // logger.error(`ModLoader ====== JsRunner ${name} ${modName} ${stage} error`);
+                    thisWin.document.removeEventListener(`JsRunner:ok:${stage}-${modName}-${name}`, co);
+                    thisWin.document.removeEventListener(`JsRunner:error:${stage}-${modName}-${name}`, ce);
+                    reject(EV.detail.E);
+                };
+                thisWin.document.addEventListener(`JsRunner:ok:${stage}-${modName}-${name}`, co);
+                thisWin.document.addEventListener(`JsRunner:error:${stage}-${modName}-${name}`, ce);
+            });
 
-        console.log(`ModLoader ====== JsRunner ${name} ${modName} ${stage} start`);
-        logger.log(`ModLoader ====== JsRunner ${name} ${modName} ${stage} start`);
+            console.log(`ModLoader ====== JsRunner ${name} ${modName} ${stage} start`);
+            logger.log(`ModLoader ====== JsRunner ${name} ${modName} ${stage} start`);
 
-        if (pSC2DataManager) {
-            // insert before SC2 data rootNode
-            pSC2DataManager?.rootNode.before(script);
-        } else {
-            // or insert to head
-            console.warn('ModLoader ====== JsRunner() pSC2DataManager is undefined, insert to head');
-            logger.warn('ModLoader ====== JsRunner() pSC2DataManager is undefined, insert to head');
-            thisWin.document.head.appendChild(script);
+            if (pSC2DataManager) {
+                // insert before SC2 data rootNode
+                pSC2DataManager?.rootNode.before(script);
+            } else {
+                // or insert to head
+                console.warn('ModLoader ====== JsRunner() pSC2DataManager is undefined, insert to head');
+                logger.warn('ModLoader ====== JsRunner() pSC2DataManager is undefined, insert to head');
+                thisWin.document.head.appendChild(script);
+            }
+
+            this.runningMod.pop();
+            return p;
+        } catch (e) {
+            this.runningMod.pop();
+            throw e;
         }
-
-        return p;
     }
 
 }

@@ -12,7 +12,7 @@ import {AddonPluginManager} from "./AddonPlugin";
 
 export class ModUtils {
 
-    version = '2.4.0';
+    version = '2.5.0';
 
     constructor(
         public pSC2DataManager: SC2DataManager,
@@ -355,6 +355,10 @@ export class ModUtils {
             this.getLogger().error(`lazyRegisterNewMod() error:[${e?.message ? e.message : e}]`);
             return false;
         }
+    }
+
+    getNowRunningModName(): string | undefined {
+        return this.pSC2DataManager.getJsPreloader().runningMod.peek();
     }
 
 }
