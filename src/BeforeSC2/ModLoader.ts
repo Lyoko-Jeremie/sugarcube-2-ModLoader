@@ -255,7 +255,7 @@ export class ModLoader {
 
     private addModeReadZip(T: ModZipReader, from: ModLoadFromSourceType) {
         if (T.modInfo) {
-            const overwrite = !this.modReadCache.getHasByName(T.modInfo.name);
+            const overwrite = this.modReadCache.getHasByName(T.modInfo.name);
             if (overwrite) {
                 this.modReadCache.deleteAll(T.modInfo.name);
             }
