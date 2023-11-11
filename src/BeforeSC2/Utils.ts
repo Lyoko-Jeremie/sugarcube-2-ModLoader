@@ -13,7 +13,7 @@ import {SemVerToolsType} from "./SemVer/InfiniteSemVer";
 
 export class ModUtils {
 
-    readonly _version = '2.5.1';
+    readonly _version = '2.5.2';
     get version() {
         return this._version;
     }
