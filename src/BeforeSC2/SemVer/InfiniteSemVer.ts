@@ -244,3 +244,8 @@ export const parseRange = parseVersionRange;
 export const parseVersion = parseInfiniteSemVer;
 export const satisfies = isWithinRange;
 
+export class SemVerToolsType {
+    parseRange = parseVersionRange;
+    parseVersion = parseInfiniteSemVer;
+    satisfies = isWithinRange;
+}

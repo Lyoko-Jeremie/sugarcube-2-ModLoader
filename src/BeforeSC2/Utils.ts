@@ -9,6 +9,7 @@ import JSZip from "jszip";
 import {ModInfo} from "./ModLoader";
 import {LogWrapper, ModLoadController} from "./ModLoadController";
 import {AddonPluginManager} from "./AddonPlugin";
+import {SemVerToolsType} from "./SemVer/InfiniteSemVer";
 
 export class ModUtils {
 
@@ -362,6 +363,10 @@ export class ModUtils {
 
     getNowRunningModName(): string | undefined {
         return this.pSC2DataManager.getJsPreloader().runningMod.peek();
+    }
+
+    getSemVerTools() {
+        return new SemVerToolsType();
     }
 
 }
