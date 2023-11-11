@@ -95,7 +95,7 @@ abstract class CustomReadonlyMapHelper<K, V> implements ReadonlyMap<K, V> {
             (index, p, ito) => {
                 return {
                     done: index >= this.size,
-                    value: ito.cache[index][0],
+                    value: ito.cache[index]?.[0],
                 };
             },
             Array.from(this.entries()),
@@ -108,7 +108,7 @@ abstract class CustomReadonlyMapHelper<K, V> implements ReadonlyMap<K, V> {
             (index, p, ito) => {
                 return {
                     done: index >= this.size,
-                    value: ito.cache[index][1],
+                    value: ito.cache[index]?.[1],
                 };
             },
             Array.from(this.entries()),
