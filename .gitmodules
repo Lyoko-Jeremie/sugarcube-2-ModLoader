@@ -53,3 +53,7 @@
 	path = mod/I18nTweeReplacer
 	url = https://github.com/Lyoko-Jeremie/I18nTweeReplacerMod.git
 	branch = master
+[submodule "mod/template"]
+	path = mod/template
+	url = https://github.com/Lyoko-Jeremie/TemplateMod.git
+	branch = master

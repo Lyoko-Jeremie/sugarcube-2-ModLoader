@@ -34,5 +34,6 @@ src/insertTools/**/*.zip
 !mod/SweetAlert2Mod
 !mod/ModuleCssReplacer
 !mod/I18nTweeReplacer
+!mod/template
 mod
 
