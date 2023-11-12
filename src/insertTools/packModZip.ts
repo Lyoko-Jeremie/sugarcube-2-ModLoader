@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import {promisify} from 'util';
 import {every, get, has, isArray, isObject, isString} from 'lodash';
+import JSON5 from 'json5';
 
 // export async function img2base64Url(fPath: string) {
 //     const img = await promisify(fs.readFile)(fPath);
@@ -157,7 +158,7 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
     }
     const bootJsonF = await promisify(fs.readFile)(bootJsonFilePath, {encoding: 'utf-8'});
 
-    const bootJson = JSON.parse(bootJsonF);
+    const bootJson = JSON5.parse(bootJsonF);
 
     if (!validateBootJson(bootJson)) {
         console.error('(!validateBootJson(bootJsonF)), json format invalid.');
