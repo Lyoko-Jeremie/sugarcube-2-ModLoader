@@ -10,7 +10,18 @@ import {ModInfo} from "./ModLoader";
 import {LogWrapper, ModLoadController} from "./ModLoadController";
 import {AddonPluginManager} from "./AddonPlugin";
 import {SemVerToolsType} from "./SemVer/InfiniteSemVer";
+// import {
+//     enumerable,
+//     sealed,
+//     sealedMethod,
+//     loggedMethod,
+//     sealedField,
+//     sealedField2,
+//     ClassDecoratorUtil,
+// } from "./DecoratorUtils";
 
+
+// @ClassDecoratorUtil.finishClassDecorate({})
 export class ModUtils {
 
     get version(): string {
