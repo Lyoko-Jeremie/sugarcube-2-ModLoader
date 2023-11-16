@@ -13,9 +13,8 @@ import {SemVerToolsType} from "./SemVer/InfiniteSemVer";
 
 export class ModUtils {
 
-    readonly _version = '2.5.2';
-    get version() {
-        return this._version;
+    get version(): string {
+        return '2.5.3';
     }
 
     constructor(
