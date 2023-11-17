@@ -108,7 +108,7 @@ jobs:
 
       # TweeReplacerLinker must build before `TweeReplacer` and `I18nTweeReplacer`
       - name: Build TweeReplacerLinker
-        working-directory: ${{ github.workspace }}/mod/TweeReplacer
+        working-directory: ${{ github.workspace }}/mod/TweeReplacerLinker
         run: |
           cd ${{ github.workspace }}/mod/TweeReplacerLinker
           yarn install
