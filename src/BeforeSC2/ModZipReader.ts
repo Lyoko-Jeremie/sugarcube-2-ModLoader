@@ -251,72 +251,7 @@ export class ModZipReader {
                     this.log.error(`cannot get imgFileList file from mod zip: [${this.modInfo.name}] [${imgPath}]`);
                 }
             }
-            for (const stylePath of bootJ.styleFileList || []) {
-                const styleFile = this.zip.file(stylePath);
-                if (styleFile) {
-                    const data = await styleFile.async('string');
-                    // this.replaceImgWithBase64String(data);
-                    this.modInfo.cache.styleFileItems.items.push({
-                        name: stylePath,
-                        content: data,
-                        id: 0,
-                    });
-                } else {
-                    console.warn('cannot get styleFileList file from mod zip:', [this.modInfo.name, stylePath]);
-                    this.log.warn(`cannot get styleFileList file from mod zip: [${this.modInfo.name}] [${stylePath}]`);
-                }
-            }
-            this.modInfo.cache.styleFileItems.fillMap();
-            for (const tweePath of bootJ.tweeFileList || []) {
-                const imgFile = this.zip.file(tweePath);
-                if (imgFile) {
-                    const data = await imgFile.async('string');
-                    const tp = Twee2Passage(data);
-                    // console.log('Twee2Passage', tp, [data]);
-                    for (const p of tp) {
-                        // this.replaceImgWithBase64String(p.contect);
-                        this.modInfo.cache.passageDataItems.items.push({
-                            name: p.name,
-                            content: p.contect,
-                            id: 0,
-                            tags: p.tags,
-                        });
-                    }
-
-
-                    // {
-                    //     // <<widget "variablesStart2">>
-                    //     const isWidget = /<<widget\W+"([^ "]+)"\W*>>/.test(data);
-                    //     this.replaceImgWithBase64String(data);
-                    //     this.modInfo.cache.passageDataItems.items.push({
-                    //         name: tweePath,
-                    //         content: data,
-                    //         id: 0,
-                    //         tags: isWidget ? ['widget'] : [],
-                    //     });
-                    // }
-                } else {
-                    console.error('cannot get tweeFileList file from mod zip:', [this.modInfo.name, tweePath]);
-                    this.log.error(`cannot get tweeFileList file from mod zip: [${this.modInfo.name}] [${tweePath}]`);
-                }
-            }
-            this.modInfo.cache.passageDataItems.fillMap();
-            for (const scPath of bootJ.scriptFileList || []) {
-                const scFile = this.zip.file(scPath);
-                if (scFile) {
-                    const data = await scFile.async('string');
-                    // this.replaceImgWithBase64String(data);
-                    this.modInfo.cache.scriptFileItems.items.push({
-                        name: scPath,
-                        content: data,
-                        id: 0,
-                    });
-                } else {
-                    console.error('cannot get scriptFileList file from mod zip:', [this.modInfo.name, scPath]);
-                    this.log.error(`cannot get scriptFileList file from mod zip: [${this.modInfo.name}] [${scPath}]`);
-                }
-            }
-            this.modInfo.cache.scriptFileItems.fillMap();
+            await this.constructModInfoCache(bootJ);
 
             // optional
             if (has(bootJ, 'scriptFileList_preload')) {
@@ -362,6 +297,116 @@ export class ModZipReader {
             return true;
         }
         return false;
+    }
+
+    async refillCacheStyleFileItems(styleFileList: string[]) {
+        if (!this.modInfo) {
+            console.error('ModLoader ====== ModZipReader refillCacheStyleFileItems() (!this.modInfo).', [this.modInfo]);
+            this.log.error(`ModLoader ====== ModZipReader refillCacheStyleFileItems() (!this.modInfo).`);
+            return;
+        }
+
+        this.modInfo.cache.styleFileItems.items = [];
+        for (const stylePath of styleFileList || []) {
+            const styleFile = this.zip.file(stylePath);
+            if (styleFile) {
+                const data = await styleFile.async('string');
+                // this.replaceImgWithBase64String(data);
+                this.modInfo.cache.styleFileItems.items.push({
+                    name: stylePath,
+                    content: data,
+                    id: 0,
+                });
+            } else {
+                console.warn('cannot get styleFileList file from mod zip:', [this.modInfo.name, stylePath]);
+                this.log.warn(`cannot get styleFileList file from mod zip: [${this.modInfo.name}] [${stylePath}]`);
+            }
+        }
+        this.modInfo.cache.styleFileItems.fillMap();
+    }
+
+    async refillCachePassageDataItems(tweeFileList: string[]) {
+        if (!this.modInfo) {
+            console.error('ModLoader ====== ModZipReader refillCachePassageDataItems() (!this.modInfo).', [this.modInfo]);
+            this.log.error(`ModLoader ====== ModZipReader refillCachePassageDataItems() (!this.modInfo).`);
+            return;
+        }
+
+        this.modInfo.cache.passageDataItems.items = [];
+        for (const tweePath of tweeFileList || []) {
+            const imgFile = this.zip.file(tweePath);
+            if (imgFile) {
+                const data = await imgFile.async('string');
+                const tp = Twee2Passage(data);
+                // console.log('Twee2Passage', tp, [data]);
+                for (const p of tp) {
+                    // this.replaceImgWithBase64String(p.contect);
+                    this.modInfo.cache.passageDataItems.items.push({
+                        name: p.name,
+                        content: p.contect,
+                        id: 0,
+                        tags: p.tags,
+                    });
+                }
+
+
+                // {
+                //     // <<widget "variablesStart2">>
+                //     const isWidget = /<<widget\W+"([^ "]+)"\W*>>/.test(data);
+                //     this.replaceImgWithBase64String(data);
+                //     this.modInfo.cache.passageDataItems.items.push({
+                //         name: tweePath,
+                //         content: data,
+                //         id: 0,
+                //         tags: isWidget ? ['widget'] : [],
+                //     });
+                // }
+            } else {
+                console.error('cannot get tweeFileList file from mod zip:', [this.modInfo.name, tweePath]);
+                this.log.error(`cannot get tweeFileList file from mod zip: [${this.modInfo.name}] [${tweePath}]`);
+            }
+        }
+        this.modInfo.cache.passageDataItems.fillMap();
+
+    }
+
+    async refillCacheScriptFileItems(scriptFileList: string[]) {
+        if (!this.modInfo) {
+            console.error('ModLoader ====== ModZipReader refillCacheScriptFileItems() (!this.modInfo).', [this.modInfo]);
+            this.log.error(`ModLoader ====== ModZipReader refillCacheScriptFileItems() (!this.modInfo).`);
+            return;
+        }
+
+        this.modInfo.cache.scriptFileItems.items = [];
+        for (const scPath of scriptFileList || []) {
+            const scFile = this.zip.file(scPath);
+            if (scFile) {
+                const data = await scFile.async('string');
+                // this.replaceImgWithBase64String(data);
+                this.modInfo.cache.scriptFileItems.items.push({
+                    name: scPath,
+                    content: data,
+                    id: 0,
+                });
+            } else {
+                console.error('cannot get scriptFileList file from mod zip:', [this.modInfo.name, scPath]);
+                this.log.error(`cannot get scriptFileList file from mod zip: [${this.modInfo.name}] [${scPath}]`);
+            }
+        }
+        this.modInfo.cache.scriptFileItems.fillMap();
+    }
+
+    async constructModInfoCache(bootJ: ModBootJson) {
+        if (!this.modInfo) {
+            console.error('ModLoader ====== ModZipReader constructModeInfoCache() (!this.modInfo).', [this.modInfo]);
+            this.log.error(`ModLoader ====== ModZipReader constructModeInfoCache() (!this.modInfo).`);
+            return;
+        }
+
+        await this.refillCacheStyleFileItems(bootJ.styleFileList);
+        await this.refillCachePassageDataItems(bootJ.tweeFileList);
+        await this.refillCacheScriptFileItems(bootJ.scriptFileList);
+
     }
 }
 
