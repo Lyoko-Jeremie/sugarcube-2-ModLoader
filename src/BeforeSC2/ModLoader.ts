@@ -136,6 +136,7 @@ export interface ModInfo {
     scriptFileList_inject_early: [string, string][];
     replacePatcher: ReplacePatcher[];
     bootJson: ModBootJson;
+    modRef: { [key: string]: any } | undefined;
 }
 
 export enum ModDataLoadType {
