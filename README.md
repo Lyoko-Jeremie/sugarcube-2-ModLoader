@@ -729,7 +729,7 @@ open file and play it.
 - [ ] 提供PostPassage Addon来访问输出后的html node   
 - [x] Mod Zip 加密 ( libsodium + 安全模式 + Mod禁用启用 )   
 - [ ] 在存档中保存Mod相关数据，用以检查存档兼容性 ( 类似RimWorld的存档检查功能，对修改涉及存档兼容性的Addon添加存档兼容性检查 )   
-- [ ] i18n version `tweeFileList`  
+- [x] i18n version `tweeFileList`  
 
 ### addon mod
 
