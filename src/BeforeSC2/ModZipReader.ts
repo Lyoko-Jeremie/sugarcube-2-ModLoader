@@ -195,6 +195,7 @@ export class ModZipReader {
                 scriptFileList_inject_early: [],
                 replacePatcher: [],
                 bootJson: bootJ,
+                modRef: undefined,
             };
             this.loaderBase.addZipFile(bootJ.name, this);
             // console.log('ModLoader ====== ModZipReader init() modInfo', this.modInfo);
