@@ -22,12 +22,12 @@ export class HtmlTagSrcHook {
         this.hookTable.set(hookKey, hook);
     }
 
-    public async doHook(el: HTMLImageElement | HTMLElement): Promise<boolean> {
+    public async doHook(el: HTMLImageElement | HTMLElement, field: string = 'src'): Promise<boolean> {
         // console.log('HtmlTagSrcHook: doHook: handing the element', [el, el.outerHTML]);
-        const mlSrc = el.getAttribute('ML-src');
+        const mlSrc = el.getAttribute(`ML-${field}`);
         if (!mlSrc) {
-            console.error('HtmlTagSrcHook: doHook: no ML-src', [el, el.outerHTML]);
-            this.logger.error(`HtmlTagSrcHook: doHook: no ML-src [${el.outerHTML}]`);
+            console.error(`HtmlTagSrcHook: doHook: no ML-${field}`, [el, el.outerHTML]);
+            this.logger.error(`HtmlTagSrcHook: doHook: no ML-${field} [${el.outerHTML}]`);
             return false;
         }
         // call hook to find a mod hook to handle the element
@@ -43,8 +43,8 @@ export class HtmlTagSrcHook {
             }
         }
         // if no one can handle the element, do the default action
-        // recover the src
-        el.setAttribute('src', mlSrc);
+        // recover the [field]
+        el.setAttribute(field, mlSrc);
         return false;
     }
 
