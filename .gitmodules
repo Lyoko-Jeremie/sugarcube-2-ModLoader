@@ -57,3 +57,7 @@
 	path = mod/template
 	url = https://github.com/Lyoko-Jeremie/TemplateMod.git
 	branch = master
+[submodule "mod/I18nTweeList"]
+	path = mod/I18nTweeList
+	url = https://github.com/Lyoko-Jeremie/I18nTweeListAddonMod.git
+	branch = master

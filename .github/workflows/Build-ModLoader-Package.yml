@@ -204,6 +204,20 @@ jobs:
           source: ${{ github.workspace }}/mod/ConflictChecker/ConflictChecker.mod.zip
           target: ${{ github.workspace }}/out
 
+      - name: Build I18nTweeList
+        working-directory: ${{ github.workspace }}/mod/I18nTweeList
+        run: |
+          cd ${{ github.workspace }}/mod/I18nTweeList
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Copy I18nTweeList
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/I18nTweeList/I18nTweeList.mod.zip
+          target: ${{ github.workspace }}/out
+
       - name: Build SweetAlert2Mod
         working-directory: ${{ github.workspace }}/mod/SweetAlert2Mod
         run: |

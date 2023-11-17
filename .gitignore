@@ -35,5 +35,6 @@ src/insertTools/**/*.zip
 !mod/ModuleCssReplacer
 !mod/I18nTweeReplacer
 !mod/template
+!mod/I18nTweeList
 mod
 
