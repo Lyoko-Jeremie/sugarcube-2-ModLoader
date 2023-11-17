@@ -21,7 +21,9 @@ Or download the DoL with ModLoader version automatic build ：[DoLModLoaderBuild
 | [ConflictChecker](https://github.com/Lyoko-Jeremie/ConflictCheckerAddon)                                                 | Built-in | Stable     | Mod冲突检查器，提供附加的约束条件来检查Mod之间的冲突                                       |
 | [ImageLoaderHook](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader-ImgLoaderHooker)                                | Built-in | Stable     | 图片替换功能，用于替换游戏中的图片                                                   |
 | [ReplacePatch](https://github.com/Lyoko-Jeremie/Degrees-of-Lewdity_Mod_ReplacePatch)                                     | Built-in | Stable     | 提供对js/css/passage的简单替换                                              |
-| [TweeReplacer](https://github.com/Lyoko-Jeremie/Degrees-of-Lewdity_Mod_TweeReplacer)                                     | Built-in | Stable     | 提供对passage的替换，可以使用正则表达式查找以及使用文件存储需替换的字符串                            |
+| [I18nTweeList](https://github.com/Lyoko-Jeremie/TweeReplacerLinkerAddon)                                                 | Built-in | Stable     | 为tweeFileList提供i18n支持                                               |
+| [TweeReplacerLinker](https://github.com/Lyoko-Jeremie/TweeReplacerLinkerAddon)                                           | Built-in | Stable     | 提供对passage的替换，可以使用正则表达式查找以及使用文件存储需替换的字符串                            |
+| [TweeReplacer](https://github.com/Lyoko-Jeremie/Degrees-of-Lewdity_Mod_TweeReplacer)                                     | Built-in | Stable     | 链接TweeReplacer和I18nTweeReplacer，使得这两个mod共享替换顺序                      |
 | [I18nTweeReplacer](https://github.com/Lyoko-Jeremie/I18nTweeReplacerMod)                                                 | Built-in | Testing    | TweeReplacer的原生I18n支持版，可以为Mod作者提供原生i18n支持                           |
 | [SweetAlert2Mod](https://github.com/Lyoko-Jeremie/SweetAlert2Mod)                                                        | Built-in | Stable     | 为mod加密等功能提供通用弹出提示框，简单封装[SweetAlert2](https://sweetalert2.github.io) |
 | [CheckGameVersion](https://github.com/Lyoko-Jeremie/Degrees-of-Lewdity_Mod_CheckGameVersion)                             | Built-in | Stable     | 为依赖检查功能中的游戏版本检查功能提供DoL适配                                            |
@@ -34,6 +36,7 @@ Or download the DoL with ModLoader version automatic build ：[DoLModLoaderBuild
 | [i18n](https://github.com/Lyoko-Jeremie/Degrees-of-Lewdity_Mod_i18nMod)                                                  | External | Stable     | i18n中文翻译Mod，其他语种基于此mod进行简单修改即可使用                                    |
 | [CryptoI18n](https://github.com/Lyoko-Jeremie/CryptoI18nMod)                                                             | Example  | Demo       | v2.0.0 版本的mod加密功能的demo。以i18n mod作为范例。                               |
 | [ExampleModModifyMod](https://github.com/Lyoko-Jeremie/ExampleModModifyMod)                                              | Example  | Demo       | 关于如何使用Mod B读取并修改Mod A的数据和行为的示范Mod                                   |
+| [SimpleCryptWrapper](https://github.com/Lyoko-Jeremie/SimpleCryptWrapperMod)                                             | Tools    | Stable     | 一个简易Mod加密封装工具，用来将另一个mod封装成在加载时需要输入解密密码的加密mod，设计用来保护图片资源             |
 
 有关各个mod的功能及用法，详见对应mod项目的README.md文件。
 
