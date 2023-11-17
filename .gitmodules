@@ -61,3 +61,7 @@
 	path = mod/I18nTweeList
 	url = https://github.com/Lyoko-Jeremie/I18nTweeListAddonMod.git
 	branch = master
+[submodule "mod/TweeReplacerLinker"]
+	path = mod/TweeReplacerLinker
+	url = https://github.com/Lyoko-Jeremie/TweeReplacerLinkerAddon.git
+	branch = master
