@@ -251,7 +251,7 @@ export class ModZipReader {
                     this.log.error(`cannot get imgFileList file from mod zip: [${this.modInfo.name}] [${imgPath}]`);
                 }
             }
-            await this.constructModInfoCache(bootJ);
+            await this.constructModInfoCache(bootJ, false);
 
             // optional
             if (has(bootJ, 'scriptFileList_preload')) {
@@ -299,14 +299,16 @@ export class ModZipReader {
         return false;
     }
 
-    async refillCacheStyleFileItems(styleFileList: string[]) {
+    async refillCacheStyleFileItems(styleFileList: string[], keepOld: boolean) {
         if (!this.modInfo) {
             console.error('ModLoader ====== ModZipReader refillCacheStyleFileItems() (!this.modInfo).', [this.modInfo]);
             this.log.error(`ModLoader ====== ModZipReader refillCacheStyleFileItems() (!this.modInfo).`);
             return;
         }
 
-        this.modInfo.cache.styleFileItems.items = [];
+        if (!keepOld) {
+            this.modInfo.cache.styleFileItems.items = [];
+        }
         for (const stylePath of styleFileList || []) {
             const styleFile = this.zip.file(stylePath);
             if (styleFile) {
@@ -325,14 +327,16 @@ export class ModZipReader {
         this.modInfo.cache.styleFileItems.fillMap();
     }
 
-    async refillCachePassageDataItems(tweeFileList: string[]) {
+    async refillCachePassageDataItems(tweeFileList: string[], keepOld: boolean) {
         if (!this.modInfo) {
             console.error('ModLoader ====== ModZipReader refillCachePassageDataItems() (!this.modInfo).', [this.modInfo]);
             this.log.error(`ModLoader ====== ModZipReader refillCachePassageDataItems() (!this.modInfo).`);
             return;
         }
 
-        this.modInfo.cache.passageDataItems.items = [];
+        if (!keepOld) {
+            this.modInfo.cache.passageDataItems.items = [];
+        }
         for (const tweePath of tweeFileList || []) {
             const imgFile = this.zip.file(tweePath);
             if (imgFile) {
@@ -370,14 +374,16 @@ export class ModZipReader {
 
     }
 
-    async refillCacheScriptFileItems(scriptFileList: string[]) {
+    async refillCacheScriptFileItems(scriptFileList: string[], keepOld: boolean) {
         if (!this.modInfo) {
             console.error('ModLoader ====== ModZipReader refillCacheScriptFileItems() (!this.modInfo).', [this.modInfo]);
             this.log.error(`ModLoader ====== ModZipReader refillCacheScriptFileItems() (!this.modInfo).`);
             return;
         }
 
-        this.modInfo.cache.scriptFileItems.items = [];
+        if (!keepOld) {
+            this.modInfo.cache.scriptFileItems.items = [];
+        }
         for (const scPath of scriptFileList || []) {
             const scFile = this.zip.file(scPath);
             if (scFile) {
@@ -396,16 +402,16 @@ export class ModZipReader {
         this.modInfo.cache.scriptFileItems.fillMap();
     }
 
-    async constructModInfoCache(bootJ: ModBootJson) {
+    async constructModInfoCache(bootJ: ModBootJson, keepOld: boolean) {
         if (!this.modInfo) {
             console.error('ModLoader ====== ModZipReader constructModeInfoCache() (!this.modInfo).', [this.modInfo]);
             this.log.error(`ModLoader ====== ModZipReader constructModeInfoCache() (!this.modInfo).`);
             return;
         }
 
-        await this.refillCacheStyleFileItems(bootJ.styleFileList);
-        await this.refillCachePassageDataItems(bootJ.tweeFileList);
-        await this.refillCacheScriptFileItems(bootJ.scriptFileList);
+        await this.refillCacheStyleFileItems(bootJ.styleFileList, keepOld);
+        await this.refillCachePassageDataItems(bootJ.tweeFileList, keepOld);
+        await this.refillCacheScriptFileItems(bootJ.scriptFileList, keepOld);
 
     }
 }
