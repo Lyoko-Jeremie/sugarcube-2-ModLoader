@@ -26,7 +26,7 @@ export interface IModImgGetter {
     /**
      * @return Promise<string>   base64 img string
      */
-    getBase64Image(): Promise<string>;
+    getBase64Image(lruCache?: IModImgGetterLRUCache): Promise<string>;
 }
 
 export const StaticModImgLruCache = new LRUCache<string, string>({
@@ -39,6 +39,12 @@ export const StaticModImgLruCache = new LRUCache<string, string>({
     updateAgeOnHas: true,
 });
 
+export interface IModImgGetterLRUCache {
+    get(path: string): string | undefined;
+
+    set(path: string, data: string): IModImgGetterLRUCache;
+}
+
 export class ModImgGetterDefault implements IModImgGetter {
     constructor(
         public zip: ModZipReader,
@@ -49,8 +55,8 @@ export class ModImgGetterDefault implements IModImgGetter {
 
     // imgCache?: string;
 
-    async getBase64Image() {
-        const cache = StaticModImgLruCache.get(this.imgPath);
+    async getBase64Image(lruCache?: IModImgGetterLRUCache) {
+        const cache = (lruCache ?? StaticModImgLruCache).get(this.imgPath);
         if (cache) {
             return cache;
         }
@@ -58,7 +64,7 @@ export class ModImgGetterDefault implements IModImgGetter {
         if (imgFile) {
             const data = await imgFile.async('base64');
             const imgCache = imgWrapBase64Url(this.imgPath, data);
-            StaticModImgLruCache.set(this.imgPath, imgCache);
+            (lruCache ?? StaticModImgLruCache).set(this.imgPath, imgCache);
             return imgCache;
         }
         console.error(`ModImgGetterDefault getBase64Image() imgFile not found: ${this.imgPath} in ${this.zip.modInfo?.name}`);
