@@ -1,7 +1,7 @@
 import {SC2DataManager} from "./SC2DataManager";
 import {LogWrapper} from "./ModLoadController";
 
-export type HtmlTagSrcHookType = (el: HTMLImageElement | HTMLElement, mlSrc: string) => Promise<boolean>;
+export type HtmlTagSrcHookType = (el: HTMLImageElement | HTMLElement, mlSrc: string, field: string) => Promise<boolean>;
 export type HtmlTagSrcReturnModeHookType = (mlSrc: string) => Promise<[boolean, string]>;
 
 /**
@@ -60,7 +60,7 @@ export class HtmlTagSrcHook {
         }
         for (const [hookKey, hook] of this.hookTable) {
             try {
-                if (await hook(el, mlSrc)) {
+                if (await hook(el, mlSrc, field)) {
                     return true;
                 }
             } catch (e: Error | any) {
@@ -68,6 +68,7 @@ export class HtmlTagSrcHook {
                 this.logger.error(`[HtmlTagSrcHook] doHook: call hookKey[${hookKey}] error [${e?.message ? e.message : e}]`);
             }
         }
+        // console.log('[HtmlTagSrcHook] doHook: cannot handing the element', [el, el.outerHTML]);
         // if no one can handle the element, do the default action
         // recover the [field]
         el.setAttribute(field, mlSrc);
@@ -75,7 +76,7 @@ export class HtmlTagSrcHook {
     }
 
     public async doHookCallback(src: string, callback: (src: string) => any): Promise<[boolean, any]> {
-        console.log('[HtmlTagSrcHook] doHookCallback: handing src', [src]);
+        // console.log('[HtmlTagSrcHook] doHookCallback: handing src', [src]);
         if (!src) {
             console.error(`[HtmlTagSrcHook] doHookCallback: no src`, [src]);
             this.logger.error(`[HtmlTagSrcHook] doHookCallback: no src [${src}]`);
@@ -100,7 +101,7 @@ export class HtmlTagSrcHook {
     }
 
     async requestImageBySrc(src: string) {
-        console.log('[HtmlTagSrcHook] requestImageBySrc: handing src', [src]);
+        // console.log('[HtmlTagSrcHook] requestImageBySrc: handing src', [src]);
         if (!src) {
             console.error(`[HtmlTagSrcHook] requestImageBySrc: no src`, [src]);
             this.logger.error(`[HtmlTagSrcHook] requestImageBySrc: no src [${src}]`);
