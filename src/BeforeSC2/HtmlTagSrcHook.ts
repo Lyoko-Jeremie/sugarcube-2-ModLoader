@@ -4,6 +4,10 @@ import {LogWrapper} from "./ModLoadController";
 export type HtmlTagSrcHookType = (el: HTMLImageElement | HTMLElement, mlSrc: string) => Promise<boolean>;
 export type HtmlTagSrcReturnModeHookType = (mlSrc: string) => Promise<[boolean, string]>;
 
+/**
+ * this class replace html image tag src/href attribute ,
+ * redirect the image request to a mod like `ImgLoaderHooker` to load the image.
+ */
 export class HtmlTagSrcHook {
     logger: LogWrapper;
 
@@ -93,6 +97,29 @@ export class HtmlTagSrcHook {
         // if no one can handle the element, do the default action
         // recover the [field]
         return [false, await callback(src)];
+    }
+
+    async requestImageBySrc(src: string) {
+        console.log('[HtmlTagSrcHook] requestImageBySrc: handing src', [src]);
+        if (!src) {
+            console.error(`[HtmlTagSrcHook] requestImageBySrc: no src`, [src]);
+            this.logger.error(`[HtmlTagSrcHook] requestImageBySrc: no src [${src}]`);
+            return undefined;
+        }
+        // call hook to find a mod hook to handle the image
+        for (const [hookKey, hook] of this.hookReturnModeTable) {
+            try {
+                const r = await hook(src);
+                if (r[0]) {
+                    return r[1];
+                }
+            } catch (e: Error | any) {
+                console.error(`[HtmlTagSrcHook] requestImageBySrc: call hookKey error`, [hookKey, hook, e]);
+                this.logger.error(`[HtmlTagSrcHook] requestImageBySrc: call hookKey[${hookKey}] error [${e?.message ? e.message : e}]`);
+            }
+        }
+        // if no one can handle the element, do the default action
+        return undefined;
     }
 
 }
