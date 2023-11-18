@@ -30,7 +30,7 @@ export interface IModImgGetter {
 }
 
 export const StaticModImgLruCache = new LRUCache<string, string>({
-    max: 100,
+    max: 30,
     ttl: 1000 * 60 * 30,
     dispose: (value: string, key: string, reason: LRUCache.DisposeReason) => {
         console.log('ModImgLruCache dispose', [value], [reason]);
