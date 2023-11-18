@@ -38,5 +38,6 @@ src/insertTools/**/*.zip
 !mod/TweeReplacer
 !mod/template
 !mod/I18nTweeList
+!mod/BeautySelectorAddon
 mod
 

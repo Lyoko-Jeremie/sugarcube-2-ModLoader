@@ -65,3 +65,7 @@
 	path = mod/TweeReplacerLinker
 	url = https://github.com/Lyoko-Jeremie/TweeReplacerLinkerAddon.git
 	branch = master
+[submodule "mod/BeautySelectorAddon"]
+	path = mod/BeautySelectorAddon
+	url = https://github.com/Lyoko-Jeremie/DoL_BeautySelectorAddonMod.git
+	branch = master

@@ -276,6 +276,20 @@ jobs:
           source: ${{ github.workspace }}/mod/ModuleCssReplacer/ModuleCssReplacer.mod.zip
           target: ${{ github.workspace }}/out
 
+      - name: Build BeautySelectorAddon
+        working-directory: ${{ github.workspace }}/mod/BeautySelectorAddon
+        run: |
+          cd ${{ github.workspace }}/mod/BeautySelectorAddon
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Copy BeautySelectorAddon
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/BeautySelectorAddon/BeautySelectorAddon.mod.zip
+          target: ${{ github.workspace }}/out
+
 
       - name: Copy dist-BeforeSC2
         uses: Lyoko-Jeremie/js-copy-github-action@master
