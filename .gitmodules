@@ -7,7 +7,7 @@
 	branch = master
 [submodule "mod/ImageLoaderHook"]
 	path = mod/ImageLoaderHook
-	url = https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader-ImgLoaderHooker.git
+	url = https://github.com/Lyoko-Jeremie/DoL_ImgLoaderHooker.git
 	branch = master
 [submodule "mod/CheckDoLCompressorDictionaries"]
 	path = mod/CheckDoLCompressorDictionaries
