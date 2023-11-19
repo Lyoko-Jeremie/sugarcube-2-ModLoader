@@ -1,0 +1,18 @@
+[
+  "mod/ModLoaderGui/ModLoaderGui.mod.zip",
+  "mod/CheckGameVersion/CheckGameVersion.mod.zip",
+  "mod/ImageLoaderHook/ModLoader DoL ImageLoaderHook.mod.zip",
+  "mod/CheckDoLCompressorDictionaries/CheckDoLCompressorDictionaries.mod.zip",
+  "mod/TweeReplacerLinker/TweeReplacerLinker.mod.zip",
+  "mod/TweeReplacer/TweeReplacer.mod.zip",
+  "mod/I18nTweeReplacer/I18nTweeReplacer.mod.zip",
+  "mod/I18nTweeList/I18nTweeList.mod.zip",
+  "mod/ReplacePatch/ReplacePatcher.mod.zip",
+  "mod/Diff3WayMerge/Diff3WayMerge.mod.zip",
+  "mod/ModdedClothesAddon/ModdedClothesAddon.mod.zip",
+  "mod/ModdedFeatsAddon/ModdedFeatsAddon.mod.zip",
+  "mod/ConflictChecker/ConflictChecker.mod.zip",
+  "mod/SweetAlert2Mod/SweetAlert2Mod.mod.zip",
+  "mod/ModuleCssReplacer/ModuleCssReplacer.mod.zip",
+  "mod/BeautySelectorAddon/BeautySelectorAddon.mod.zip"
+]
