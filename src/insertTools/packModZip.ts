@@ -12,6 +12,29 @@ import JSON5 from 'json5';
 //     return `data:image/${ext};base64,${base64}`;
 // }
 
+async function listFilesIteratively(dir: string): Promise<string[]> {
+    let filesToReturn: string[] = [];
+    let stack = [dir];
+
+    while (stack.length) {
+        const currentPath = stack.pop();
+        if (!currentPath) continue;
+
+        const stat = await fs.promises.stat(currentPath);
+
+        if (stat.isDirectory()) {
+            const files = await fs.promises.readdir(currentPath);
+            for (const file of files) {
+                stack.push(path.join(currentPath, file));
+            }
+        } else {
+            filesToReturn.push(currentPath.replaceAll('\\', '/'));
+        }
+    }
+
+    return filesToReturn;
+}
+
 export interface ModBootJson {
     name: string;
     version: string;
@@ -25,6 +48,7 @@ export interface ModBootJson {
     replacePatchList?: string[];
     additionFile: string[];
     additionBinaryFile: string[];
+    additionDir: string[];
     addonPlugin?: ModBootJsonAddonPlugin[];
     dependenceInfo?: DependenceInfo[];
 }
@@ -220,6 +244,18 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
             zip.file(scriptPath, scriptFile);
         }
     }
+
+    if (bootJson.additionDir) {
+        for (const dirPath of bootJson.additionDir) {
+            const dirFiles = await listFilesIteratively(dirPath);
+            console.log('dirFiles', dirFiles);
+            for (const fPath of dirFiles) {
+                const f = await promisify(fs.readFile)(fPath);
+                zip.file(fPath, f);
+            }
+        }
+    }
+
     zip.file('boot.json', JSON.stringify(bootJson, undefined, ' '));
     const zipBase64 = await zip.generateAsync({
         type: "nodebuffer",

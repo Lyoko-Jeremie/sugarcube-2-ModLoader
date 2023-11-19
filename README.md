@@ -149,6 +149,9 @@ The format is as follows (sample src/insertTools/MyMod/boot.json):
   "additionBinaryFile": [   // 附加二进制文件
     "xxxx.zip"          // 如果有需要附加的二进制文件，编写在这里时 `packModZip.ts` 会将其以二进制格式保存
   ],
+  "additionDir": [    // 附加文件夹
+    "xxxx"            // 如果有需要附加的文件夹，编写在这里时 `packModZip.ts` 会将其下所有问题以二进制格式保存
+  ],
   "addonPlugin": [      // （可选） 依赖的插件列表，在此声明本mod依赖哪些插件，在此处声明后会调用对应的插件，不满足的依赖会在加载日志中产生警告
     {           //  需要首先由提供插件的mod在EarlyLoad阶段注册插件，否则会找不到插件
       "modName": "MyMod2",    // 插件来自哪个mod
