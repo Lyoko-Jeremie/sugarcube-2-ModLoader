@@ -54,6 +54,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: corepack enable
+        run: corepack enable
+
       - name: Build ModLoader
         run: |
           yarn install
