@@ -8,65 +8,44 @@ import {PassageTracer} from "./PassageTracer";
 import {Sc2EventTracer, Sc2EventTracerCallback} from "./Sc2EventTracer";
 import {Passage} from "./SugarCube2";
 
-type  AddonPluginHookType = () => Promise<any>;
+type AddonPluginHookType = () => Promise<any>;
 
-const AddonPluginHookPoint_KL = [
+export interface AddonPluginHookPoint {
     // 当前 mod 加载后 (这个hook无法拦截到，因为最早可能的hook注入点在InjectEarlyLoad)
-    'afterInit',
+    afterInit?: AddonPluginHookType,
     // 所有 EarlyInject 脚本插入后
-    'afterInjectEarlyLoad',
+    afterInjectEarlyLoad?: AddonPluginHookType,
     // 所有 mod 加载后 ， 且 LifeTimeCircleHook.afterModLoad 触发后
-    'afterModLoad',
+    afterModLoad?: AddonPluginHookType,
     // 所有 EarlyLoad 脚本执行后
-    'afterEarlyLoad',
+    afterEarlyLoad?: AddonPluginHookType,
     // 所有 Mod 注册到 Addon 后
-    'afterRegisterMod2Addon',
+    afterRegisterMod2Addon?: AddonPluginHookType,
     // 所有 mod 数据覆盖到游戏前
-    'beforePatchModToGame',
+    beforePatchModToGame?: AddonPluginHookType,
     // 所有 mod 数据覆盖到游戏后
-    'afterPatchModToGame',
+    afterPatchModToGame?: AddonPluginHookType,
     // 所有 Preload 脚本执行后
-    'afterPreload',
-    // // SugarCube2 引擎触发 StoryReady 事件后
-    // 'whenSC2StoryReady',
-    // // SugarCube2 引擎触发 PassageInit 事件后
-    // 'whenSC2PassageInit',
-    // // SugarCube2 引擎触发 PassageStart 事件后
-    // 'whenSC2PassageStart',
-    // // SugarCube2 引擎触发 PassageRender 事件后
-    // 'whenSC2PassageRender',
-    // // SugarCube2 引擎触发 PassageDisplay 事件后
-    // 'whenSC2PassageDisplay',
-    // // SugarCube2 引擎触发 PassageReady 事件后
-    // 'whenSC2PassageEnd',
-] as const;
-
-export type AddonPluginHookPoint_K = typeof AddonPluginHookPoint_KL[number];
-
-export type AddonPluginHookPoint = {
-    [key in AddonPluginHookPoint_K]?: AddonPluginHookType;
+    afterPreload?: AddonPluginHookType,
 }
+export type AddonPluginHookPoint_K = keyof AddonPluginHookPoint;
 
-const AddonPluginHookPointWhenSC2_KL = {
-    // SugarCube2 引擎触发 StoryReady 事件后
-    whenSC2StoryReady: () => Promise<any>,
-    // SugarCube2 引擎触发 PassageInit 事件后
-    whenSC2PassageInit: (passage: Passage) => Promise<any>,
-    // SugarCube2 引擎触发 PassageStart 事件后
-    whenSC2PassageStart: (passage: Passage, content: HTMLDivElement) => Promise<any>,
-    // SugarCube2 引擎触发 PassageRender 事件后
-    whenSC2PassageRender: (passage: Passage, content: HTMLDivElement) => Promise<any>,
-    // SugarCube2 引擎触发 PassageDisplay 事件后
-    whenSC2PassageDisplay: (passage: Passage, content: HTMLDivElement) => Promise<any>,
-    // SugarCube2 引擎触发 PassageReady 事件后
-    whenSC2PassageEnd: (passage: Passage, content: HTMLDivElement) => Promise<any>,
-} as const;
-
-export type AddonPluginHookPointWhenSC2_T = typeof AddonPluginHookPointWhenSC2_KL;
-export type AddonPluginHookPointWhenSC2_K = keyof AddonPluginHookPointWhenSC2_T;
 export type AddonPluginHookPointWhenSC2 = {
-    [key in AddonPluginHookPointWhenSC2_K]?: AddonPluginHookPointWhenSC2_T[key];
+    // SugarCube2 引擎触发 StoryReady 事件后
+    whenSC2StoryReady?: () => Promise<any>,
+    // SugarCube2 引擎触发 PassageInit 事件后
+    whenSC2PassageInit?: (passage: Passage) => Promise<any>,
+    // SugarCube2 引擎触发 PassageStart 事件后
+    whenSC2PassageStart?: (passage: Passage, content: HTMLDivElement) => Promise<any>,
+    // SugarCube2 引擎触发 PassageRender 事件后
+    whenSC2PassageRender?: (passage: Passage, content: HTMLDivElement) => Promise<any>,
+    // SugarCube2 引擎触发 PassageDisplay 事件后
+    whenSC2PassageDisplay?: (passage: Passage, content: HTMLDivElement) => Promise<any>,
+    // SugarCube2 引擎触发 PassageReady 事件后
+    whenSC2PassageEnd?: (passage: Passage, content: HTMLDivElement) => Promise<any>,
 }
+export type AddonPluginHookPointWhenSC2_T = AddonPluginHookPointWhenSC2;
+export type AddonPluginHookPointWhenSC2_K = keyof AddonPluginHookPointWhenSC2_T;
 
 export type AddonPluginHookPointExOptional = {
     /**
@@ -104,6 +83,12 @@ export type AddonPluginHookPointExMustImplement = {
  * addon plugin 可以实现任何 hook，但是必须实现 registerMod()，
  * addon 可以在里面实现更多 API，让 mod 调用它来获得更多功能。
  */
+// export type AddonPluginHookPointEx =
+//     AddonPluginHookPoint
+//     & AddonPluginHookPointExOptional
+//     & AddonPluginHookPointExMustImplement
+//     & AddonPluginHookPointWhenSC2;
+
 export interface AddonPluginHookPointEx
     extends AddonPluginHookPoint, AddonPluginHookPointExOptional, AddonPluginHookPointExMustImplement, AddonPluginHookPointWhenSC2 {
 }
@@ -268,7 +253,7 @@ export class AddonPluginManager implements Sc2EventTracerCallback {
      */
     async triggerHookWhenSC2<K extends AddonPluginHookPointWhenSC2_K>(
         hook: K,
-        ...params: Parameters<AddonPluginHookPointWhenSC2_T[K]>
+        ...params: Parameters<NonNullable<AddonPluginHookPointWhenSC2_T[K]>>
     ) {
         const log = this.gSC2DataManager.getModLoadController().getLog();
         for (const addonPlugin of this.addonPluginTable) {
