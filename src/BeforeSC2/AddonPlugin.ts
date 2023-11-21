@@ -263,7 +263,7 @@ export class AddonPluginManager implements Sc2EventTracerCallback {
                 // log.log(`AddonPluginManager.triggerHookWhenSC2() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] start`);
                 try {
                     const f: ((...params: any[]) => any) = (addonPlugin.hookPoint as AddonPluginHookPointWhenSC2)[hook]!;
-                    await f.call(addonPlugin, ...params);
+                    await f.call(addonPlugin.hookPoint, ...params);
                 } catch (e: any | Error) {
                     console.error(`ModLoader ====== AddonPluginManager.triggerHookWhenSC2() error [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] `, e);
                     log.error(`AddonPluginManager.triggerHookWhenSC2() error [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] [${e?.message ? e.message : e}]`);
