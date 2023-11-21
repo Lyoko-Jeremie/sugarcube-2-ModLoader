@@ -259,7 +259,7 @@ export class AddonPluginManager implements Sc2EventTracerCallback {
         const log = this.gSC2DataManager.getModLoadController().getLog();
         for (const addonPlugin of this.addonPluginTable) {
             if (addonPlugin.hookPoint[hook]) {
-                console.log(`ModLoader ====== AddonPluginManager.triggerHookWhenSC2() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] start`);
+                // console.log(`ModLoader ====== AddonPluginManager.triggerHookWhenSC2() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] start`);
                 // log.log(`AddonPluginManager.triggerHookWhenSC2() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] start`);
                 try {
                     const f: ((...params: any[]) => any) = (addonPlugin.hookPoint as AddonPluginHookPointWhenSC2)[hook]!;
@@ -268,7 +268,7 @@ export class AddonPluginManager implements Sc2EventTracerCallback {
                     console.error(`ModLoader ====== AddonPluginManager.triggerHookWhenSC2() error [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] `, e);
                     log.error(`AddonPluginManager.triggerHookWhenSC2() error [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] [${e?.message ? e.message : e}]`);
                 }
-                console.log(`ModLoader ====== AddonPluginManager.triggerHookWhenSC2() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] end`);
+                // console.log(`ModLoader ====== AddonPluginManager.triggerHookWhenSC2() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] end`);
                 // log.log(`AddonPluginManager.triggerHookWhenSC2() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] end`);
             }
         }
