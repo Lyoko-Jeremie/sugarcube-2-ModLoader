@@ -3,6 +3,8 @@ export class Passage {
 
     get text(): string | any;
 
+    get title(): string | any;
+
     description(): string | null;
 
     processText(): string | null;
