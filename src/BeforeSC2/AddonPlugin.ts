@@ -27,24 +27,45 @@ const AddonPluginHookPoint_KL = [
     'afterPatchModToGame',
     // 所有 Preload 脚本执行后
     'afterPreload',
-    // SugarCube2 引擎触发 StoryReady 事件后
-    'whenSC2StoryReady',
-    // SugarCube2 引擎触发 PassageInit 事件后
-    'whenSC2PassageInit',
-    // SugarCube2 引擎触发 PassageStart 事件后
-    'whenSC2PassageStart',
-    // SugarCube2 引擎触发 PassageRender 事件后
-    'whenSC2PassageRender',
-    // SugarCube2 引擎触发 PassageDisplay 事件后
-    'whenSC2PassageDisplay',
-    // SugarCube2 引擎触发 PassageReady 事件后
-    'whenSC2PassageEnd',
+    // // SugarCube2 引擎触发 StoryReady 事件后
+    // 'whenSC2StoryReady',
+    // // SugarCube2 引擎触发 PassageInit 事件后
+    // 'whenSC2PassageInit',
+    // // SugarCube2 引擎触发 PassageStart 事件后
+    // 'whenSC2PassageStart',
+    // // SugarCube2 引擎触发 PassageRender 事件后
+    // 'whenSC2PassageRender',
+    // // SugarCube2 引擎触发 PassageDisplay 事件后
+    // 'whenSC2PassageDisplay',
+    // // SugarCube2 引擎触发 PassageReady 事件后
+    // 'whenSC2PassageEnd',
 ] as const;
 
-type AddonPluginHookPoint_K = typeof AddonPluginHookPoint_KL[number];
+export type AddonPluginHookPoint_K = typeof AddonPluginHookPoint_KL[number];
 
 export type AddonPluginHookPoint = {
     [key in AddonPluginHookPoint_K]?: AddonPluginHookType;
+}
+
+const AddonPluginHookPointWhenSC2_KL = {
+    // SugarCube2 引擎触发 StoryReady 事件后
+    whenSC2StoryReady: () => Promise<any>,
+    // SugarCube2 引擎触发 PassageInit 事件后
+    whenSC2PassageInit: (passage: Passage) => Promise<any>,
+    // SugarCube2 引擎触发 PassageStart 事件后
+    whenSC2PassageStart: (passage: Passage, content: HTMLDivElement) => Promise<any>,
+    // SugarCube2 引擎触发 PassageRender 事件后
+    whenSC2PassageRender: (passage: Passage, content: HTMLDivElement) => Promise<any>,
+    // SugarCube2 引擎触发 PassageDisplay 事件后
+    whenSC2PassageDisplay: (passage: Passage, content: HTMLDivElement) => Promise<any>,
+    // SugarCube2 引擎触发 PassageReady 事件后
+    whenSC2PassageEnd: (passage: Passage, content: HTMLDivElement) => Promise<any>,
+} as const;
+
+export type AddonPluginHookPointWhenSC2_T = typeof AddonPluginHookPointWhenSC2_KL;
+export type AddonPluginHookPointWhenSC2_K = keyof AddonPluginHookPointWhenSC2_T;
+export type AddonPluginHookPointWhenSC2 = {
+    [key in AddonPluginHookPointWhenSC2_K]?: AddonPluginHookPointWhenSC2_T[key];
 }
 
 export type AddonPluginHookPointExOptional = {
@@ -83,7 +104,8 @@ export type AddonPluginHookPointExMustImplement = {
  * addon plugin 可以实现任何 hook，但是必须实现 registerMod()，
  * addon 可以在里面实现更多 API，让 mod 调用它来获得更多功能。
  */
-export interface AddonPluginHookPointEx extends AddonPluginHookPoint, AddonPluginHookPointExOptional, AddonPluginHookPointExMustImplement {
+export interface AddonPluginHookPointEx
+    extends AddonPluginHookPoint, AddonPluginHookPointExOptional, AddonPluginHookPointExMustImplement, AddonPluginHookPointWhenSC2 {
 }
 
 export class AddonPlugin {
@@ -124,42 +146,42 @@ export class AddonPluginManager implements Sc2EventTracerCallback {
      * inner use
      */
     async whenSC2StoryReady(): Promise<any> {
-        await this.triggerHook('whenSC2StoryReady');
+        await this.triggerHookWhenSC2('whenSC2StoryReady');
     }
 
     /**
      * inner use
      */
     async whenSC2PassageInit(passage: Passage): Promise<any> {
-        await this.triggerHook('whenSC2PassageInit');
+        await this.triggerHookWhenSC2('whenSC2PassageInit', passage);
     }
 
     /**
      * inner use
      */
     async whenSC2PassageStart(passage: Passage, content: HTMLDivElement): Promise<any> {
-        await this.triggerHook('whenSC2PassageStart');
+        await this.triggerHookWhenSC2('whenSC2PassageStart', passage, content);
     }
 
     /**
      * inner use
      */
     async whenSC2PassageRender(passage: Passage, content: HTMLDivElement): Promise<any> {
-        await this.triggerHook('whenSC2PassageRender');
+        await this.triggerHookWhenSC2('whenSC2PassageRender', passage, content);
     }
 
     /**
      * inner use
      */
     async whenSC2PassageDisplay(passage: Passage, content: HTMLDivElement): Promise<any> {
-        await this.triggerHook('whenSC2PassageDisplay');
+        await this.triggerHookWhenSC2('whenSC2PassageDisplay', passage, content);
     }
 
     /**
      * inner use
      */
     async whenSC2PassageEnd(passage: Passage, content: HTMLDivElement): Promise<any> {
-        await this.triggerHook('whenSC2PassageEnd');
+        await this.triggerHookWhenSC2('whenSC2PassageEnd', passage, content);
     }
 
     /**
@@ -237,6 +259,31 @@ export class AddonPluginManager implements Sc2EventTracerCallback {
                 }
                 console.log(`ModLoader ====== AddonPluginManager.triggerHook() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] end`);
                 log.log(`AddonPluginManager.triggerHook() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] end`);
+            }
+        }
+    }
+
+    /**
+     * call by ModLoader (inner use)
+     */
+    async triggerHookWhenSC2<K extends AddonPluginHookPointWhenSC2_K>(
+        hook: K,
+        ...params: Parameters<AddonPluginHookPointWhenSC2_T[K]>
+    ) {
+        const log = this.gSC2DataManager.getModLoadController().getLog();
+        for (const addonPlugin of this.addonPluginTable) {
+            if (addonPlugin.hookPoint[hook]) {
+                console.log(`ModLoader ====== AddonPluginManager.triggerHookWhenSC2() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] start`);
+                log.log(`AddonPluginManager.triggerHookWhenSC2() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] start`);
+                try {
+                    const f: ((...params: any[]) => any) = (addonPlugin.hookPoint as AddonPluginHookPointWhenSC2)[hook]!;
+                    await f!(...params);
+                } catch (e: any | Error) {
+                    console.error(`ModLoader ====== AddonPluginManager.triggerHookWhenSC2() error [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] `, e);
+                    log.error(`AddonPluginManager.triggerHookWhenSC2() error [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] [${e?.message ? e.message : e}]`);
+                }
+                console.log(`ModLoader ====== AddonPluginManager.triggerHookWhenSC2() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] end`);
+                log.log(`AddonPluginManager.triggerHookWhenSC2() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] end`);
             }
         }
     }
