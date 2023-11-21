@@ -28,6 +28,7 @@ export interface AddonPluginHookPoint {
     // 所有 Preload 脚本执行后
     afterPreload?: AddonPluginHookType,
 }
+
 export type AddonPluginHookPoint_K = keyof AddonPluginHookPoint;
 
 export type AddonPluginHookPointWhenSC2 = {
@@ -262,7 +263,7 @@ export class AddonPluginManager implements Sc2EventTracerCallback {
                 // log.log(`AddonPluginManager.triggerHookWhenSC2() trigger hook [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] start`);
                 try {
                     const f: ((...params: any[]) => any) = (addonPlugin.hookPoint as AddonPluginHookPointWhenSC2)[hook]!;
-                    await f!(...params);
+                    await f.call(addonPlugin, ...params);
                 } catch (e: any | Error) {
                     console.error(`ModLoader ====== AddonPluginManager.triggerHookWhenSC2() error [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] `, e);
                     log.error(`AddonPluginManager.triggerHookWhenSC2() error [${addonPlugin.modName}] [${addonPlugin.addonName}] [${hook}] [${e?.message ? e.message : e}]`);
