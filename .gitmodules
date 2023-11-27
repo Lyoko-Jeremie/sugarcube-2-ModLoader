@@ -69,3 +69,7 @@
 	path = mod/BeautySelectorAddon
 	url = https://github.com/Lyoko-Jeremie/DoL_BeautySelectorAddonMod.git
 	branch = master
+[submodule "mod/I18nScriptList"]
+	path = mod/I18nScriptList
+	url = https://github.com/Lyoko-Jeremie/I18nScriptListAddonMod.git
+	branch = master
