@@ -12,16 +12,19 @@ export interface Twee2PassageR {
     name: string;
     tags: string[];
     contect: string;
-};
+}
 
 export function Twee2Passage(s: string): Twee2PassageR[] {
     // match:
     //      :: Widgets Bodywriting Objects [widget]
     //      :: Widgets Bodywriting Objects
     //      :: Widgets Bodywriting Objects [widget asdasd]
-    const r = s.split(/^(:: +((?:[^:"\\/\n\r\[\] ]+ *)+)(?:(?: +\[((?:\w+ *)+)\] *)?|))$/gm);
+    // special allow :
+    //      :: Widgets Bodywriting Objects []
+    const r = s.split(/^(:: +((?:[^:"\\/\n\r\[\] ]+ *)+)(?: +\[((?:\w+ *)+)?\] *|))$/gm);
     // console.log('Twee2Passage split ', r, [s]);
-    // ['xxx', ':: Widgets Bodywriting Objects [widget]', 'Widgets', 'Bodywriting Objects', 'widget', 'xxx']
+    // ['xxx', ':: Widgets Bodywriting Objects [widget]', 'Widgets Bodywriting Objects', 'widget', 'xxx']
+    // ['xxx', ':: Widgets Bodywriting Objects [widget]', 'Widgets Bodywriting Objects', undefined, 'xxx']
     const rr: Twee2PassageR[] = [];
     for (let i = 0; i < r.length; i++) {
         if (r[i].startsWith(':: ')) {
