@@ -325,9 +325,6 @@ jobs:
         working-directory: ${{ github.workspace }}/mod/DoLHookWidget
         run: |
           cd ${{ github.workspace }}/mod/DoLHookWidget
-          yarn install
-          yarn run build:ts
-          yarn run build:webpack
           node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
       - name: Copy DoLHookWidget
         uses: Lyoko-Jeremie/js-copy-github-action@master
