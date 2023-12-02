@@ -73,3 +73,7 @@
 	path = mod/I18nScriptList
 	url = https://github.com/Lyoko-Jeremie/I18nScriptListAddonMod.git
 	branch = master
+[submodule "mod/DoLTimeWrapperAddon"]
+	path = mod/DoLTimeWrapperAddon
+	url = https://github.com/Lyoko-Jeremie/DoLTimeWrapperAddonMod.git
+	branch = master

@@ -195,6 +195,20 @@ jobs:
           source: ${{ github.workspace }}/mod/Diff3WayMerge/Diff3WayMerge.mod.zip
           target: ${{ github.workspace }}/out
 
+      - name: Build DoLTimeWrapperAddon
+        working-directory: ${{ github.workspace }}/mod/DoLTimeWrapperAddon
+        run: |
+          cd ${{ github.workspace }}/mod/DoLTimeWrapperAddon
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Copy DoLTimeWrapperAddon
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/DoLTimeWrapperAddon/DoLTimeWrapperAddon.mod.zip
+          target: ${{ github.workspace }}/out
+
       - name: Build ModdedClothesAddon
         working-directory: ${{ github.workspace }}/mod/ModdedClothesAddon
         run: |

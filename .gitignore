@@ -40,5 +40,6 @@ src/insertTools/**/*.zip
 !mod/I18nTweeList
 !mod/I18nScriptList
 !mod/BeautySelectorAddon
+!mod/DoLTimeWrapperAddon
 mod
 
