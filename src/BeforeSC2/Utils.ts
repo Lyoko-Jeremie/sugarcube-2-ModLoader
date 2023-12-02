@@ -25,7 +25,7 @@ import {SemVerToolsType} from "./SemVer/InfiniteSemVer";
 export class ModUtils {
 
     get version(): string {
-        return '2.9.0';
+        return '2.10.0';
     }
 
     constructor(
