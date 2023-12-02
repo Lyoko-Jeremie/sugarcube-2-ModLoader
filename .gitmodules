@@ -77,3 +77,6 @@
 	path = mod/DoLTimeWrapperAddon
 	url = https://github.com/Lyoko-Jeremie/DoLTimeWrapperAddonMod.git
 	branch = master
+[submodule "mod/DoLHookWidget"]
+	path = mod/DoLHookWidget
+	url = https://github.com/Lyoko-Jeremie/DoLHookWidgetMod.git

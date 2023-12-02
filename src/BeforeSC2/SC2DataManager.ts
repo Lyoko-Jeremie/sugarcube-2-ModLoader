@@ -18,6 +18,7 @@ import {ModUtils} from "./Utils";
 import {JsPreloader} from "./JsPreloader";
 import {HtmlTagSrcHook} from "./HtmlTagSrcHook";
 import {LanguageManager} from "./LanguageManager";
+import {WikifyTracer} from "./WikifyTracer";
 
 export class SC2DataManager {
 
@@ -35,6 +36,7 @@ export class SC2DataManager {
         this.sC2JsEvalContext = new SC2JsEvalContext(this);
         this.dependenceChecker = new DependenceChecker(this, this.getModUtils());
         this.htmlTagSrcHook = new HtmlTagSrcHook(this);
+        this.wikifyTracer = new WikifyTracer(this);
         // this.
     }
 
@@ -230,6 +232,12 @@ export class SC2DataManager {
 
     getHtmlTagSrcHook() {
         return this.htmlTagSrcHook;
+    }
+
+    private wikifyTracer; // = new WikifyTracer(this);
+
+    getWikifyTracer() {
+        return this.wikifyTracer;
     }
 
     private conflictResult?: { mod: SC2DataInfo, result: SimulateMergeResult }[];
