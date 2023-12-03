@@ -279,6 +279,20 @@ jobs:
           source: ${{ github.workspace }}/mod/I18nScriptList/I18nScriptList.mod.zip
           target: ${{ github.workspace }}/out
 
+      - name: Build TweePrefixPostfixAddon
+        working-directory: ${{ github.workspace }}/mod/TweePrefixPostfixAddon
+        run: |
+          cd ${{ github.workspace }}/mod/TweePrefixPostfixAddon
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Copy TweePrefixPostfixAddon
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/TweePrefixPostfixAddon/TweePrefixPostfixAddon.mod.zip
+          target: ${{ github.workspace }}/out
+
       - name: Build SweetAlert2Mod
         working-directory: ${{ github.workspace }}/mod/SweetAlert2Mod
         run: |

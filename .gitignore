@@ -39,6 +39,7 @@ src/insertTools/**/*.zip
 !mod/template
 !mod/I18nTweeList
 !mod/I18nScriptList
+!mod/TweePrefixPostfixAddon
 !mod/BeautySelectorAddon
 !mod/DoLTimeWrapperAddon
 !mod/DoLHookWidget
