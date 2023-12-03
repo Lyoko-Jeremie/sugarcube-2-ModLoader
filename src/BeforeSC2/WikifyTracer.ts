@@ -5,11 +5,11 @@ import {LogWrapper} from "./ModLoadController";
 // all must sync impl, and must fastest
 export interface WikifyTracerCallback {
     beforePassage?: (text: string, passageTitle: string, passageObj: SC2Passage) => string;
-    afterPassage?: (text: string, passageTitle: string, passageObj: SC2Passage) => void;
+    afterPassage?: (text: string, passageTitle: string, passageObj: SC2Passage, node: DocumentFragment) => void;
     beforeWikify?: (text: string) => string;
-    afterWikify?: (text: string) => void;
+    afterWikify?: (text: string, node: DocumentFragment) => void;
     beforeWidget?: (text: string, widgetName: string, passageTitle?: string, passageObj?: SC2Passage) => string;
-    afterWidget?: (text: string, widgetName: string, passageTitle?: string, passageObj?: SC2Passage) => void;
+    afterWidget?: (text: string, widgetName: string, passageTitle: string | undefined, passageObj: SC2Passage | undefined, node: DocumentFragment) => void;
 }
 
 export class WikifyTracerCallbackOrder {
@@ -205,7 +205,7 @@ export class WikifyTracer {
         return text;
     }
 
-    afterPassage(text: string, passageTitle: string, passageObj: SC2Passage) {
+    afterPassage(text: string, passageTitle: string, passageObj: SC2Passage, node: DocumentFragment) {
         // console.log('afterPassage', [passageTitle, passageObj, text]);
         if (this.callbackCount.afterPassage === 0) {
             // short stop
@@ -220,7 +220,7 @@ export class WikifyTracer {
             }
             if (callback.afterPassage) {
                 try {
-                    callback.afterPassage(text, passageTitle, passageObj);
+                    callback.afterPassage(text, passageTitle, passageObj, node);
                 } catch (e: Error | any) {
                     console.error('WikifyTracer.afterPassage', [key, callback, [text, passageTitle, passageObj], e]);
                 }
@@ -258,7 +258,7 @@ export class WikifyTracer {
         return text;
     }
 
-    afterWikify(text: string) {
+    afterWikify(text: string, node: DocumentFragment) {
         // console.log('afterWikify', [text]);
         if (this.callbackCount.afterWikify === 0) {
             // short stop
@@ -273,7 +273,7 @@ export class WikifyTracer {
             }
             if (callback.afterWikify) {
                 try {
-                    callback.afterWikify(text);
+                    callback.afterWikify(text, node);
                 } catch (e: Error | any) {
                     console.error('WikifyTracer.afterWikify', [key, callback, [text], e]);
                 }
@@ -311,7 +311,7 @@ export class WikifyTracer {
         return text;
     }
 
-    afterWidget(text: string, widgetName: string, passageTitle?: string, passageObj?: SC2Passage) {
+    afterWidget(text: string, widgetName: string, passageTitle: string | undefined, passageObj: SC2Passage | undefined, node: DocumentFragment) {
         // console.log('afterWidget', [widgetName, passageTitle, passageObj, text]);
         if (this.callbackCount.afterWidget === 0) {
             // short stop
@@ -326,7 +326,7 @@ export class WikifyTracer {
             }
             if (callback.afterWidget) {
                 try {
-                    callback.afterWidget(text, widgetName, passageTitle, passageObj);
+                    callback.afterWidget(text, widgetName, passageTitle, passageObj, node);
                 } catch (e: Error | any) {
                     console.error('WikifyTracer.afterWidget', [key, callback, [text, widgetName, passageTitle, passageObj], e]);
                 }
