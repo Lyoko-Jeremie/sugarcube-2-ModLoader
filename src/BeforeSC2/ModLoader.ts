@@ -132,13 +132,26 @@ export interface ModInfo {
     version: string;
     cache: SC2DataInfo;
     imgs: ModImg[];
-    // origin path, replace path
+    /**
+     * origin path, replace path
+     *
+     * @deprecated the imgFileReplaceList not work and never implemented, don't use it.
+     *             Please use `ImageLoaderAddon` or `BeautySelectorAddon` instead.
+     * @see `ImageLoaderAddon` https://github.com/Lyoko-Jeremie/DoL_ImgLoaderHooker
+     * @see `BeautySelectorAddon` https://github.com/Lyoko-Jeremie/DoL_BeautySelectorAddonMod
+     */
     imgFileReplaceList: [string, string][];
-    // file name, file content
+    /**
+     * file name, file content
+     */
     scriptFileList_preload: [string, string][];
-    // file name, file content
+    /**
+     * file name, file content
+     */
     scriptFileList_earlyload: [string, string][];
-    // file name, file content
+    /**
+     * file name, file content
+     */
     scriptFileList_inject_early: [string, string][];
     replacePatcher: ReplacePatcher[];
     bootJson: ModBootJson;
