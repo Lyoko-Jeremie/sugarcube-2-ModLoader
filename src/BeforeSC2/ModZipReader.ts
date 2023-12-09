@@ -51,22 +51,76 @@ export class ModZipReader {
 
     public log: LogWrapper;
 
+    private gcFinalizationRegistry;
+
+    private _zip: JSZip | undefined;
+    // private _zipWeakRef: WeakRef<JSZip>;
+    private _zipWeakRef: WeakMap<typeof this, JSZip>;
+    private _zipIsExist: boolean | null;
+
+    public get zip() {
+        if (!this._zip) {
+            console.error('ModZipReader zip was released.', [this.modInfo, this]);
+            this.log.error(`ModZipReader zip was released. [${this.modInfo?.name}]`);
+            throw new Error(`ModZipReader zip was released. [${this.modInfo?.name}]`);
+        }
+        return this._zip;
+    }
+
     constructor(
-        public zip: JSZip,
+        zip: JSZip,
         public loaderBase: LoaderBase,
         public modLoadControllerCallback: ModLoadControllerCallback,
     ) {
+        if (typeof FinalizationRegistry === 'undefined') {
+            this.gcFinalizationRegistry = new FinalizationRegistryMock(() => {
+                // never be call
+            });
+            this._zipIsExist = null;
+            console.warn('ModZipReader FinalizationRegistry is not support.');
+        } else {
+            this.gcFinalizationRegistry = new FinalizationRegistry(() => {
+                console.log('ModZipReader zip was released.', [this.modInfo, this]);
+                this._zipIsExist = true;
+            });
+            this._zipIsExist = false;
+            // console.warn('ModZipReader FinalizationRegistry is support.');
+        }
+        // this._zipWeakRef = new WeakRef(zip);
+        this._zipWeakRef = new WeakMap();
+        this._zipWeakRef.set(this, zip);
+        this._zip = zip;
+        this.gcFinalizationRegistry.register(this._zip, undefined, this);
         this.log = getLogFromModLoadControllerCallback(modLoadControllerCallback);
     }
 
     modInfo?: ModInfo;
 
-    getModInfo() {
+    public getModInfo() {
         return this.modInfo;
     }
 
-    getZipFile() {
-        return this.zip;
+    public getZipFile() {
+        return this._zip;
+    }
+
+    public gcReleaseZip() {
+        console.log(`ModLoader ====== ModZipReader gcReleaseZip [${this.modInfo?.name}]`);
+        this.log.log(`ModLoader ====== ModZipReader gcReleaseZip [${this.modInfo?.name}]`);
+        this._zip = undefined;
+    }
+
+    public gcCheckReleased(): [boolean, boolean, boolean | null] {
+        return [
+            !!this._zip,
+            // !!this._zipWeakRef.deref(),
+            this._zipWeakRef.has(this),
+            this._zipIsExist,
+        ];
+    }
+
+    public gcIsReleased(): boolean {
+        return !this._zip;
     }
 
     static validateBootJson(bootJ: any, log?: LogWrapper): bootJ is ModBootJson {
