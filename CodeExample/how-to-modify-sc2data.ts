@@ -2,7 +2,7 @@ import type {} from '../src/BeforeSC2/global';
 import type {SC2DataManager} from '../dist-BeforeSC2/SC2DataManager';
 import type {ModUtils} from '../dist-BeforeSC2/Utils';
 import type {SC2DataInfoCache, PassageDataItem} from "../dist-BeforeSC2/SC2DataInfoCache";
-import {SC2DataInfo} from "../src/BeforeSC2/SC2DataInfoCache";
+import type {SC2DataInfo} from "../dist-BeforeSC2/SC2DataInfoCache";
 
 const gUtils: ModUtils = window.modUtils;
 const gSC2DataManager: SC2DataManager = window.modSC2DataManager;
