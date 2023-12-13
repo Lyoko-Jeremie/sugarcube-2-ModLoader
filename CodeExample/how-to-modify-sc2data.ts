@@ -34,3 +34,6 @@ sc.passageDataItems.back2Array();
 // save all modify
 gUtils.replaceFollowSC2DataInfo(sc, scOld);
 
+// you can call `clean()` to release memory reference, it is not required
+sc.clean();
+scOld.clean();
