@@ -31,5 +31,6 @@ const sc: SC2DataInfo = scOld.cloneSC2DataInfo();
 // if you modify the `passageDataItems.map`, you need call this to update the `passageDataItems.items`
 // because the `gUtils.replaceFollowSC2DataInfo` use the `passageDataItems.items` to update the html
 sc.passageDataItems.back2Array();
+// save all modify
 gUtils.replaceFollowSC2DataInfo(sc, scOld);
 
