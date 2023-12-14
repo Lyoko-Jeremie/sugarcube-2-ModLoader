@@ -185,6 +185,7 @@ export class ModUtils {
      * @param content passageContent
      * @param tags passageTags [] OR ['widget']
      * @param pid passagePid 默认是 0 ， 如果不是故意覆盖已有的passage那么就填 0 即可
+     * @deprecated use `CodeExample/how-to-modify-sc2data.ts` instead
      */
     updatePassageData(
         name: string,
@@ -193,6 +194,7 @@ export class ModUtils {
         tags: string[] = [],
         pid: undefined | number = 0,
     ) {
+        console.warn('updatePassageData() is deprecated, use `CodeExample/how-to-modify-sc2data.ts` instead');
         const rootNode = this.pSC2DataManager.rootNode;
         const passageDataNodeList = this.pSC2DataManager.passageDataNodeList;
 
@@ -206,7 +208,7 @@ export class ModUtils {
         node.setAttribute('name', name);
         node.setAttribute('tags', tags?.join(' ') || '');
         // s.innerText = `:: Widgets ${T.name}${T.tags?.length > 0 ? ` [${T.tags.join(' ')}]` : ''}\n${T.content}\n`;
-        node.innerText = content;
+        node.textContent = content;
         rootNode.appendChild(node);
 
         this.pSC2DataManager.flushAfterPatchCache();
