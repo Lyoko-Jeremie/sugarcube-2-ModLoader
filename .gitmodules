@@ -80,6 +80,12 @@
 [submodule "mod/DoLHookWidget"]
 	path = mod/DoLHookWidget
 	url = https://github.com/Lyoko-Jeremie/DoLHookWidgetMod.git
+	branch = master
 [submodule "mod/TweePrefixPostfixAddon"]
 	path = mod/TweePrefixPostfixAddon
 	url = https://github.com/Lyoko-Jeremie/TweePrefixPostfixAddonMod.git
+	branch = master
+[submodule "mod/ModdedHairAddon"]
+	path = mod/ModdedHairAddon
+	url = https://github.com/Lyoko-Jeremie/DoL_ModdedHairAddon.git
+	branch = master

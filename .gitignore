@@ -30,6 +30,7 @@ src/insertTools/**/*.zip
 !mod/Diff3WayMerge
 !mod/ModdedClothesAddon
 !mod/ModdedFeatsAddon
+!mod/ModdedHairAddon
 !mod/ConflictChecker
 !mod/SweetAlert2Mod
 !mod/ModuleCssReplacer
