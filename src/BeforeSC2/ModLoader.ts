@@ -180,8 +180,20 @@ export class ModLoader {
         this.logger = this.gSC2DataManager.getModUtils().getLogger();
     }
 
+    /**
+     * 已读取的mod列表（加载但没有初始化）
+     * The mod list that already read (load but not init)
+     */
     private modReadCache: ModOrderContainer = new ModOrderContainer();
+    /**
+     * 已加载的mod列表（加载并完成初始化）
+     * The mod list that already loaded (load and init)
+     */
     private modCache: ModOrderContainer = new ModOrderContainer();
+    /**
+     * 已加载的Lazy mod列表（使用 `lazyRegisterNewMod` 加载但未完成初始化）
+     * The Lazy mod list that already loaded (load use `lazyRegisterNewMod` but not init)
+     */
     private modLazyCache: ModOrderContainer = new ModOrderContainer();
 
     // it recorded the do_initModInjectEarlyLoadInDomScript call
