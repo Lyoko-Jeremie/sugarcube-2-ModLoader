@@ -350,7 +350,7 @@ export class ModLoader {
             }
         }
 
-        this.gSC2DataManager
+        this.modReadCache = this.gSC2DataManager.getDependenceChecker().sortByDependency(this.modReadCache);
         await this.initModInjectEarlyLoadInDomScript();
         await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterInjectEarlyLoad');
         await this.triggerAfterModLoad();
