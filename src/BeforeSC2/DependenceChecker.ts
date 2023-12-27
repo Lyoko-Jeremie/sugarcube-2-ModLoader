@@ -37,7 +37,7 @@ export class DependenceChecker {
         // Step 1: Prepare initial indegrees
         const inDegree: Map<ModOrderItem, number> = new Map();
         items.forEach(item => {
-            let dependenciesCount = (item.mod.bootJson.dependenceInfo || []).filter((dep: any) => dep.resolved === true).length;
+            let dependenciesCount = (item.mod.bootJson.dependenceInfo || []).filter((dep: any) => dep.resolved === false).length;
             inDegree.set(item, dependenciesCount);
         });
 
@@ -54,6 +54,7 @@ export class DependenceChecker {
             let current = zeroIndegree.shift() as ModOrderItem;
 
             // Add node to the sorted list
+
             result.pushBackFast(current);
             this.log.log(`DependenceChecker.sortByDependency: Sort ${current.mod.name}`);
 

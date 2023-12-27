@@ -391,6 +391,15 @@ export class ModOrderContainer {
      * @param obj
      */
     pushBackFast(obj: ModOrderItem): boolean {
+        if (!this.container.has(obj.name)) {
+            this.container.set(obj.name, new Map<ModLoadFromSourceType, ModOrderItem>());
+        }
+        const m = this.container.get(obj.name)!;
+        m.set(obj.from, obj);
+        const ii = this.order.findIndex(T => T.name === obj.name && T.from === obj.from);
+        if (ii >= 0) {
+            this.order.splice(ii, 1);
+        }
         this.order.push(obj);
         this.checkData();
         return true;
