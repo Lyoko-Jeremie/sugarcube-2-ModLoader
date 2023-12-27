@@ -279,7 +279,13 @@ export class ModLoader {
             if (overwrite) {
                 this.modReadCache.deleteAll(T.modInfo.name);
             }
-            // // this is invalid
+            // 在这里进行前序依赖检查是无效且不必要的，由于modReadCache是已读取的mod列表，但不是最终的mod加载结果，
+            // 在mod加载过程中可以使用 `canLoadThisMod` 阻止单个mod的加载，或使用 `lazyRegisterNewMod` 插入mod，会最终的mod加载顺序与这里不一致
+            // this is a invalid and unnecessary check, because modReadCache is the mod list that already read, but not the final mod load result,
+            // in mod load progress, we can use `canLoadThisMod` to ban single mod load, or use `lazyRegisterNewMod` to insert mod,
+            // will make the final mod load order different with here.
+            // 但我们在这里进行一次检查可以简单确定加载列表是否有明显的错误
+            // but we can do a simply check here to make sure the load list have no obvious error
             this.gSC2DataManager.getDependenceChecker().checkFor(T.modInfo, [this.modReadCache]);
             this.modReadCache.pushBack(T, from);
             this.modReadCache.checkNameUniq();
