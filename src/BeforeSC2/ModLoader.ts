@@ -464,6 +464,7 @@ export class ModLoader {
 
     private async initModInjectEarlyLoadInDomScript() {
         let toLoadModeList = this.modReadCache.clone();
+        // TODO re-order mod list on there (impl mod re-order on there)
         this.modCache = new ModOrderContainer();
         while (toLoadModeList.size > 0) {
             const nowMod = toLoadModeList.popFront();
