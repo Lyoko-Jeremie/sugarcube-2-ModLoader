@@ -30,12 +30,81 @@ export class DependenceChecker {
         return new InfiniteSemVerApi();
     }
 
+    sortByDependency(modCaches: ModOrderContainer): ModOrderContainer {
+        let result = new ModOrderContainer();
+        let items = modCaches.get_Array();
+
+        // Step 1: Prepare initial indegrees
+        const inDegree: Map<ModOrderItem, number> = new Map();
+        items.forEach(item => {
+            let dependenciesCount = (item.mod.bootJson.dependenceInfo || []).filter((dep: any) => dep.resolved === true).length;
+            inDegree.set(item, dependenciesCount);
+        });
+
+        // Step 2: Prepare zero indegree list
+        let zeroIndegree: ModOrderItem[] = [];
+        inDegree.forEach((value, key) => {
+            if (value === 0) zeroIndegree.push(key);
+        });
+
+        // Step 3: Start the loop
+        while (zeroIndegree.length) {
+            // Dequeue node
+            // 使用队列行为，以尽量保持原本的顺序
+            let current = zeroIndegree.shift() as ModOrderItem;
+
+            // Add node to the sorted list
+            result.pushBackFast(current);
+            this.log.log(`DependenceChecker.sortByDependency: Sort ${current.mod.name}`);
+
+            // Now look at all nodes that this node pointed to
+            items.forEach(item => {
+                let dependencies = item.mod.bootJson.dependenceInfo;
+                if (dependencies) {
+                    dependencies.forEach((dep: any) => {
+                        if (dep.modName === current.mod.name) {
+                            // Decrease their indegree value
+                            let currentIndegree = inDegree.get(item) as number;
+                            inDegree.set(item, currentIndegree - 1);
+
+                            // If a node's input degree drops to zero, then add it to the list
+                            if (currentIndegree - 1 === 0) {
+                                zeroIndegree.push(item);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        // Step 4: Add remaining nodes with non-zero indegree in their original order
+        for (let item of items) {
+            if (inDegree.get(item) !== 0) {
+                result.pushBackFast(item);
+                this.log.log(`DependenceChecker.sortByDependency: Sort ${item.mod.name}`);
+            }
+        }
+
+
+
+        return result;
+    }
+
+    /**
+     * Checks if all dependencies of a given mod are satisfied.
+     * Note: this method is not pure.it'll change 'resolved' property in DependenceInfo.
+     * @param {ModInfo} mod - The mod to check dependencies for.
+     * @param {ModOrderContainer[]} modCaches - The array of mod cache containers.
+     *
+     * @returns {boolean} - Returns true if all dependencies are satisfied, otherwise false.
+     */
     checkFor(mod: ModInfo, modCaches: ModOrderContainer[]): boolean {
         let isOk = true;
         if (mod.bootJson.dependenceInfo) {
-            for (const d of mod.bootJson.dependenceInfo) {
+            for (let d of mod.bootJson.dependenceInfo) {
                 if (d.modName === 'GameVersion') {
                     // skip
+                    d.resolved = true;
                     continue;
                 }
                 if (d.modName === 'ModLoader') {
@@ -44,8 +113,10 @@ export class DependenceChecker {
                         this.log.error(`DependenceChecker.checkFor(${mod.bootJson.name}) not satisfies ModLoader: mod[${mod.bootJson.name}] need mod[${d.modName}] version[${d.version}] but find ModLoader[${this.gModUtils.version}].`);
                         isOk = false;
                     }
+                    d.resolved = true;
                     continue;
                 }
+                d.resolved = false;
                 const find: ModOrderItem[] = [];
                 for (const modCache of modCaches) {
                     const fr = modCache.getByName(d.modName);

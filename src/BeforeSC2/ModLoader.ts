@@ -103,6 +103,8 @@ export function checkModBootJsonAddonPlugin(v: any): v is ModBootJsonAddonPlugin
 export interface DependenceInfo {
     modName: string;
     version: string;
+    downloadDir: string;
+    resolved: boolean; //这是一个运行时变量，在完成checkDependence之后被置为 false，之后在 sortDependency 时被置为 true(拓扑排序)
 }
 
 export function checkDependenceInfo(v: any): v is DependenceInfo {
@@ -180,8 +182,11 @@ export class ModLoader {
         this.logger = this.gSC2DataManager.getModUtils().getLogger();
     }
 
+    //待加载的Mod列表
     private modReadCache: ModOrderContainer = new ModOrderContainer();
+    //已加载的Mod列表
     private modCache: ModOrderContainer = new ModOrderContainer();
+    //注册延迟加载的Mod列表
     private modLazyCache: ModOrderContainer = new ModOrderContainer();
 
     // it recorded the do_initModInjectEarlyLoadInDomScript call
@@ -344,6 +349,8 @@ export class ModLoader {
                     this.logger.error(`ModLoader loadTranslateData() unknown loadType: [${loadType}]`);
             }
         }
+
+        this.gSC2DataManager
         await this.initModInjectEarlyLoadInDomScript();
         await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterInjectEarlyLoad');
         await this.triggerAfterModLoad();

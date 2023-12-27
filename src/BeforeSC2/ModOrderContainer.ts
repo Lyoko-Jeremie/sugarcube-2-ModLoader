@@ -387,6 +387,17 @@ export class ModOrderContainer {
     }
 
     /**
+     * 插入一个元素，这相对于上面的版本忽略了ModOrderItem的构建，并 Assert 不存在同名元素。
+     * @param obj
+     */
+    pushBackFast(obj: ModOrderItem): boolean {
+        this.order.push(obj);
+        this.checkData();
+        return true;
+    }
+
+
+    /**
      * O(2n)
      */
     insertReplace(zip: ModZipReader, from: ModLoadFromSourceType): boolean {
