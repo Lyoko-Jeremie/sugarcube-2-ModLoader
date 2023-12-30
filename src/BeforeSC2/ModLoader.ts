@@ -21,6 +21,7 @@ import {
 } from "./ModOrderContainer";
 import {LRUCache} from 'lru-cache';
 import JSZip from 'jszip';
+import {UnresolvedDependency} from "./DependenceChecker";
 
 export interface IModImgGetter {
     /**
@@ -288,7 +289,9 @@ export class ModLoader {
             this.gSC2DataManager.getDependenceChecker().checkFor(T.modInfo, [this.modReadCache]);
             this.modReadCache.pushBack(T, from);
             this.modReadCache.checkNameUniq();
+            return {isSuccess: true, isOverwrite: overwrite};
         }
+        return {isSuccess: false, isOverwrite: false};
     }
 
     public async loadMod(loadOrder: ModDataLoadType[]): Promise<boolean> {
@@ -349,8 +352,35 @@ export class ModLoader {
                     this.logger.error(`ModLoader loadTranslateData() unknown loadType: [${loadType}]`);
             }
         }
-
-        this.modReadCache = this.gSC2DataManager.getDependenceChecker().sortByDependency(this.modReadCache);
+        for(;;) {
+            const {sortedList, unresolvedList} =
+                this.gSC2DataManager.getDependenceChecker().sortByDependency(this.modReadCache);
+            let loadedCount = 0;
+            if (unresolvedList.size > 0)
+            {
+                //尝试通过 downloadDir 安装缺失的依赖
+                if (!this.modRemoteLoader) {
+                    this.modRemoteLoader = new RemoteLoader(this.modLoadControllerCallback);
+                }
+                try {
+                    let loadedMod =
+                        await this.modRemoteLoader.loadUnresolvedDependencies(unresolvedList) || [];
+                    loadedMod.forEach(T => {
+                        const {isSuccess, isOverwrite} =
+                            this.addModeReadZip(T, ModLoadFromSourceType.Remote);
+                        if (isSuccess && !isOverwrite)
+                            loadedCount++;
+                    });
+                } catch (e: Error | any) {
+                    console.error(e);
+                    this.logger.error(`ModLoader loadMod() RemoteLoader load error: ${e?.message ? e.message : e}`);
+                }
+            }
+            this.modReadCache = sortedList;
+            // 将 sortedList 赋值给 this.modReadCache
+            // 如果没有任何mod能非 Overwrite 地加载，那么退出这个流程，不再尝试解决依赖。
+            if (loadedCount == 0) break;
+        }
         await this.initModInjectEarlyLoadInDomScript();
         await this.gSC2DataManager.getAddonPluginManager().triggerHook('afterInjectEarlyLoad');
         await this.triggerAfterModLoad();

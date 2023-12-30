@@ -10,6 +10,12 @@ import {
 import {findIndex} from 'lodash';
 import {ModOrderContainer, ModOrderItem} from "./ModOrderContainer";
 
+export interface UnresolvedDependency
+{
+    modName: string;
+    downloadDir: string;
+}
+
 export class InfiniteSemVerApi {
     parseRange = parseRange;
     parseVersion = parseVersion;
@@ -30,9 +36,14 @@ export class DependenceChecker {
         return new InfiniteSemVerApi();
     }
 
-    sortByDependency(modCaches: ModOrderContainer): ModOrderContainer {
+    static isStringValid(str: string | null | undefined): boolean {
+        return str !== null && str !== undefined && str.trim().length > 0;
+    }
+
+    sortByDependency(modCaches: ModOrderContainer): { sortedList: ModOrderContainer, unresolvedList: Map<string, UnresolvedDependency>} {
         let result = new ModOrderContainer();
         let items = modCaches.get_Array();
+        let unresolved: Map<string,UnresolvedDependency> = new Map();
 
         // Step 1: Prepare initial indegrees
         const inDegree: Map<ModOrderItem, number> = new Map();
@@ -63,10 +74,11 @@ export class DependenceChecker {
                 let dependencies = item.mod.bootJson.dependenceInfo;
                 if (dependencies) {
                     dependencies.forEach((dep: any) => {
-                        if (dep.modName === current.mod.name) {
+                        if (dep.modName === current.mod.name && dep.resolved == false) {
                             // Decrease their indegree value
                             let currentIndegree = inDegree.get(item) as number;
                             inDegree.set(item, currentIndegree - 1);
+                            dep.resolved = true;
 
                             // If a node's input degree drops to zero, then add it to the list
                             if (currentIndegree - 1 === 0) {
@@ -82,13 +94,27 @@ export class DependenceChecker {
         for (let item of items) {
             if (inDegree.get(item) !== 0) {
                 result.pushBackFast(item);
-                this.log.log(`DependenceChecker.sortByDependency: Sort ${item.mod.name}`);
+                this.log.log(`DependenceChecker.sortByDependency: Sort(Missing) ${item.mod.name}`);
+                item.mod.bootJson.dependenceInfo?.forEach(dep=>{
+                    if (!dep.resolved)
+                    {
+                        this.log.log(`DependenceChecker.sortByDependency: Unresolved ${dep.modName}`);
+                        if (!DependenceChecker.isStringValid(unresolved.get(dep.modName)?.downloadDir))
+                        {
+                            //TODO: 基于 semver 选择合适的下载地址
+                            unresolved.set(dep.modName, {
+                                modName: dep.modName,
+                                downloadDir: dep.downloadDir
+                            });
+                        }
+                    }
+                });
             }
         }
 
 
 
-        return result;
+        return {sortedList: result, unresolvedList: unresolved};
     }
 
     /**

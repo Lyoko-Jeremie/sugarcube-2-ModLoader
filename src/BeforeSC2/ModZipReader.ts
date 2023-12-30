@@ -7,6 +7,7 @@ import {getLogFromModLoadControllerCallback, LogWrapper, ModLoadControllerCallba
 import {extname} from "./extname";
 import {ReplacePatcher, checkPatchInfo} from "./ReplacePatcher";
 import JSON5 from 'json5';
+import {UnresolvedDependency} from "./DependenceChecker";
 
 export interface Twee2PassageR {
     name: string;
@@ -837,6 +838,54 @@ export class RemoteLoader extends LoaderBase {
             return Promise.resolve(true);
         }
         return Promise.resolve(false);
+    }
+
+    public static blobToBase64(blob: Blob): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    /**
+     * Downloads unresolved dependencies.
+     *
+     * @param {Map<string, UnresolvedDependency>} pendingDependencies - A map of pending dependencies where the key is the dependency ID and the value is the unresolved dependency object
+     *.
+     * @returns {Promise<boolean>} - 返回 true，如果至少一个 Dependency 被成功下载并安装
+     */
+    public async loadUnresolvedDependencies(pendingDependencies: Map<string, UnresolvedDependency>) : Promise<ModZipReader[]>
+    {
+        let loadedMod: ModZipReader[] = [];
+        for (let value of pendingDependencies.values()) {
+            let downloadPath = value.downloadDir;
+            if (downloadPath !== null && downloadPath !== undefined && downloadPath.trim().length > 0)
+            {
+                try {
+                    // CORS 等问题需要提供下载地址的人自己解决
+                    const m = await fetch(downloadPath)
+                        .then(T => T.blob())
+                        .then(async T => {
+                            this.log.logInfo(`RemoteLoader.loadUnresolvedDependencies: Downloaded ${value.modName}.`);
+                            const modBase64String = await RemoteLoader.blobToBase64(T);
+                            IndexDBLoader.addMod(value.modName, modBase64String);
+                            return JSZip.loadAsync(T);
+                        })
+                        .then(zip => {
+                            return new ModZipReader(zip, this, this.log);
+                        });
+                    if (await m.init()) {
+                        this.modList.push(m);
+                        loadedMod.push(m);
+                    }
+                } catch (E) {
+                    console.error(E);
+                }
+            }
+        }
+        return Promise.resolve(loadedMod);
     }
 
 }
