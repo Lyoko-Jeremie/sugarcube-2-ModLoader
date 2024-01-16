@@ -24,12 +24,12 @@ const sc: SC2DataInfo = scOld.cloneSC2DataInfo();
     // note that , the code not include the passage name `:: PassageName` line
     pp.content.replace('aaaa', 'bbbb');
 
-    // similar like the passage, you can modify the js code
+    // similar like above, you can modify the js code
     sc.scriptFileItems.map.get('scriptName.js')?.content.replace('aaaa', 'bbbb');
 
     {
         // add new passage
-        // the passage name must not exist
+        // the passage name must not exist, otherwise you will overwrite it
         sc.passageDataItems.map.set('NewPassageName', {
             name: 'NewPassageName',     // the passage name, must same as the key of `map`
             id: 0,      // set it `0` if a new passage
