@@ -31,7 +31,7 @@ Since SugarCube2 is a fully synchronous rendering engine, to modify the game scr
 
 After carefully reading the source code of SugarCube2, we can find that the startup code of SugarCube2 is located in a `jQuery(() => {})` closure function in `sugarcube.js#L111`, which starts after the webpage is loaded. This means that if we can make some modifications in this closure and insert our startup script, then we can let ModLoader start before SugarCube2 starts.
 Considering the design requirements of ModLoader, we find that ModLoader needs to perform a large number of asynchronous operations, including loading mods from remote, reading mod zip files from localStorage/indexDB, reading mod information from zip files, etc.
-Therefore, we need to insert a moment before the startup code of SugarCube2 that allows us to execute asynchronous code. After reviewing the source code of SugarCube2 and jQuery, we find that the only and most reliable method is to add a Promise and wrap the original startup code of SugarCube2, so that the startup code of SugarCube2 can wait for our asynchronous operations to complete.
+Therefore, we need to insert a Promise before the startup code of SugarCube2 that allows us to execute asynchronous code. After reviewing the source code of SugarCube2 and jQuery, we find that the only and most reliable method is to add a Promise and wrap the original startup code of SugarCube2, so that the startup code of SugarCube2 can wait for our asynchronous operations to complete.
 
 ## 2.2 How ModLoader Initializes and Starts
 

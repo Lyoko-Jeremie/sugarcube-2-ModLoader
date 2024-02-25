@@ -45,7 +45,7 @@ SugarCube2是一个全同步的渲染引擎，它以完全同步（没有任何�
 
 ## 2.3 Mod 加载执行过程 和 ModLoader 的启动过程
 
-由startInit()调用[ModLoader.loadMod()](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/blob/ac0bb6c59abd93a2a784f2a574f031861bcf269f/src/BeforeSC2/ModLoader.ts#L307)，
+由`startInit()`调用[ModLoader.loadMod()](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/blob/ac0bb6c59abd93a2a784f2a574f031861bcf269f/src/BeforeSC2/ModLoader.ts#L307)，
 开始执行Mod的加载过程。
 
 
@@ -66,7 +66,7 @@ Mod的加载总的来说涉及以下几个步骤：
 5. 调用 [initModEarlyLoadScript()](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/blob/ac0bb6c59abd93a2a784f2a574f031861bcf269f/src/BeforeSC2/ModLoader.ts#L517) 执行所有 `scriptFileList_earlyload` 中的*单行指令*。要特别注意的是，此处使用的是 [JsPreloader.JsRunner()](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/blob/ac0bb6c59abd93a2a784f2a574f031861bcf269f/src/BeforeSC2/JsPreloader.ts#L117)，这个执行器的真实实现是将原始的js文件中的代码包装到一个形如 `(async () => {return ${jsCode}\n})()` 的函数中，并等待函数返回的异步调用结束，这个代码由于会在整个文件的第一行开头添加一个`return`指令，按照JS的`return`的语义，此处只会执行js文件中第一行的代码，或者从第一行开始的闭包函数。
 6. 在调用 `initModEarlyLoadScript()` 的过程中，会不断调用 [tryInitWaitingLazyLoadMod()]() 来尝试检查当前是否有Mod追加了需要懒加载的Mod，并加载这些懒加载Mod。对于加密mod的实现就是使用了懒加载mod的特性，在此处解密并释放被加载mod。
 7. 要特别注意的是，懒加载的Mod由于在此处才会读取到zip文件，故懒加载的mod的`scriptFileList_inject_early`和`scriptFileList_earlyload`会在[此处](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/blob/ac0bb6c59abd93a2a784f2a574f031861bcf269f/src/BeforeSC2/ModLoader.ts#L745)同时执行。且在此过程中会不断触发`canLoadThisMod`钩子。
-8. 在完成以上的Mod本体的JS脚本的加载和执行工作后，会触发AddonPluginHookPoint.afterEarlyLoad`钩子
+8. 在完成以上的Mod本体的JS脚本的加载和执行工作后，会触发`AddonPluginHookPoint.afterEarlyLoad`钩子
 9. 调用 [registerMod2Addon()](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/blob/ac0bb6c59abd93a2a784f2a574f031861bcf269f/src/BeforeSC2/ModLoader.ts#L384) 来将所有在`boot.json`中声明使用了`addonPlugin` 的Mod都注册到对应的Addon Mod去。（这些Addon Mod必须在此之前调用 `AddonPluginManager.registerAddonPlugin` 将自己注册为一个Addon Mod）。
 10. 此时Addon Mod会从 `AddonPluginHookPointExMustImplement.registerMod` 回调函数钩子上收到mod的注册回调，此时Addon Mod就可以根据自己的设计功能来完成记录或者执行操作等等。
 11. 触发 `AddonPluginHookPoint.afterRegisterMod2Addon` 钩子
