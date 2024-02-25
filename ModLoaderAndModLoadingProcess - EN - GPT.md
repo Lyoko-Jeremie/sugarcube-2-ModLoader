@@ -1,5 +1,9 @@
 ModLoader Operation Principles and Mod Loading Process
 
+
+# **!!! This File Translate from Chinese to English by GPT-4, So it may have some mistakes. !!!**
+
+
 # 1. Premise
 SugarCube2 is a fully synchronous rendering engine that dynamically translates (assembles) game scripts (such as twee) into HTML in a completely synchronous manner (without any asynchronous operations) and displays them.
 
