@@ -210,7 +210,7 @@ export class AddonPluginManager implements Sc2EventTracerCallback {
     }
 
     /**
-     * call by ModLoader (inner use)
+     * call by ModLoaderGui (inner use)
      * @param zip
      */
     async exportDataZip(zip: JSZip): Promise<JSZip> {

@@ -293,11 +293,15 @@ export class ModLoadController implements ModLoadControllerCallback {
         }
     }
 
+    /**
+     * call by ModLoaderGui (inner use)
+     * @param zip
+     */
     async exportDataZip(zip: JSZip): Promise<JSZip> {
         for (const [id, hook] of this.lifeTimeCircleHookTable) {
             try {
                 if (hook.exportDataZip) {
-                    await hook.exportDataZip(zip);
+                    zip = await hook.exportDataZip(zip);
                 }
             } catch (e: any | Error) {
                 console.error('ModLoadController exportDataZip()', e);
