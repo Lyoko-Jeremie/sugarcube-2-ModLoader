@@ -27,6 +27,10 @@ export interface IModImgGetter {
      * @return Promise<string>   base64 img string
      */
     getBase64Image(lruCache?: IModImgGetterLRUCache): Promise<string>;
+
+    imgCache?: string;
+
+    forceCache(): Promise<any>;
 }
 
 export const StaticModImgLruCache = new LRUCache<string, string>({
@@ -53,9 +57,16 @@ export class ModImgGetterDefault implements IModImgGetter {
     ) {
     }
 
-    // imgCache?: string;
+    imgCache?: string;
+
+    async forceCache() {
+        this.imgCache = await this.getBase64Image();
+    }
 
     async getBase64Image(lruCache?: IModImgGetterLRUCache) {
+        if (this.imgCache) {
+            return this.imgCache;
+        }
         const cache = (lruCache ?? StaticModImgLruCache).get(this.imgPath);
         if (cache) {
             return cache;
