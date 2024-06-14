@@ -578,6 +578,43 @@ ModLoader会从4个地方加载mod
 
 按照1234的顺序加载Mod，如果有同名Mod，后加载的会替代先加载的
 
+### 有关 `modList.json`
+
+这个 ModLoader 项目文件中的 modlist 只适用于预加载进html的mod【local】。
+而对于远程加载的【remote】，modList.json 文件的格式与项目中的这个相同，唯一需要注意的是路径需要满足 fetch 的路径语法。远程加载的源码参见：
+
+https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/blob/dffd87657683b29ee663ac8279dbec8ce6611466/src/BeforeSC2/ModZipReader.ts#L698-L733
+
+其中modFileZipPath
+
+https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/blob/dffd87657683b29ee663ac8279dbec8ce6611466/src/BeforeSC2/ModZipReader.ts#L714
+
+就是在 `modList.json` 文件中列出的路径，`RemoteLoader` 会直接使用fetch访问服务器的这个路径来下载zip文件并加载mod。
+
+
+举例：
+
+```json5
+[
+  "aaa.mod.zip",  // 从html同一目录加载 aaa.mod.zip
+  "/rrr.mod.zip",   // 从web服务器根目录加载 rrr.mod.zip
+  "./ddd/ccc.mod.zip",  // 从html所在目录下的ddd文件夹中加载 ccc.mod.zip
+  "../../uuu.mod.zip",  // 从html所在目录的父目录的父目录加载 uuu.mod.zip
+  "http://aaa.bbb.ccc/mmm.mod.zip"  // 从网站 aaa.bbb.ccc 加载 mmm.mod.zip
+]
+```
+
+---
+
+有关 `modList.json` 的设计是这样的。
+* 对于需要打包自己的“整合包”的用户，可以直接在打包时指定一个自定义的 `modList.json` 来将想要的mod全部打包进html。【local】
+* 对于自己设立了web服务器的用户，可以在web服务器上的与html同一目录下放置一个`modList.json`文件，这样在启动时就会由`RemoteLoader`去加载这个`modList.json`文件中指定的mod。【remote】
+* 对于终端用户（玩家），在打开游戏后就会默认得到以上两个【local】+【remote】的mod，玩家自己可以通过mod管理器的界面再加载自己想要的mod。【IndexDB】
+
+以上三个中，如果存在同名mod，则会存在覆盖关系，【remote】会覆盖【local】中的同名mod，而【IndexDB】会覆盖【local】+【remote】的同名mod。  
+也就是说，如果【local】和【remote】都存在mod A ，则最终生效的是【remote】的mod A。如果用户再自己加载一个mod A，则最终生效的是用户加载的这个mod A。
+
+
 ### Mod、ModLoader、引擎、游戏 三者的结构
 
 ModLoader和游戏的关系大约是 `((sc2引擎 + 游戏本体)[游戏] + (ModLoader + Mod)[Mod框架])` 这个结构
