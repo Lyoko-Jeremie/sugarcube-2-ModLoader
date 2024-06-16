@@ -89,3 +89,7 @@
 	path = mod/ModdedHairAddon
 	url = https://github.com/Lyoko-Jeremie/DoL_ModdedHairAddon.git
 	branch = master
+[submodule "mod/DoLLinkButtonFilter"]
+	path = mod/DoLLinkButtonFilter
+	url = https://github.com/Lyoko-Jeremie/DoLLinkButtonFilter.git
+	branch = master

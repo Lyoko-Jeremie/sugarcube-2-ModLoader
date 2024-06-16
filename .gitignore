@@ -44,5 +44,6 @@ src/insertTools/**/*.zip
 !mod/BeautySelectorAddon
 !mod/DoLTimeWrapperAddon
 !mod/DoLHookWidget
+!mod/DoLLinkButtonFilter
 mod
 
