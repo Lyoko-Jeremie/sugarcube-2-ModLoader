@@ -841,7 +841,8 @@ el.src = 'aaaa/bbbb/cccc/dddd.jpg';
 // 使用以下这段代码即可以同步的方式拦截并替换为从 ModLoader 中加载的图像
 if (typeof window.modSC2DataManager !== 'undefined' &&
 	typeof window.modSC2DataManager.getHtmlTagSrcHook?.()?.doHook !== 'undefined') {
-	if (tagName === 'img' && !el.getAttribute('src')?.startsWith('data:')) {
+    // 如果 src 已经是 "data:" 开头的 URI ，则不需要处理
+	if (el.tagName === 'img' && !el.hasAttribute('ML-src') && !el.getAttribute('src')?.startsWith('data:')) {
 		// need check the src is not "data:" URI
 		el.setAttribute('ML-src', el.getAttribute('src'));
 		el.removeAttribute('src');
@@ -850,6 +851,8 @@ if (typeof window.modSC2DataManager !== 'undefined' &&
 	}
 }
 
+// 继续使用 el 即可，图片会在稍后加载完成后自动显示
+document.body.appendChild(el);
 ```
 
 方法 2 、 使用 ModLoader 提供的接口直接加载图片：
