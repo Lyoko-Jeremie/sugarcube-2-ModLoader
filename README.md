@@ -820,6 +820,56 @@ if (modAInfo && modAInfo.modRef) {
 
 ```
 
+---
+
+## 如何从 ModLoader 加载图片
+
+由于 ModLoader 体系下的 Mod 中的图片全都在内存中，所以如果需要从 ModLoader 加载图片，需要使用 ModLoader 提供的接口来加载图片。
+
+使用 ModLoader 的接口加载图片时有一个需要注意的地方， ModLoader 查询并读取图片的操作由于受到 zip 文件读取操作的影响，是个异步过程，故需要使用 Promise 来等待返回图片数据
+
+
+以下是两种加载图片的方法：
+
+方法 1 、对任意一个已经存储了图片 src 的 HtmlImageElement 节点进行拦截并使用 ModLoader 加载图片：
+
+```javascript
+// 假设我们有一个 HtmlImageElement ，我们需要让 ModLoader 加载这个 HtmlImageElement 的 src 指向的图片
+const el = document.createElement('img');
+el.src = 'aaaa/bbbb/cccc/dddd.jpg';
+
+// 使用以下这段代码即可以同步的方式拦截并替换为从 ModLoader 中加载的图像
+if (typeof window.modSC2DataManager !== 'undefined' &&
+	typeof window.modSC2DataManager.getHtmlTagSrcHook?.()?.doHook !== 'undefined') {
+	if (tagName === 'img' && !el.getAttribute('src')?.startsWith('data:')) {
+		// need check the src is not "data:" URI
+		el.setAttribute('ML-src', el.getAttribute('src'));
+		el.removeAttribute('src');
+		// call img loader on there
+		window.modSC2DataManager.getHtmlTagSrcHook().doHook(el).catch(E => console.error(E));
+	}
+}
+
+```
+
+方法 2 、 使用 ModLoader 提供的接口直接加载图片：
+
+```javascript
+// 直接传入图片路径，返回一个 Promise ，并异步等待图片数据
+// async-await 语法
+const imageData = await window.modSC2DataManager.getHtmlTagSrcHook().requestImageBySrc('图片路径');
+// Promise 语法
+window.modSC2DataManager.getHtmlTagSrcHook().requestImageBySrc('图片路径').then(imageData => {
+    // ......
+});
+
+```
+
+其中 imageData 在读取成功时会返回一个 `data:image/png;base64,...` 的字符串，可以直接在网页中显示
+
+如果读取失败，会返回undefined，代表无法在 ModLoader 管理的所有Mod中找到这个路径对应的图片，此时需要自行判断处理方法，例如继续使用原始的图片路径来从远程加载图片
+
+要注意的是， ModLoader 加载图片时是逐个 Mod 顺序查询的，可以理解为以 Mod 的加载为顺序形成层叠关系，当有多个 Mod 都能提供同一路径的图片时，只会返回第一个查找到的 Mod 提供的图片
 
 
 
