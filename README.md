@@ -758,6 +758,73 @@ open file and play it.
 
 ---
 
+## Mod 间联动
+
+Mod 间联动是指一个Mod可以通过ModLoader提供的接口来访问其他Mod的数据，以实现Mod之间的协作。
+
+### 检测Mod是否存在
+
+可以使用以下几个 API 来检测Mod是否存在，并访问Mod文件或ML已经解析的数据（不包括mod的js运行时内存对象）
+
+```javascript
+// 获取所有Mod的名字列表
+//      返回 string[]
+window.modUtils.getModListName()
+// 通过mod名字获取Mod
+//      找到返回 ModInfo ，找不到返回 undefined
+window.modUtils.getMod('mod name')
+// 通过mod名字获取ModZip文件
+//      找到返回 ModZipReader ，找不到返回 undefined
+window.modUtils.getModZip('mod name')
+// 获取当前正在执行脚本的Mod名字，常用来获取自己的名字
+//      如果有Mod的js脚本正在运行，返回当前Mod的名字 string ，其他情况下返回 undefined
+// 常见于需要代码复用的Mod模板中
+window.modUtils.getNowRunningModName()
+```
+
+### Mod 间主动交互
+
+如果需要实现js 级的 Mod 间互操作 (例如Mod B调用Mod A的函数)，可以使用以下特性
+
+```javascript
+// ===== Mod A (先加载) ======
+// 获取当前运行时上下文的Mod名字，这里因为在Mod A的上下文中运行，故一定会获取到Mod A的名字
+const modAName = window.modUtils.getNowRunningModName();
+// 使用Mod A的名字获取Mod A的信息（也就是自己的信息）
+const modAInfo = window.modUtils.getMod(modAName);
+// 创建并保存一个对象到 `ModInfo::modRef` 来暴露Mod自己的接口。  ( `modRef` 默认情况下是 undefined )
+// modAInfo.modRef 可以是一个对象，可以在这里添加Mod A主动暴露给其他Mod来与Mod A进行交互的功能
+// 例如提供一个切换Mod A中状态的函数，或者读取Mod A中数据的接口
+modAInfo.modRef = {
+    // 一个函数
+    funcA: () => {
+        console.log('modA funcA');
+    },
+    // 一个对象
+    objA: {
+        a: 1,
+        b: 2,
+    }
+};
+
+// ===== Mod B (后加载) ======
+// 以指定的Mod名字获取Mod A的信息
+const modAInfo = window.modUtils.getMod('指定Mod A Name');
+// 可能因为注册顺序或没有加载等的原因，可能获取不到Mod A，所以要先确定获取操作的返回值是否存在
+// 如果存在，再判断 `modAInfo.modRef` 是否已经注册
+// 此时才可以通过 modAInfo.modRef 来访问Mod A的数据
+if (modAInfo && modAInfo.modRef) {
+    modAInfo.modRef.funcA();
+    console.log(modAInfo.modRef.objA);
+}
+
+```
+
+
+
+
+---
+
 ## TODO
 
 - [x] 安全模式 Safe Mode   
