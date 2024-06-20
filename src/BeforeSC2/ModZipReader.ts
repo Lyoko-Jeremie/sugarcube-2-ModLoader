@@ -1,5 +1,5 @@
 import JSZip from "jszip";
-import {every, get, has, isArray, isString} from "lodash";
+import {every, get, has, isArray, isString, uniq} from "lodash";
 import {get as keyval_get, set as keyval_set, del as keyval_del, createStore, UseStore, setMany} from 'idb-keyval';
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {checkDependenceInfo, checkModBootJsonAddonPlugin, ModBootJson, ModImgGetterDefault, ModInfo} from "./ModLoader";
@@ -669,6 +669,31 @@ export class IndexDBLoader extends LoaderBase {
         }
 
         return Promise.resolve(true);
+    }
+
+    /**
+     * @param modeList must have same items as the list in listMod()
+     */
+    static async reorderModeList(modeList: string[]) {
+        const oldList = await IndexDBLoader.listMod();
+        if (!oldList) {
+            console.error('ModLoader ====== IndexDBLoader reorderModeList() oldList Invalid');
+            return;
+        }
+        if (oldList.length !== modeList.length) {
+            console.error('ModLoader ====== IndexDBLoader reorderModeList() oldList.length !== modeList.length');
+            return;
+        }
+        if (uniq(modeList).length !== modeList.length) {
+            console.error('ModLoader ====== IndexDBLoader reorderModeList() modeList has duplicate items. invalid');
+            return;
+        }
+        if (!oldList.every((T, i) => modeList.includes(T))) {
+            console.error('ModLoader ====== IndexDBLoader reorderModeList() oldList !includes() modeList');
+            return;
+        }
+        await keyval_set(IndexDBLoader.modDataIndexDBZipList, JSON.stringify(modeList), createStore(IndexDBLoader.dbName, IndexDBLoader.storeName));
+        console.log('ModLoader ====== IndexDBLoader reorderModeList() done');
     }
 
     static async listMod() {
