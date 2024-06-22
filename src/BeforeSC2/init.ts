@@ -1,7 +1,8 @@
+import 'core-js';
+import './Utils/LazyIteratorAdaptor';
 import {SC2DataManager} from "./SC2DataManager";
 import {getGlobal} from "./getGlobal";
 // import {Inject4Jquery} from "./JqueryInjector";
-import './Utils/LazyIteratorAdaptor';
 
 
 console.log('getGlobal()', getGlobal());
