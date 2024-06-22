@@ -118,3 +118,14 @@ LazyIteratorAdaptor.reduce([1, 2, 3, 4, 5].values(), (acc, v) => acc + v, 0); //
 // console.log('window.LazyIteratorAdaptor = LazyIteratorAdaptor');
 // @ts-ignore
 window.LazyIteratorAdaptor = LazyIteratorAdaptor;
+
+;(() => {
+    try {
+        // test if it is working (maybe on chrome)
+        // @ts-ignore
+        [1, 2, 3, 4, 5].values().reduce((acc, v) => acc + v, 0);
+    } catch (e) {
+        // need patch it (maybe in firefox)
+    }
+})();
+
