@@ -21,7 +21,7 @@
   "packageManager": "yarn@3.4.1",
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
-    "core-js": "^3.33.2",
+    "core-js": "^3.37.1",
     "idb-keyval": "^6.2.1",
     "jquery": "^3.7.1",
     "json5": "^2.2.3",
