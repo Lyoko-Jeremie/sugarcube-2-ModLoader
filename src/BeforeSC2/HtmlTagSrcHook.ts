@@ -58,6 +58,7 @@ export class HtmlTagSrcHook {
                 this.logger.error(`[HtmlTagSrcHook] doHookCallback: call hookKey[${hookKey}] error [${e?.message ? e.message : e}]`);
             }
         }
+        // console.log('[HtmlTagSrcHook] doHook: cannot handing on hookReturnModeTable of the element', [el, el.outerHTML]);
         for (const [hookKey, hook] of this.hookTable) {
             try {
                 if (await hook(el, mlSrc, field)) {
@@ -68,7 +69,9 @@ export class HtmlTagSrcHook {
                 this.logger.error(`[HtmlTagSrcHook] doHook: call hookKey[${hookKey}] error [${e?.message ? e.message : e}]`);
             }
         }
+        // console.log('[HtmlTagSrcHook] doHook: cannot handing on hookTable of the element', [el, el.outerHTML]);
         // console.log('[HtmlTagSrcHook] doHook: cannot handing the element', [el, el.outerHTML]);
+        el.setAttribute('ML-src_replace_failed', '1');
         // if no one can handle the element, do the default action
         // recover the [field]
         el.setAttribute(field, mlSrc);
