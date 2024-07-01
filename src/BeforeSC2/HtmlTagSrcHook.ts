@@ -37,6 +37,19 @@ export class HtmlTagSrcHook {
     }
 
     public async doHook(el: HTMLImageElement | HTMLElement, field: string = 'src'): Promise<boolean> {
+        /*
+         * example:
+         * ```typescript
+         * const node = document.createElement('img');
+         * node.src = 'xxx/xxx/xxx.png';
+         * if (node.tagName.toLowerCase() === 'img' && !node.getAttribute('src')?.startsWith('data:')) {
+         *     // need check the src is not "data:" URI
+         *     node.setAttribute('ML-src', node.getAttribute('src')!);
+         *     node.removeAttribute('src');
+         *     window.modSC2DataManager.getHtmlTagSrcHook().doHook(node).catch(E => console.error(E));
+         * }
+         * ```
+         */
         // console.log('[HtmlTagSrcHook] doHook: handing the element', [el, el.outerHTML]);
         const mlSrc = el.getAttribute(`ML-${field}`);
         if (!mlSrc) {
