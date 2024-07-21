@@ -93,3 +93,7 @@
 	path = mod/DoLLinkButtonFilter
 	url = https://github.com/Lyoko-Jeremie/DoLLinkButtonFilter.git
 	branch = master
+[submodule "mod/HookMacroRng"]
+	path = mod/HookMacroRng
+	url = https://github.com/Lyoko-Jeremie/DoLHookMacroRng.git
+	branch = master
