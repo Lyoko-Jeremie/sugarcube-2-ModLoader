@@ -374,6 +374,20 @@ jobs:
           source: ${{ github.workspace }}/mod/DoLLinkButtonFilter/DoLLinkButtonFilter.mod.zip
           target: ${{ github.workspace }}/out
 
+      - name: Build HookMacroRng
+        working-directory: ${{ github.workspace }}/mod/HookMacroRng
+        run: |
+          cd ${{ github.workspace }}/mod/HookMacroRng
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Copy HookMacroRng
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/HookMacroRng/HookMacroRng.mod.zip
+          target: ${{ github.workspace }}/out
+
       - name: Copy dist-BeforeSC2
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
