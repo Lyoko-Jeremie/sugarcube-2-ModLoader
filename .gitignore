@@ -46,5 +46,6 @@ src/insertTools/**/*.zip
 !mod/DoLHookWidget
 !mod/DoLLinkButtonFilter
 !mod/HookMacroRng
+!mod/ModSubUiAngularJs
 mod
 

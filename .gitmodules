@@ -97,3 +97,6 @@
 	path = mod/HookMacroRng
 	url = https://github.com/Lyoko-Jeremie/DoLHookMacroRng.git
 	branch = master
+[submodule "mod/ModSubUiAngularJs"]
+	path = mod/ModSubUiAngularJs
+	url = https://github.com/Lyoko-Jeremie/ModSubUiAngularJs
