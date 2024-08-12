@@ -186,57 +186,57 @@ export class SC2DataManager {
         return this.modLoader;
     }
 
-    private passageTracer; // = new PassageTracer(this.thisWin);
+    private passageTracer: PassageTracer; // = new PassageTracer(this.thisWin);
 
-    getPassageTracer() {
+    getPassageTracer(): PassageTracer {
         return this.passageTracer;
     }
 
-    private languageManager; // = new LanguageManager(this.thisWin, this);
+    private languageManager: LanguageManager; // = new LanguageManager(this.thisWin, this);
 
-    getLanguageManager() {
+    getLanguageManager(): LanguageManager {
         return this.languageManager;
     }
 
-    private sc2EventTracer; // = new Sc2EventTracer(this.thisWin, this);
+    private sc2EventTracer: Sc2EventTracer; // = new Sc2EventTracer(this.thisWin, this);
 
-    getSc2EventTracer() {
+    getSc2EventTracer(): Sc2EventTracer {
         return this.sc2EventTracer;
     }
 
-    private jsPreloader; // = new JsPreloader(this, this.modUtils, this.thisWin);
+    private jsPreloader: JsPreloader; // = new JsPreloader(this, this.modUtils, this.thisWin);
 
-    getJsPreloader() {
+    getJsPreloader(): JsPreloader {
         return this.jsPreloader;
     }
 
-    private addonPluginManager; // = new AddonPluginManager(this, this.getModLoadController());
+    private addonPluginManager: AddonPluginManager; // = new AddonPluginManager(this, this.getModLoadController());
 
-    getAddonPluginManager() {
+    getAddonPluginManager(): AddonPluginManager {
         return this.addonPluginManager;
     }
 
-    private sC2JsEvalContext; // = new SC2JsEvalContext(this);
+    private sC2JsEvalContext: SC2JsEvalContext; // = new SC2JsEvalContext(this);
 
-    getSC2JsEvalContext() {
+    getSC2JsEvalContext(): SC2JsEvalContext {
         return this.sC2JsEvalContext;
     }
 
-    private dependenceChecker; // = new DependenceChecker(this, this.getModUtils());
+    private dependenceChecker: DependenceChecker; // = new DependenceChecker(this, this.getModUtils());
 
-    getDependenceChecker() {
+    getDependenceChecker(): DependenceChecker {
         return this.dependenceChecker;
     }
 
-    private htmlTagSrcHook; // = new HtmlTagSrcHook(this);
+    private htmlTagSrcHook: HtmlTagSrcHook; // = new HtmlTagSrcHook(this);
 
-    getHtmlTagSrcHook() {
+    getHtmlTagSrcHook(): HtmlTagSrcHook {
         return this.htmlTagSrcHook;
     }
 
-    private wikifyTracer; // = new WikifyTracer(this);
+    private wikifyTracer: WikifyTracer; // = new WikifyTracer(this);
 
-    getWikifyTracer() {
+    getWikifyTracer(): WikifyTracer {
         return this.wikifyTracer;
     }
 
