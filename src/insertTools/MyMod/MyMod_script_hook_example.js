@@ -143,6 +143,42 @@
     },
   );
 
+  {
+    // 如何修改Passage数据
+
+    const passage1 = modUtils.getPassageData('aaaaa');
+    if (passage1) {
+      // 成功获得passage数据
+
+      // passage 名称
+      passage1.name;
+      // passage id
+      passage1.id;
+      // passage tags ，一个字符串数组, 例如 [widget] ，这里就必须填 ['widget']，否则保持 [] 数组
+      passage1.tags;
+      // 例如
+      passage1.tags = ['widget'];
+      // passage 的文本内容
+      passage1.content;
+      // 执行文本操作
+      passage1.content.replace('1234567890', '9876543210');
+
+      // 将单个passage数据写回到SC2引擎的游戏数据中，这个函数效率很低，可以使用下面那个函数
+      modUtils.updatePassageData(
+        passage1.name,
+        passage1.content,
+        passage1.tags,
+        passage1.id,
+      );
+
+      // 如果同时处理多个Passage，则不要使用上面的 `updatePassageData` ，可以调用这个 `updatePassageDataMany` 函数将多个passage数据写回到SC2引擎的游戏数据中
+      // 参数是 需要更新的passage列表
+      modUtils.updatePassageDataMany([passage1], true);
+    } else {
+      // 没有这个passage
+    }
+  }
+
 })();
 
 
