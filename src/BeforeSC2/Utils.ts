@@ -69,7 +69,7 @@ export class ModUtils {
      * @param name PassageName
      * @return PassageDataItem | undefined
      */
-    getPassageData(name: string) {
+    getPassageData(name: string): PassageDataItem | undefined {
         return this.pSC2DataManager.getSC2DataInfoAfterPatch().passageDataItems.map.get(name);
     }
 
@@ -77,7 +77,7 @@ export class ModUtils {
      * 获取所有Passage的信息
      * @return PassageDataItem[]
      */
-    getAllPassageData() {
+    getAllPassageData(): PassageDataItem[] {
         return this.pSC2DataManager.getSC2DataInfoAfterPatch().passageDataItems.items;
     }
 
@@ -85,7 +85,7 @@ export class ModUtils {
      * 获取当前最新的SC2DataInfo，其中存储了所有SC2引擎的数据，包括js/css/passage
      * @return SC2DataInfo
      */
-    createNewSC2DataInfoFromNow() {
+    createNewSC2DataInfoFromNow(): SC2DataInfoCache {
         return this.pSC2DataManager.getSC2DataInfoAfterPatch();
     }
 
@@ -262,7 +262,7 @@ export class ModUtils {
                      tolerance1: number = 0,
                      tolerance2Negative: number = 0,
                      tolerance2Positive: number = 0,
-    ) {
+    ): string {
         let s = content;
         const to = replaceString;
         const pStart = this.tryStringSearch(
@@ -298,7 +298,7 @@ export class ModUtils {
                     tolerance1: number = 0,
                     tolerance2Negative: number = 0,
                     tolerance2Positive: number = 0,
-    ) {
+    ): number | undefined {
         let s = content;
         const from = searchString;
         const pos = positionHint;
@@ -341,7 +341,7 @@ export class ModUtils {
      * @param position  插入的位置
      * @return string   插入后的字符串
      */
-    insertStringInPosition(content: string, insertString: string, position: number) {
+    insertStringInPosition(content: string, insertString: string, position: number): string {
         return content.slice(0, position) + insertString + content.slice(position);
     }
 
