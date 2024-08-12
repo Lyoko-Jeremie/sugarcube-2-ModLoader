@@ -51,16 +51,34 @@ export interface ModLoadControllerCallback {
 
     PatchModToGame_end(): Promise<any>
 
+    /**
+     * @deprecated
+     */
     ReplacePatcher_start(modName: string, fileName: string): Promise<any>;
 
+    /**
+     * @deprecated
+     */
     ReplacePatcher_end(modName: string, fileName: string): Promise<any>;
 
+    /**
+     * Latest Hook On ModLoader When ALL Load End
+     */
     ModLoaderLoadEnd(): Promise<any>;
 
+    /**
+     * @useless useless for user
+     */
     logError(s: string): void;
 
+    /**
+     * @useless useless for user
+     */
     logInfo(s: string): void;
 
+    /**
+     * @useless useless for user
+     */
     logWarning(s: string): void;
 
     exportDataZip(zip: JSZip): Promise<JSZip>;
