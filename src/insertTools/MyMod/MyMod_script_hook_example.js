@@ -12,6 +12,12 @@
 
   const modSC2DataManager = window.modSC2DataManager;
 
+  const logger = modUtils.getLogger();
+
+  logger.log('[MyMod_script_hook_example] 输出一段Log到ModLoaderGui日志');
+  logger.warn('[MyMod_script_hook_example] 输出一段Warn到ModLoaderGui日志');
+  logger.error('[MyMod_script_hook_example] 输出一段Error到ModLoaderGui日志');
+
   modSC2DataManager.getAddonPluginManager().registerAddonPlugin(
     'MyMod_script_hook_example',  //  mod名称
     'MyMod_script_hook_example',  // 插件名称，必须唯一，一个mod可以挂多个插件，可以使用mod名称
