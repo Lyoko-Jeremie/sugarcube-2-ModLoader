@@ -1,4 +1,4 @@
-;(() => {
+(() => {
   // 自执行函数，会在[Story/storyInit()]后执行
   console.log('MyMod_script_hook_example.js', '  ', '自执行函数，会在[Story/storyInit()]后执行');
   console.log('MyMod_script_hook_example.js', '  ', '由于此时引擎已经抓取所有模板数据，故无法在此处使用modUtils.updatePassageData更新passage');
