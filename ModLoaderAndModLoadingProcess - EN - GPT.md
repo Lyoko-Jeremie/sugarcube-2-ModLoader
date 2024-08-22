@@ -67,14 +67,14 @@ The detailed process is as follows:
 8. After loading and executing the mod's JavaScript scripts, the `AddonPluginHookPoint.afterEarlyLoad` hook is triggered.
 9. [registerMod2Addon()](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/blob/ac0bb6c59abd93a2a784f2a574f031861bcf269f/src/BeforeSC2/ModLoader.ts#L384) is called to register all mods declared in `boot.json` with `addonPlugin` to their corresponding Addon Mods.
 10. At this point, Addon Mods receive the mod registration callback from `AddonPluginHookPointExMustImplement.registerMod`, allowing them to record or perform actions based on their design.
-11. The `AddonPluginHookPoint.afterRegisterMod2Addon` hook is triggered.
+11. The `AddonPluginHookPoint.afterRegisterMod2Addon` hook is triggered. allowing mods to modify the merged game script data. Mods like `TweeReplacer` and `ReplacePatch` perform their replacement calculations here.
 12. This completes the loading of the mod's JavaScript functionalities.
 13. The `AddonPluginHookPoint.beforePatchModToGame` hook is triggered.
 14. The `styleFileList`, `scriptFileList`, and `tweeFileList` data are merged into the `tw-storydata` node, rebuilding it.
 15. The `AddonPluginHookPoint.afterPatchModToGame` hook is triggered.
 16. The `ModLoader.loadMod()` process ends, returning control to SugarCube2's code.
 17. SugarCube2's code then calls [JsPreloader.startLoad()](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/blob/ac0bb6c59abd93a2a784f2a574f031861bcf269f/src/BeforeSC2/JsPreloader.ts#L51).
-18. Files in `scriptFileList_preload` are executed, allowing mods to modify the merged game script data. Mods like `TweeReplacer` and `ReplacePatch` perform their replacement calculations here.
+18. Files in `scriptFileList_preload` are executed
 19. The `AddonPluginHookPoint.afterPreload` hook is triggered.
 20. The `ModLoadControllerCallback.ModLoaderLoadEnd` callback is triggered, marking the last hook event in the ModLoader loading process. Mods can complete their final tasks before SugarCube2 starts here.
 21. The mod loading is complete, ModLoader has started, and the normal operation of SugarCube2 begins. From this point, all actions of ModLoader are triggered by SugarCube2.

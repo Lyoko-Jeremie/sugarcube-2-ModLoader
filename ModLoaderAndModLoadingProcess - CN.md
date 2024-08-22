@@ -73,10 +73,10 @@ Mod的加载总的来说涉及以下几个步骤：
 12. 以上便完成了Mod的Js功能的加载
 13. 触发 `AddonPluginHookPoint.beforePatchModToGame` 钩子
 14. 开始合并`styleFileList`、`scriptFileList`、`tweeFileList`的数据到tw-storydata节点中，重建tw-storydata节点
-15. 触发 `AddonPluginHookPoint.afterPatchModToGame` 钩子
+15. 触发 `AddonPluginHookPoint.afterPatchModToGame` 钩子，Mod可以在此处修改合并后的游戏脚本数据，`TweeReplacer`、`ReplacePatch` 等Mod就是在此处执行替换计算
 16. `ModLoader.loadMod()`执行结束，返回SugarCube2的代码
 17. 再次由SugarCube2的代码调用[JsPreloader.startLoad()](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/blob/ac0bb6c59abd93a2a784f2a574f031861bcf269f/src/BeforeSC2/JsPreloader.ts#L51)
-18. 执行`scriptFileList_preload`中的文件，Mod可以在此处修改合并后的游戏脚本数据，`TweeReplacer`、`ReplacePatch` 等Mod就是在此处执行替换计算
+18. 执行`scriptFileList_preload`中的文件
 19. 触发`AddonPluginHookPoint.afterPreload`
 20. 触发`ModLoadControllerCallback.ModLoaderLoadEnd`回调，这是ModLoader加载过程中的最后一个回调钩子事件，Mod可以在此处完成SugarCube2启动前最后的收尾工作。如果某个操作没有选择地必须在其他Mod最后执行操作，也可选择在此处进行。
 21. Mod 加载全部完成，ModLoader启动完毕，开始启动SugarCube2的正常运行流程。接下来ModLoader的动作全部由SugarCube2触发。
