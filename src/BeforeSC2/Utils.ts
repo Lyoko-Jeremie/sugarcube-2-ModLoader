@@ -1,7 +1,7 @@
 import {SC2DataManager} from "./SC2DataManager";
 import {isInteger, isString} from "lodash";
 import _ from "lodash";
-import {ModZipReader, Twee2Passage, Twee2PassageR} from "./ModZipReader";
+import {getModZipReaderStaticClassRef, ModZipReader, Twee2Passage, Twee2PassageR} from "./ModZipReader";
 import {PassageDataItem, SC2DataInfo, SC2DataInfoCache} from "./SC2DataInfoCache";
 import {SimulateMergeResult} from "./SimulateMerge";
 import {replaceMergeSC2DataInfoCache, replaceMergeSC2DataInfoCacheForce} from "./MergeSC2DataInfoCache";
@@ -380,6 +380,8 @@ export class ModUtils {
     getSemVerTools() {
         return new SemVerToolsType();
     }
+
+    getModZipReaderStaticClassRef = getModZipReaderStaticClassRef;
 
 }
 

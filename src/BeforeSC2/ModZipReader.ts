@@ -871,7 +871,6 @@ export class RemoteLoader extends LoaderBase {
 
 }
 
-
 export class LazyLoader extends LoaderBase {
 
     async add(modeZip: JSZip) {
@@ -894,3 +893,11 @@ export class LazyLoader extends LoaderBase {
 
 }
 
+export const getModZipReaderStaticClassRef = () => {
+    return {
+        LocalStorageLoader: LocalStorageLoader,
+        IndexDBLoader: IndexDBLoader,
+        LocalLoader: LocalLoader,
+        RemoteLoader: RemoteLoader,
+    };
+};
