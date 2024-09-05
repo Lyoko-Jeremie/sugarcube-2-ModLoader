@@ -275,22 +275,37 @@ export class ModLoader {
     private modLazyLoader?: LazyLoader;
 
     public getIndexDBLoader() {
+        if (!this.modIndexDBLoader) {
+            this.modIndexDBLoader = new IndexDBLoader(this.modLoadControllerCallback);
+        }
         return this.modIndexDBLoader;
     }
 
     public getLocalStorageLoader() {
+        if (!this.modLocalStorageLoader) {
+            this.modLocalStorageLoader = new LocalStorageLoader(this.modLoadControllerCallback);
+        }
         return this.modLocalStorageLoader;
     }
 
     public getLocalLoader() {
+        if (!this.modLocalLoader) {
+            this.modLocalLoader = new LocalLoader(this.modLoadControllerCallback, this.thisWin);
+        }
         return this.modLocalLoader;
     }
 
     public getRemoteLoader() {
+        if (!this.modRemoteLoader) {
+            this.modRemoteLoader = new RemoteLoader(this.modLoadControllerCallback);
+        }
         return this.modRemoteLoader;
     }
 
     public getLazyLoader() {
+        if (!this.modLazyLoader) {
+            this.modLazyLoader = new LazyLoader(this.modLoadControllerCallback);
+        }
         return this.modLazyLoader;
     }
 
@@ -321,48 +336,40 @@ export class ModLoader {
         for (const loadType of this.loadOrder) {
             switch (loadType) {
                 case ModDataLoadType.Remote:
-                    if (!this.modRemoteLoader) {
-                        this.modRemoteLoader = new RemoteLoader(this.modLoadControllerCallback);
-                    }
+                    const modRemoteLoader = this.getRemoteLoader();
                     try {
-                        ok = await this.modRemoteLoader.load() || ok;
-                        this.modRemoteLoader.modList.forEach(T => this.addModReadZip(T, ModLoadFromSourceType.Remote));
+                        ok = await modRemoteLoader.load() || ok;
+                        modRemoteLoader.modList.forEach(T => this.addModReadZip(T, ModLoadFromSourceType.Remote));
                     } catch (e: Error | any) {
                         console.error(e);
                         this.logger.error(`ModLoader loadMod() RemoteLoader load error: ${e?.message ? e.message : e}`);
                     }
                     break;
                 case ModDataLoadType.Local:
-                    if (!this.modLocalLoader) {
-                        this.modLocalLoader = new LocalLoader(this.modLoadControllerCallback, this.thisWin);
-                    }
+                    const modLocalLoader = this.getLocalLoader();
                     try {
-                        ok = await this.modLocalLoader.load() || ok;
-                        this.modLocalLoader.modList.forEach(T => this.addModReadZip(T, ModLoadFromSourceType.Local));
+                        ok = await modLocalLoader.load() || ok;
+                        modLocalLoader.modList.forEach(T => this.addModReadZip(T, ModLoadFromSourceType.Local));
                     } catch (e: Error | any) {
                         console.error(e);
                         this.logger.error(`ModLoader loadMod() LocalLoader load error: ${e?.message ? e.message : e}`);
                     }
                     break;
                 case ModDataLoadType.LocalStorage:
-                    if (!this.modLocalStorageLoader) {
-                        this.modLocalStorageLoader = new LocalStorageLoader(this.modLoadControllerCallback);
-                    }
+                    const modLocalStorageLoader = this.getLocalStorageLoader();
                     try {
-                        ok = await this.modLocalStorageLoader.load() || ok;
-                        this.modLocalStorageLoader.modList.forEach(T => this.addModReadZip(T, ModLoadFromSourceType.LocalStorage));
+                        ok = await modLocalStorageLoader.load() || ok;
+                        modLocalStorageLoader.modList.forEach(T => this.addModReadZip(T, ModLoadFromSourceType.LocalStorage));
                     } catch (e: Error | any) {
                         console.error(e);
                         this.logger.error(`ModLoader loadMod() LocalStorageLoader load error: ${e?.message ? e.message : e}`);
                     }
                     break;
                 case ModDataLoadType.IndexDB:
-                    if (!this.modIndexDBLoader) {
-                        this.modIndexDBLoader = new IndexDBLoader(this.modLoadControllerCallback);
-                    }
+                    const modIndexDBLoader = this.getIndexDBLoader();
                     try {
-                        ok = await this.modIndexDBLoader.load() || ok;
-                        this.modIndexDBLoader.modList.forEach(T => this.addModReadZip(T, ModLoadFromSourceType.IndexDB));
+                        ok = await modIndexDBLoader.load() || ok;
+                        modIndexDBLoader.modList.forEach(T => this.addModReadZip(T, ModLoadFromSourceType.IndexDB));
                     } catch (e: Error | any) {
                         console.error(e);
                         this.logger.error(`ModLoader loadMod() IndexDBLoader load error: ${e?.message ? e.message : e}`);
@@ -425,12 +432,10 @@ export class ModLoader {
     }
 
     public async lazyRegisterNewMod(modeZip: JSZip) {
-        if (!this.modLazyLoader) {
-            this.modLazyLoader = new LazyLoader(this.modLoadControllerCallback);
-        }
         console.log('ModLoader ====== lazyRegisterNewMod() LazyLoader load start: ', [modeZip]);
+        const modLazyLoader = this.getLazyLoader();
         try {
-            const m = await this.modLazyLoader.add(modeZip);
+            const m = await modLazyLoader.add(modeZip);
             if (m.modInfo) {
                 this.modLazyCache.pushBack(m, ModLoadFromSourceType.SideLazy);
                 console.log('ModLoader ====== lazyRegisterNewMod() LazyLoader load ok: ', [m, this.modLazyCache]);

@@ -612,6 +612,9 @@ export class LocalStorageLoader extends LoaderBase {
         }
     }
 
+    setConfigKey(modDataLocalStorageZipListKey: string) {
+        LocalStorageLoader.modDataLocalStorageZipList = modDataLocalStorageZipListKey;
+    }
 }
 
 export class IndexDBLoader extends LoaderBase {
@@ -762,6 +765,16 @@ export class IndexDBLoader extends LoaderBase {
         }
     }
 
+    setConfigKey(
+        dbName: string,
+        storeName: string,
+        modDataIndexDBZipList: string,
+    ) {
+        IndexDBLoader.dbName = dbName;
+        IndexDBLoader.storeName = storeName;
+        IndexDBLoader.modDataIndexDBZipList = modDataIndexDBZipList;
+    }
+
 }
 
 export class Base64ZipStringLoader extends LoaderBase {
@@ -832,6 +845,11 @@ export class LocalLoader extends LoaderBase {
         }
         return Promise.resolve(false);
     }
+
+    setConfigKey(modDataValueZipListPath: string) {
+        this.modDataValueZipListPath = modDataValueZipListPath;
+    }
+
 }
 
 export class RemoteLoader extends LoaderBase {
@@ -867,6 +885,10 @@ export class RemoteLoader extends LoaderBase {
             return Promise.resolve(true);
         }
         return Promise.resolve(false);
+    }
+
+    setConfigKey(modDataRemoteListPath: string) {
+        this.modDataRemoteListPath = modDataRemoteListPath;
     }
 
 }
