@@ -510,6 +510,7 @@ export class LoaderBase {
 export class LocalStorageLoader extends LoaderBase {
 
     static modDataLocalStorageZipList = 'modDataLocalStorageZipList';
+    static modDataLocalStorageZipPrefix = 'modDataLocalStorageZip';
 
     async load(): Promise<boolean> {
 
@@ -572,7 +573,7 @@ export class LocalStorageLoader extends LoaderBase {
     }
 
     static calcModNameKey(name: string) {
-        return `modDataLocalStorageZip:${name}`;
+        return `${this.modDataLocalStorageZipPrefix}:${name}`;
     }
 
     static addMod(name: string, modBase64String: string) {
