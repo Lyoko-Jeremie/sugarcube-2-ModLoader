@@ -483,9 +483,27 @@ export class LoaderBase {
     modList: ModZipReader[] = [];
     modZipList: Map<string, ModZipReader[]> = new Map<string, ModZipReader[]>();
 
+    logger: Record<'log' | 'warn' | 'error', ((s: string) => void)>;
+
     constructor(
         public log: ModLoadControllerCallback,
+        public loaderKeyConfig: LoaderKeyConfig,
     ) {
+        this.logger = {
+            log: (s: string) => {
+                this.log.logInfo(s);
+            },
+            warn: (s: string) => {
+                this.log.logWarning(s);
+            },
+            error: (s: string) => {
+                this.log.logError(s);
+            },
+        }
+    }
+
+    init() {
+        // this is used for override
     }
 
     getZipFile(name: string) {
@@ -512,6 +530,12 @@ export class LocalStorageLoader extends LoaderBase {
     static modDataLocalStorageZipList = 'modDataLocalStorageZipList';
     static modDataLocalStorageZipPrefix = 'modDataLocalStorageZip';
 
+    override init() {
+        super.init();
+        LocalStorageLoader.modDataLocalStorageZipList = this.loaderKeyConfig.getLoaderKey(LocalStorageLoader.modDataLocalStorageZipList, LocalStorageLoader.modDataLocalStorageZipList);
+        LocalStorageLoader.modDataLocalStorageZipPrefix = this.loaderKeyConfig.getLoaderKey(LocalStorageLoader.modDataLocalStorageZipPrefix, LocalStorageLoader.modDataLocalStorageZipPrefix);
+    }
+
     async load(): Promise<boolean> {
 
         const listFile = localStorage.getItem(LocalStorageLoader.modDataLocalStorageZipList);
@@ -530,12 +554,14 @@ export class LocalStorageLoader extends LoaderBase {
         }
 
         console.log('ModLoader ====== LocalStorageLoader load() list', list);
+        // this.logger.log('ModLoader ====== LocalStorageLoader load() list');
 
         // modDataBase64ZipStringList: base64[]
         for (const zipPath of list) {
             const base64ZipString = localStorage.getItem(LocalStorageLoader.calcModNameKey(zipPath));
             if (!base64ZipString) {
                 console.error('ModLoader ====== LocalStorageLoader load() cannot get zipPath:', zipPath);
+                // this.logger.error(`ModLoader ====== LocalStorageLoader load() cannot get zipPath:[${zipPath}]`);
                 continue;
             }
             try {
@@ -613,8 +639,12 @@ export class LocalStorageLoader extends LoaderBase {
         }
     }
 
-    setConfigKey(modDataLocalStorageZipListKey: string) {
+    setConfigKey(
+        modDataLocalStorageZipListKey: string,
+        modDataLocalStorageZipPrefix?: string,
+    ) {
         LocalStorageLoader.modDataLocalStorageZipList = modDataLocalStorageZipListKey;
+        LocalStorageLoader.modDataLocalStorageZipPrefix = modDataLocalStorageZipPrefix ?? LocalStorageLoader.modDataLocalStorageZipPrefix;
     }
 }
 
@@ -624,13 +654,23 @@ export class IndexDBLoader extends LoaderBase {
     static storeName: string = 'ModLoader_IndexDBLoader';
 
     static modDataIndexDBZipList = 'modDataIndexDBZipList';
+    static modDataIndexDBZipPrefix = 'modDataIndexDBZip';
+
+    override init() {
+        super.init();
+        IndexDBLoader.dbName = this.loaderKeyConfig.getLoaderKey(IndexDBLoader.dbName, IndexDBLoader.dbName);
+        IndexDBLoader.storeName = this.loaderKeyConfig.getLoaderKey(IndexDBLoader.storeName, IndexDBLoader.storeName);
+        IndexDBLoader.modDataIndexDBZipList = this.loaderKeyConfig.getLoaderKey(IndexDBLoader.modDataIndexDBZipList, IndexDBLoader.modDataIndexDBZipList);
+        IndexDBLoader.modDataIndexDBZipPrefix = this.loaderKeyConfig.getLoaderKey(IndexDBLoader.modDataIndexDBZipPrefix, IndexDBLoader.modDataIndexDBZipPrefix);
+    }
 
     customStore: UseStore;
 
     constructor(
         public modLoadControllerCallback: ModLoadControllerCallback,
+        public loaderKeyConfig: LoaderKeyConfig,
     ) {
-        super(modLoadControllerCallback);
+        super(modLoadControllerCallback, loaderKeyConfig);
         this.customStore = createStore(IndexDBLoader.dbName, IndexDBLoader.storeName);
     }
 
@@ -720,7 +760,7 @@ export class IndexDBLoader extends LoaderBase {
     }
 
     static calcModNameKey(name: string) {
-        return `modDataIndexDBZip:${name}`;
+        return `${this.modDataIndexDBZipPrefix}:${name}`;
     }
 
     static async addMod(name: string, modBase64String: string) {
@@ -782,10 +822,11 @@ export class Base64ZipStringLoader extends LoaderBase {
 
     constructor(
         public modLoadControllerCallback: ModLoadControllerCallback,
+        public loaderKeyConfig: LoaderKeyConfig,
         // base64ZipStringList: base64[]
         public base64ZipStringList: string[],
     ) {
-        super(modLoadControllerCallback);
+        super(modLoadControllerCallback, loaderKeyConfig);
     }
 
     async load(): Promise<boolean> {
@@ -812,11 +853,17 @@ export class Base64ZipStringLoader extends LoaderBase {
 export class LocalLoader extends LoaderBase {
     modDataValueZipListPath = 'modDataValueZipList';
 
+    override init() {
+        super.init();
+        this.modDataValueZipListPath = this.loaderKeyConfig.getLoaderKey(this.modDataValueZipListPath, this.modDataValueZipListPath);
+    }
+
     constructor(
         public modLoadControllerCallback: ModLoadControllerCallback,
+        public loaderKeyConfig: LoaderKeyConfig,
         public thisWin: Window,
     ) {
-        super(modLoadControllerCallback);
+        super(modLoadControllerCallback, loaderKeyConfig);
     }
 
 
@@ -856,6 +903,11 @@ export class LocalLoader extends LoaderBase {
 export class RemoteLoader extends LoaderBase {
 
     modDataRemoteListPath = 'modList.json';
+
+    override init() {
+        super.init();
+        this.modDataRemoteListPath = this.loaderKeyConfig.getLoaderKey(this.modDataRemoteListPath, this.modDataRemoteListPath);
+    }
 
     async load(): Promise<boolean> {
         const modList: undefined | string[] = await fetch(this.modDataRemoteListPath).then(T => T.json()).catch(E => {
@@ -917,6 +969,7 @@ export class LazyLoader extends LoaderBase {
 }
 
 export const getModZipReaderStaticClassRef = () => {
+    console.error('WARNING: the [[[getModZipReaderStaticClassRef]]] will delete later.');
     return {
         LocalStorageLoader: LocalStorageLoader,
         IndexDBLoader: IndexDBLoader,
@@ -924,3 +977,78 @@ export const getModZipReaderStaticClassRef = () => {
         RemoteLoader: RemoteLoader,
     };
 };
+
+export class LoaderKeyConfig {
+
+    modLoaderKeyConfigWinHookFunctionName = 'modLoaderKeyConfigWinHookFunction';
+
+    logger: Record<'log' | 'warn' | 'error', ((s: string) => void)>;
+
+    constructor(
+        public log: ModLoadControllerCallback,
+    ) {
+        this.logger = {
+            log: (s: string) => {
+                this.log.logInfo(s);
+            },
+            warn: (s: string) => {
+                this.log.logWarning(s);
+            },
+            error: (s: string) => {
+                this.log.logError(s);
+            },
+        }
+    }
+
+    config: Map<string, string> = new Map<string, string>();
+
+    getLoaderKey(k: string, d: string) {
+        this.init();
+        const n = this.config.get(k);
+        console.log('LoaderKeyConfig getLoaderKey:', k, d, n);
+        if (isString(n) && n.length > 1) {
+            return n;
+        } else {
+            return d;
+        }
+    }
+
+    protected isInit = false;
+
+    protected init() {
+        if (this.isInit) {
+            return;
+        }
+        this.isInit = true;
+        console.log('LoaderKeyConfig init.');
+        this.callWinHookFunction();
+        this.getConfigFromUrlHash();
+        if (this.config.size > 0) {
+            this.logger.log(`LoaderKeyConfig init() config:[${[...this.config.entries()]}]`);
+        }
+        console.log('LoaderKeyConfig init end', this.config);
+    }
+
+    protected callWinHookFunction() {
+        try {
+            if ((window as any)[this.modLoaderKeyConfigWinHookFunctionName]) {
+                (window as any)[this.modLoaderKeyConfigWinHookFunctionName](this);
+                console.log('LoaderKeyConfig callWinHookFunction called', this.config);
+            }
+        } catch (e) {
+            console.error('LoaderKeyConfig callWinHookFunction Error', e);
+            this.logger.error('LoaderKeyConfig callWinHookFunction Error');
+        }
+    }
+
+    protected getConfigFromUrlHash() {
+        const search = window.location.search;
+        if (search.length > 1) {
+            const a = search.slice(1).split('&').map(T => T.split('='));
+            for (const [k, v] of a) {
+                this.config.set(k, v);
+            }
+        }
+    }
+
+}

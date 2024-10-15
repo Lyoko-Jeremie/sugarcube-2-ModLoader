@@ -5,6 +5,7 @@ import {
     imgWrapBase64Url,
     IndexDBLoader,
     LazyLoader,
+    LoaderKeyConfig,
     LocalLoader,
     LocalStorageLoader,
     ModZipReader,
@@ -268,43 +269,56 @@ export class ModLoader {
         });
     }
 
+    private modLoaderKeyConfig?: LoaderKeyConfig;
     private modIndexDBLoader?: IndexDBLoader;
     private modLocalStorageLoader?: LocalStorageLoader;
     private modLocalLoader?: LocalLoader;
     private modRemoteLoader?: RemoteLoader;
     private modLazyLoader?: LazyLoader;
 
+    public getLoaderKeyConfig() {
+        if (!this.modLoaderKeyConfig) {
+            this.modLoaderKeyConfig = new LoaderKeyConfig(this.modLoadControllerCallback);
+        }
+        return this.modLoaderKeyConfig;
+    }
+
     public getIndexDBLoader() {
         if (!this.modIndexDBLoader) {
-            this.modIndexDBLoader = new IndexDBLoader(this.modLoadControllerCallback);
+            this.modIndexDBLoader = new IndexDBLoader(this.modLoadControllerCallback, this.getLoaderKeyConfig());
+            this.modIndexDBLoader.init();
         }
         return this.modIndexDBLoader;
     }
 
     public getLocalStorageLoader() {
         if (!this.modLocalStorageLoader) {
-            this.modLocalStorageLoader = new LocalStorageLoader(this.modLoadControllerCallback);
+            this.modLocalStorageLoader = new LocalStorageLoader(this.modLoadControllerCallback, this.getLoaderKeyConfig());
+            this.modLocalStorageLoader.init();
         }
         return this.modLocalStorageLoader;
     }
 
     public getLocalLoader() {
         if (!this.modLocalLoader) {
-            this.modLocalLoader = new LocalLoader(this.modLoadControllerCallback, this.thisWin);
+            this.modLocalLoader = new LocalLoader(this.modLoadControllerCallback, this.getLoaderKeyConfig(), this.thisWin);
+            this.modLocalLoader.init();
         }
         return this.modLocalLoader;
     }
 
     public getRemoteLoader() {
         if (!this.modRemoteLoader) {
-            this.modRemoteLoader = new RemoteLoader(this.modLoadControllerCallback);
+            this.modRemoteLoader = new RemoteLoader(this.modLoadControllerCallback, this.getLoaderKeyConfig());
+            this.modRemoteLoader.init();
         }
         return this.modRemoteLoader;
     }
 
     public getLazyLoader() {
         if (!this.modLazyLoader) {
-            this.modLazyLoader = new LazyLoader(this.modLoadControllerCallback);
+            this.modLazyLoader = new LazyLoader(this.modLoadControllerCallback, this.getLoaderKeyConfig());
+            this.modLazyLoader.init();
         }
         return this.modLazyLoader;
     }
