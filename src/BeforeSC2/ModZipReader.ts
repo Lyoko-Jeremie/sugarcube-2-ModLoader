@@ -1029,6 +1029,17 @@ export class LoaderKeyConfig {
         console.log('LoaderKeyConfig init end', this.config);
     }
 
+    /**
+     * @example
+     * @code
+     * ```
+     * window.modLoaderKeyConfigWinHookFunction = (loaderKeyConfig: LoaderKeyConfig) => {
+     *    loaderKeyConfig.config.set('modDataIndexDBZipList', 'modDataIndexDBZipList123456789');
+     * };
+     * ```
+     *
+     * @protected
+     */
     protected callWinHookFunction() {
         try {
             if ((window as any)[this.modLoaderKeyConfigWinHookFunctionName]) {
@@ -1041,6 +1052,10 @@ export class LoaderKeyConfig {
         }
     }
 
+    /**
+     * @example   URL:  ./Degrees of Lewdity VERSION.html.mod.html?modDataIndexDBZipList=modDataIndexDBZipList123456789
+     * @protected
+     */
     protected getConfigFromUrlHash() {
         const search = window.location.search;
         if (search.length > 1) {
