@@ -36,20 +36,23 @@ export class HtmlTagSrcHook {
         this.hookReturnModeTable.set(hookKey, hook);
     }
 
+    /**
+     * covert HtmlElement to use image from mod
+     *
+     * @example:
+     * @code
+     * ```typescript
+     * const node = document.createElement('img');
+     * node.src = 'xxx/xxx/xxx.png';
+     * if (node.tagName.toLowerCase() === 'img' && !node.getAttribute('src')?.startsWith('data:')) {
+     *     // need check the src is not "data:" URI
+     *     node.setAttribute('ML-src', node.getAttribute('src')!);
+     *     node.removeAttribute('src');
+     *     window.modSC2DataManager.getHtmlTagSrcHook().doHook(node).catch(E => console.error(E));
+     * }
+     * ```
+     */
     public async doHook(el: HTMLImageElement | HTMLElement, field: string = 'src'): Promise<boolean> {
-        /*
-         * example:
-         * ```typescript
-         * const node = document.createElement('img');
-         * node.src = 'xxx/xxx/xxx.png';
-         * if (node.tagName.toLowerCase() === 'img' && !node.getAttribute('src')?.startsWith('data:')) {
-         *     // need check the src is not "data:" URI
-         *     node.setAttribute('ML-src', node.getAttribute('src')!);
-         *     node.removeAttribute('src');
-         *     window.modSC2DataManager.getHtmlTagSrcHook().doHook(node).catch(E => console.error(E));
-         * }
-         * ```
-         */
         // console.log('[HtmlTagSrcHook] doHook: handing the element', [el, el.outerHTML]);
         const mlSrc = el.getAttribute(`ML-${field}`);
         if (!mlSrc) {
@@ -116,6 +119,11 @@ export class HtmlTagSrcHook {
         return [false, await callback(src)];
     }
 
+    /**
+     * get image from mod
+     * @param src  image path
+     * @return image base64 string
+     */
     async requestImageBySrc(src: string) {
         // console.log('[HtmlTagSrcHook] requestImageBySrc: handing src', [src]);
         if (!src) {

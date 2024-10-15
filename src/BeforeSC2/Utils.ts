@@ -383,6 +383,11 @@ export class ModUtils {
 
     getModZipReaderStaticClassRef = getModZipReaderStaticClassRef;
 
+    async getImage(imagePath: string): Promise<string | undefined> {
+        const imageBase64String = await this.pSC2DataManager.getHtmlTagSrcHook().requestImageBySrc(imagePath);
+        return imageBase64String;
+    }
+
 }
 
 // https://stackoverflow.com/questions/51851677/how-to-get-argument-types-from-function-in-typescript
