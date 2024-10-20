@@ -41,6 +41,9 @@ Or download the DoL with ModLoader version automatic build ：[DoLModLoaderBuild
 | [CryptoI18n](https://github.com/Lyoko-Jeremie/CryptoI18nMod)                                                             | Example  | Demo       | v2.0.0 版本的mod加密功能的demo。以i18n mod作为范例。                               |
 | [ExampleModModifyMod](https://github.com/Lyoko-Jeremie/ExampleModModifyMod)                                              | Example  | Demo       | 关于如何使用Mod B读取并修改Mod A的数据和行为的示范Mod                                   |
 | [SimpleCryptWrapper](https://github.com/Lyoko-Jeremie/SimpleCryptWrapperMod)                                             | Tools    | Stable     | 一个简易Mod加密封装工具，用来将另一个mod封装成在加载时需要输入解密密码的加密mod，设计用来保护图片资源             |
+| [DoLModWebpackExampleTs](https://github.com/Lyoko-Jeremie/DoLModWebpackExampleTs)                                       | Template | Demo       | 使用webpack打包的TypeScript模板项目，用于展示如何使用TypeScript开发Mod                  |
+| [DoLModWebpackExampleJs](https://github.com/Lyoko-Jeremie/DoLModWebpackExampleJs)                                       | Template | Demo       | 使用webpack打包的JavaScript模板项目，用于展示如何使用JavaScript开发Mod                 |
+
 
 有关各个mod的功能及用法，详见对应mod项目的README.md文件。
 
