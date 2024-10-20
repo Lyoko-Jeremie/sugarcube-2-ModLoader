@@ -25,7 +25,7 @@ import {SemVerToolsType} from "./SemVer/InfiniteSemVer";
 export class ModUtils {
 
     get version(): string {
-        return '2.21.0';
+        return '2.21.1';
     }
 
     constructor(
@@ -386,6 +386,14 @@ export class ModUtils {
     async getImage(imagePath: string): Promise<string | undefined> {
         const imageBase64String = await this.pSC2DataManager.getHtmlTagSrcHook().requestImageBySrc(imagePath);
         return imageBase64String;
+    }
+
+    getLanguageManager() {
+        return this.pSC2DataManager.getLanguageManager();
+    }
+
+    getNowMainLanguage(): 'en' | 'zh' | string {
+        return this.getLanguageManager().mainLanguage;
     }
 
 }
