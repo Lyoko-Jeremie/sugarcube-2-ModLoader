@@ -306,7 +306,7 @@ export class ModZipReader {
                 if (imgFile) {
                     this.modInfo.imgs.push({
                         // data: imgWrapBase64Url(imgPath, data),
-                        getter: new ModImgGetterDefault(this, imgPath, this.log),
+                        getter: new ModImgGetterDefault(bootJ.name, this, imgPath, this.log),
                         path: imgPath,
                     });
                 } else {

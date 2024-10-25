@@ -27,17 +27,23 @@ export interface IModImgGetter {
     /**
      * @return Promise<string>   base64 img string
      */
-    getBase64Image(lruCache?: IModImgGetterLRUCache): Promise<string>;
+    getBase64Image(/*lruCache?: IModImgGetterLRUCache*/): Promise<string | undefined>;
 
     imgCache?: string;
+    invalid: boolean;
 
     forceCache(): Promise<any>;
 }
 
-export const StaticModImgLruCache = new LRUCache<string, string>({
+export interface ImgLruCacheItemType {
+    imageBase64: string;
+    invalid: boolean;
+}
+
+export const StaticModImgLruCache = new LRUCache<string, ImgLruCacheItemType>({
     max: 30,
     ttl: 1000 * 60 * 1,
-    dispose: (value: string, key: string, reason: LRUCache.DisposeReason) => {
+    dispose: (value: ImgLruCacheItemType, key: string, reason: LRUCache.DisposeReason) => {
         console.log('ModImgLruCache dispose', [value], [reason]);
     },
     updateAgeOnGet: true,
@@ -45,18 +51,21 @@ export const StaticModImgLruCache = new LRUCache<string, string>({
 });
 
 export interface IModImgGetterLRUCache {
-    get(path: string): string | undefined;
+    get(path: string): ImgLruCacheItemType | undefined;
 
-    set(path: string, data: string): IModImgGetterLRUCache;
+    set(path: string, data: ImgLruCacheItemType): IModImgGetterLRUCache;
 }
 
 export class ModImgGetterDefault implements IModImgGetter {
     constructor(
+        public modName: string,
         public zip: ModZipReader,
         public imgPath: string,
         public logger: LogWrapper,
     ) {
     }
+
+    invalid: boolean = false;
 
     imgCache?: string;
 
@@ -64,21 +73,35 @@ export class ModImgGetterDefault implements IModImgGetter {
         this.imgCache = await this.getBase64Image();
     }
 
-    async getBase64Image(lruCache?: IModImgGetterLRUCache) {
+    async getBase64Image() {
+        arguments.length > 0 && console.error('ModImgGetterDefault getBase64Image() cannot have arguments.', arguments);
+        if (this.invalid) {
+            return undefined;
+        }
+        // add mod prefix to cache path
+        const key = `[${this.modName}]_${this.imgPath}`;
         if (this.imgCache) {
             return this.imgCache;
         }
-        const cache = (lruCache ?? StaticModImgLruCache).get(this.imgPath);
+        const cache = StaticModImgLruCache.get(key);
         if (cache) {
-            return cache;
+            return cache.invalid ? undefined : cache.imageBase64;
         }
         const imgFile = this.zip.zip.file(this.imgPath);
         if (imgFile) {
             const data = await imgFile.async('base64');
-            const imgCache = imgWrapBase64Url(this.imgPath, data);
-            (lruCache ?? StaticModImgLruCache).set(this.imgPath, imgCache);
+            const imgCache = imgWrapBase64Url(key, data);
+            StaticModImgLruCache.set(this.imgPath, {
+                imageBase64: imgCache,
+                invalid: false,
+            });
             return imgCache;
         }
+        this.invalid = true;
+        StaticModImgLruCache.set(this.imgPath, {
+            imageBase64: '',
+            invalid: true,
+        });
         console.error(`ModImgGetterDefault getBase64Image() imgFile not found: ${this.imgPath} in ${this.zip.modInfo?.name}`);
         this.logger.error(`ModImgGetterDefault getBase64Image() imgFile not found: ${this.imgPath} in ${this.zip.modInfo?.name}`);
         return Promise.reject(`ModImgGetterDefault getBase64Image() imgFile not found: ${this.imgPath} in ${this.zip.modInfo?.name}`);
