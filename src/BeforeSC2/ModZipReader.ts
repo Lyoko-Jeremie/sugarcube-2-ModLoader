@@ -653,6 +653,7 @@ export class IndexDBLoader extends LoaderBase {
     static dbName: string = 'ModLoader_IndexDBLoader';
     static storeName: string = 'ModLoader_IndexDBLoader';
 
+    static modDataIndexDBZipListHidden = 'modDataIndexDBZipListHidden';
     static modDataIndexDBZipList = 'modDataIndexDBZipList';
     static modDataIndexDBZipPrefix = 'modDataIndexDBZip';
 
@@ -660,6 +661,7 @@ export class IndexDBLoader extends LoaderBase {
         super.init();
         IndexDBLoader.dbName = this.loaderKeyConfig.getLoaderKey(IndexDBLoader.dbName, IndexDBLoader.dbName);
         IndexDBLoader.storeName = this.loaderKeyConfig.getLoaderKey(IndexDBLoader.storeName, IndexDBLoader.storeName);
+        IndexDBLoader.modDataIndexDBZipListHidden = this.loaderKeyConfig.getLoaderKey(IndexDBLoader.modDataIndexDBZipListHidden, IndexDBLoader.modDataIndexDBZipListHidden);
         IndexDBLoader.modDataIndexDBZipList = this.loaderKeyConfig.getLoaderKey(IndexDBLoader.modDataIndexDBZipList, IndexDBLoader.modDataIndexDBZipList);
         IndexDBLoader.modDataIndexDBZipPrefix = this.loaderKeyConfig.getLoaderKey(IndexDBLoader.modDataIndexDBZipPrefix, IndexDBLoader.modDataIndexDBZipPrefix);
     }
@@ -740,6 +742,51 @@ export class IndexDBLoader extends LoaderBase {
         console.log('ModLoader ====== IndexDBLoader reorderModeList() done');
     }
 
+    static async setModeList(modeList: string[]) {
+        if (!isArray(modeList) || !every(modeList, isString)) {
+            console.error('ModLoader ====== IndexDBLoader setModeList() modeList type invalid. invalid');
+            return;
+        }
+        if (uniq(modeList).length !== modeList.length) {
+            console.error('ModLoader ====== IndexDBLoader setModeList() modeList has duplicate items. invalid');
+            return;
+        }
+        await keyval_set(IndexDBLoader.modDataIndexDBZipList, JSON.stringify(modeList), createStore(IndexDBLoader.dbName, IndexDBLoader.storeName));
+        console.log('ModLoader ====== IndexDBLoader setModeList() done');
+    }
+
+    static async setHiddenModeList(modeList: string[]) {
+        if (!isArray(modeList) || !every(modeList, isString)) {
+            console.error('ModLoader ====== IndexDBLoader setHiddenModeList() modeList type invalid. invalid');
+            return;
+        }
+        if (uniq(modeList).length !== modeList.length) {
+            console.error('ModLoader ====== IndexDBLoader setHiddenModeList() modeList has duplicate items. invalid');
+            return;
+        }
+        await keyval_set(IndexDBLoader.modDataIndexDBZipListHidden, JSON.stringify(modeList), createStore(IndexDBLoader.dbName, IndexDBLoader.storeName));
+        console.log('ModLoader ====== IndexDBLoader setHiddenModeList() done');
+    }
+
+    static async loadHiddenModList() {
+        const ls = await keyval_get(IndexDBLoader.modDataIndexDBZipListHidden, createStore(IndexDBLoader.dbName, IndexDBLoader.storeName));
+        if (!ls) {
+            console.log('ModLoader ====== IndexDBLoader loadHiddenModList() cannot find modDataIndexDBZipListHidden');
+            return undefined;
+        }
+        try {
+            const l = JSON5.parse(ls);
+            console.log('ModLoader ====== IndexDBLoader loadHiddenModList() modDataIndexDBZipListHidden', l);
+            if (Array.isArray(l) && l.every(isString)) {
+                return l;
+            }
+        } catch (e) {
+            console.error(e);
+        }
+        console.log('ModLoader ====== IndexDBLoader loadHiddenModList() modDataIndexDBZipListHidden Invalid');
+        return undefined;
+    }
+
     static async listMod() {
         const ls = await keyval_get(IndexDBLoader.modDataIndexDBZipList, createStore(IndexDBLoader.dbName, IndexDBLoader.storeName));
         if (!ls) {
@@ -810,10 +857,12 @@ export class IndexDBLoader extends LoaderBase {
         dbName: string,
         storeName: string,
         modDataIndexDBZipList: string,
+        modDataIndexDBZipListHidden: string,
     ) {
         IndexDBLoader.dbName = dbName;
         IndexDBLoader.storeName = storeName;
         IndexDBLoader.modDataIndexDBZipList = modDataIndexDBZipList;
+        IndexDBLoader.modDataIndexDBZipListHidden = modDataIndexDBZipListHidden;
     }
 
 }
