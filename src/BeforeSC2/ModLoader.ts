@@ -74,7 +74,7 @@ export class ModImgGetterDefault implements IModImgGetter {
     }
 
     async getBase64Image() {
-        arguments.length > 0 && console.error('ModImgGetterDefault getBase64Image() cannot have arguments.', arguments);
+        // arguments.length > 0 && console.error('ModImgGetterDefault getBase64Image() cannot have arguments.', arguments);
         if (this.invalid) {
             return undefined;
         }
