@@ -720,52 +720,52 @@ export class IndexDBLoader extends LoaderBase {
     /**
      * @param modeList must have same items as the list in listMod()
      */
-    static async reorderModeList(modeList: string[]) {
+    static async reorderModList(modeList: string[]) {
         const oldList = await IndexDBLoader.listMod();
         if (!oldList) {
-            console.error('ModLoader ====== IndexDBLoader reorderModeList() oldList Invalid');
+            console.error('ModLoader ====== IndexDBLoader reorderModList() oldList Invalid');
             return;
         }
         if (oldList.length !== modeList.length) {
-            console.error('ModLoader ====== IndexDBLoader reorderModeList() oldList.length !== modeList.length');
+            console.error('ModLoader ====== IndexDBLoader reorderModList() oldList.length !== modeList.length');
             return;
         }
         if (uniq(modeList).length !== modeList.length) {
-            console.error('ModLoader ====== IndexDBLoader reorderModeList() modeList has duplicate items. invalid');
+            console.error('ModLoader ====== IndexDBLoader reorderModList() modeList has duplicate items. invalid');
             return;
         }
         if (!oldList.every((T, i) => modeList.includes(T))) {
-            console.error('ModLoader ====== IndexDBLoader reorderModeList() oldList !includes() modeList');
+            console.error('ModLoader ====== IndexDBLoader reorderModList() oldList !includes() modeList');
             return;
         }
         await keyval_set(IndexDBLoader.modDataIndexDBZipList, JSON.stringify(modeList), createStore(IndexDBLoader.dbName, IndexDBLoader.storeName));
-        console.log('ModLoader ====== IndexDBLoader reorderModeList() done');
+        console.log('ModLoader ====== IndexDBLoader reorderModList() done');
     }
 
-    static async setModeList(modeList: string[]) {
+    static async setModList(modeList: string[]) {
         if (!isArray(modeList) || !every(modeList, isString)) {
-            console.error('ModLoader ====== IndexDBLoader setModeList() modeList type invalid. invalid');
+            console.error('ModLoader ====== IndexDBLoader setModList() modeList type invalid. invalid');
             return;
         }
         if (uniq(modeList).length !== modeList.length) {
-            console.error('ModLoader ====== IndexDBLoader setModeList() modeList has duplicate items. invalid');
+            console.error('ModLoader ====== IndexDBLoader setModList() modeList has duplicate items. invalid');
             return;
         }
         await keyval_set(IndexDBLoader.modDataIndexDBZipList, JSON.stringify(modeList), createStore(IndexDBLoader.dbName, IndexDBLoader.storeName));
-        console.log('ModLoader ====== IndexDBLoader setModeList() done');
+        console.log('ModLoader ====== IndexDBLoader setModList() done');
     }
 
-    static async setHiddenModeList(modeList: string[]) {
+    static async setHiddenModList(modeList: string[]) {
         if (!isArray(modeList) || !every(modeList, isString)) {
-            console.error('ModLoader ====== IndexDBLoader setHiddenModeList() modeList type invalid. invalid');
+            console.error('ModLoader ====== IndexDBLoader setHiddenModList() modeList type invalid. invalid');
             return;
         }
         if (uniq(modeList).length !== modeList.length) {
-            console.error('ModLoader ====== IndexDBLoader setHiddenModeList() modeList has duplicate items. invalid');
+            console.error('ModLoader ====== IndexDBLoader setHiddenModList() modeList has duplicate items. invalid');
             return;
         }
         await keyval_set(IndexDBLoader.modDataIndexDBZipListHidden, JSON.stringify(modeList), createStore(IndexDBLoader.dbName, IndexDBLoader.storeName));
-        console.log('ModLoader ====== IndexDBLoader setHiddenModeList() done');
+        console.log('ModLoader ====== IndexDBLoader setHiddenModList() done');
     }
 
     static async loadHiddenModList() {
