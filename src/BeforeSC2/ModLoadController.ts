@@ -363,6 +363,14 @@ export class ModLoadController implements ModLoadControllerCallback {
         return LocalStorageLoader.checkModZipFile(modBase64String);
     }
 
+    public async overwriteModIndexDBModList(modeList: string[]) {
+        await IndexDBLoader.setModList(modeList);
+    }
+
+    public async overwriteModIndexDBHiddenModList(modeList: string[]) {
+        await IndexDBLoader.setHiddenModList(modeList);
+    }
+
     public async listModIndexDB() {
         return await IndexDBLoader.listMod() || [];
     }
