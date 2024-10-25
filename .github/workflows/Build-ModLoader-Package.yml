@@ -67,6 +67,21 @@ jobs:
           yarn run webpack:insertTools
           yarn run tras:babel
 
+      # ModLoaderGui need use ModSubUiAngularJs types
+      - name: Build ModSubUiAngularJs
+        working-directory: ${{ github.workspace }}/mod/ModSubUiAngularJs
+        run: |
+          cd ${{ github.workspace }}/mod/ModSubUiAngularJs
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Copy ModSubUiAngularJs
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/ModSubUiAngularJs/ModSubUiAngularJs.mod.zip
+          target: ${{ github.workspace }}/out
+
       - name: Build ModLoaderGui
         working-directory: ${{ github.workspace }}/mod/ModLoaderGui
         run: |
@@ -372,20 +387,6 @@ jobs:
         uses: Lyoko-Jeremie/js-copy-github-action@master
         with:
           source: ${{ github.workspace }}/mod/DoLLinkButtonFilter/DoLLinkButtonFilter.mod.zip
-          target: ${{ github.workspace }}/out
-
-      - name: Build ModSubUiAngularJs
-        working-directory: ${{ github.workspace }}/mod/ModSubUiAngularJs
-        run: |
-          cd ${{ github.workspace }}/mod/ModSubUiAngularJs
-          yarn install
-          yarn run build:ts
-          yarn run build:webpack
-          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
-      - name: Copy ModSubUiAngularJs
-        uses: Lyoko-Jeremie/js-copy-github-action@master
-        with:
-          source: ${{ github.workspace }}/mod/ModSubUiAngularJs/ModSubUiAngularJs.mod.zip
           target: ${{ github.workspace }}/out
 
       - name: Build HookMacroRng
