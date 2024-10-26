@@ -2514,6 +2514,7 @@ __metadata:
     expose-loader: ^4.1.0
     fork-ts-checker-webpack-plugin: ^8.0.0
     html-webpack-plugin: ^5.5.3
+    idb: ^8.0.0
     idb-keyval: ^6.2.1
     jquery: ^3.7.1
     json5: ^2.2.3
@@ -5048,6 +5049,13 @@ __metadata:
   version: 6.2.1
   resolution: "idb-keyval@npm:6.2.1"
   checksum: 7c0836f832096086e99258167740181132a71dd2694c8b8454a4f5ec69114ba6d70983115153306f0b6de1c8d3bad04f67eed3dff8f50c96815b9985d6d78470
+  languageName: node
+  linkType: hard
+
+"idb@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "idb@npm:8.0.0"
+  checksum: a9c6176c176dc1a73520ae906d33fcda8a6f6068cf64027e196763d4ad70b088b7141650ed68f3604e0f0ccd1a123f6b8a435ba5e4514f42ada3460c23b6747a
   languageName: node
   linkType: hard
 
