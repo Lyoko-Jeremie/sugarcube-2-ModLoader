@@ -7,6 +7,7 @@ import {getLogFromModLoadControllerCallback, LogWrapper, ModLoadControllerCallba
 import {extname} from "./extname";
 import {ReplacePatcher, checkPatchInfo} from "./ReplacePatcher";
 import JSON5 from 'json5';
+import fnv1a from '@sindresorhus/fnv1a';
 
 export interface Twee2PassageR {
     name: string;
@@ -47,6 +48,50 @@ export function imgWrapBase64Url(fileName: string, base64: string) {
     return `data:image/${ext};base64,${base64}`;
 }
 
+export async function blobToBase64(blob: Blob) {
+    return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            // reader.result包含了base64数据URL，格式如: data:image/jpeg;base64,/9j/4AAQ...
+            // 如果只需要base64字符串部分，可以用split(',')[1]获取
+            resolve((reader.result as string).split(',')[1]);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+
+export class ModZipReaderHash {
+    hash: BigInt;
+
+    constructor(
+        zipBase64String: string,
+    ) {
+        this.hash = fnv1a(zipBase64String, {size: 64});
+    }
+
+    compare(h: ModZipReaderHash) {
+        return this.hash === h.hash;
+    }
+
+    compareWithString(h: string) {
+        try {
+            return this.hash === BigInt(h);
+        } catch (e) {
+            return false;
+        }
+    }
+
+    toString() {
+        return this.hash.toString();
+    }
+
+    fromString(hash: string) {
+        return BigInt(hash);
+    }
+
+}
+
 export class ModZipReader {
 
     public log: LogWrapper;
@@ -67,8 +112,11 @@ export class ModZipReader {
         return this._zip;
     }
 
+    public modZipReaderHash: ModZipReaderHash;
+
     constructor(
         zip: JSZip,
+        zipBase64String: string,
         public loaderBase: LoaderBase,
         public modLoadControllerCallback: ModLoadControllerCallback,
     ) {
@@ -88,6 +136,7 @@ export class ModZipReader {
         }
         // this._zipWeakRef = new WeakRef(zip);
         this._zip = zip;
+        this.modZipReaderHash = new ModZipReaderHash(zipBase64String);
         this.gcFinalizationRegistry.register(this._zip, undefined, this);
         this.log = getLogFromModLoadControllerCallback(modLoadControllerCallback);
     }
@@ -354,7 +403,7 @@ export class ModZipReader {
                 }
             }
 
-            console.log('ModLoader ====== ModZipReader init() modInfo', this.modInfo);
+            console.log('ModLoader ====== ModZipReader init() modInfo', this.modInfo, this.modZipReaderHash.hash);
             this.log.log(`ModLoader ====== ModZipReader init() modInfo: [${this.modInfo.name}] [${this.modInfo.version}]`);
 
             return true;
@@ -566,7 +615,7 @@ export class LocalStorageLoader extends LoaderBase {
             }
             try {
                 const m = await JSZip.loadAsync(base64ZipString, {base64: true}).then(zip => {
-                    return new ModZipReader(zip, this, this.log);
+                    return new ModZipReader(zip, base64ZipString, this, this.log);
                 });
                 if (await m.init()) {
                     this.modList.push(m);
@@ -705,7 +754,7 @@ export class IndexDBLoader extends LoaderBase {
             }
             try {
                 const m = await JSZip.loadAsync(base64ZipString, {base64: true}).then(zip => {
-                    return new ModZipReader(zip, this, this.log);
+                    return new ModZipReader(zip, base64ZipString, this, this.log);
                 });
                 if (await m.init()) {
                     this.modList.push(m);
@@ -885,7 +934,7 @@ export class Base64ZipStringLoader extends LoaderBase {
         for (const base64ZipString of this.base64ZipStringList) {
             try {
                 const m = await JSZip.loadAsync(base64ZipString, {base64: true}).then(zip => {
-                    return new ModZipReader(zip, this, this.log);
+                    return new ModZipReader(zip, base64ZipString, this, this.log);
                 });
                 if (await m.init()) {
                     this.modList.push(m);
@@ -928,7 +977,7 @@ export class LocalLoader extends LoaderBase {
                 for (const modDataValueZip of modDataValueZipList) {
                     try {
                         const m = await JSZip.loadAsync(modDataValueZip, {base64: true}).then(zip => {
-                            return new ModZipReader(zip, this, this.log);
+                            return new ModZipReader(zip, modDataValueZip, this, this.log);
                         });
                         if (await m.init()) {
                             this.modList.push(m);
@@ -972,10 +1021,11 @@ export class RemoteLoader extends LoaderBase {
             for (const modFileZipPath of modList) {
                 try {
                     const m = await fetch(modFileZipPath)
-                        .then(T => T.blob())
-                        .then(T => JSZip.loadAsync(T))
-                        .then(zip => {
-                            return new ModZipReader(zip, this, this.log);
+                        .then(async (T) => {
+                            const blob = await T.blob();
+                            const base64ZipString = await blobToBase64(blob);
+                            const zipFile = await JSZip.loadAsync(blob);
+                            return new ModZipReader(zipFile, base64ZipString, this, this.log);
                         });
                     if (await m.init()) {
                         this.modList.push(m);
@@ -1000,7 +1050,8 @@ export class LazyLoader extends LoaderBase {
 
     async add(modeZip: JSZip) {
         try {
-            const m = new ModZipReader(modeZip, this, this.log);
+            const base64ZipString = await modeZip.generateAsync({type: "base64"});
+            const m = new ModZipReader(modeZip, base64ZipString, this, this.log);
             if (await m.init()) {
                 this.modList.push(m);
             }
