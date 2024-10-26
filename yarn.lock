@@ -1939,6 +1939,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sindresorhus/fnv1a@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@sindresorhus/fnv1a@npm:3.1.0"
+  checksum: 9816f4382da21df562e9049bd40dca95bc952afbc5f2257750b1b537af0810850749ee113c8b97f0b4c49a2d82c225fc8e0e14fda191333de9e1f73730a428e3
+  languageName: node
+  linkType: hard
+
 "@tootallnate/once@npm:1":
   version: 1.1.2
   resolution: "@tootallnate/once@npm:1.1.2"
@@ -2491,6 +2498,7 @@ __metadata:
     "@babel/core": ^7.23.2
     "@babel/preset-env": ^7.23.2
     "@babel/preset-typescript": ^7.23.2
+    "@sindresorhus/fnv1a": ^3.1.0
     "@types/core-js": ^2.5.8
     "@types/jquery": ^3.5.20
     "@types/libsodium-wrappers": ^0.7.11
