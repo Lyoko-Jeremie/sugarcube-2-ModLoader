@@ -1168,25 +1168,3 @@ export class LoaderKeyConfig {
     }
 
 }
-
-export class IdbKeyValRef {
-    get keyval_get() {
-        return keyval_get;
-    }
-
-    get keyval_set() {
-        return keyval_set;
-    }
-
-    get keyval_del() {
-        return keyval_del;
-    }
-
-    get createStore() {
-        return createStore;
-    }
-
-    get setMany() {
-        return setMany;
-    }
-}
