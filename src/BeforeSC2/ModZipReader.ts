@@ -664,16 +664,17 @@ export class IndexDBLoader extends LoaderBase {
         IndexDBLoader.modDataIndexDBZipListHidden = this.loaderKeyConfig.getLoaderKey(IndexDBLoader.modDataIndexDBZipListHidden, IndexDBLoader.modDataIndexDBZipListHidden);
         IndexDBLoader.modDataIndexDBZipList = this.loaderKeyConfig.getLoaderKey(IndexDBLoader.modDataIndexDBZipList, IndexDBLoader.modDataIndexDBZipList);
         IndexDBLoader.modDataIndexDBZipPrefix = this.loaderKeyConfig.getLoaderKey(IndexDBLoader.modDataIndexDBZipPrefix, IndexDBLoader.modDataIndexDBZipPrefix);
+
+        this.customStore = createStore(IndexDBLoader.dbName, IndexDBLoader.storeName);
     }
 
-    customStore: UseStore;
+    customStore!: UseStore;
 
     constructor(
         public modLoadControllerCallback: ModLoadControllerCallback,
         public loaderKeyConfig: LoaderKeyConfig,
     ) {
         super(modLoadControllerCallback, loaderKeyConfig);
-        this.customStore = createStore(IndexDBLoader.dbName, IndexDBLoader.storeName);
     }
 
     async load(): Promise<boolean> {
