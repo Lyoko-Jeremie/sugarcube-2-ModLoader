@@ -10,6 +10,7 @@ import {ModInfo, ModLoader} from "./ModLoader";
 import {LogWrapper, ModLoadController} from "./ModLoadController";
 import {AddonPluginManager} from "./AddonPlugin";
 import {SemVerToolsType} from "./SemVer/InfiniteSemVer";
+import {IdbKeyValRef, IdbRef} from "./IdbKeyValRef";
 // import {
 //     enumerable,
 //     sealed,
@@ -402,6 +403,10 @@ export class ModUtils {
 
     getIdbKeyValRef() {
         return new IdbKeyValRef();
+    }
+
+    getIdbRef() {
+        return new IdbRef();
     }
 
 }
