@@ -1,12 +1,12 @@
 import {SC2DataManager} from "./SC2DataManager";
 import {isInteger, isString} from "lodash";
 import _ from "lodash";
-import {getModZipReaderStaticClassRef, ModZipReader, Twee2Passage, Twee2PassageR} from "./ModZipReader";
+import {getModZipReaderStaticClassRef, IdbKeyValRef, ModZipReader, Twee2Passage, Twee2PassageR} from "./ModZipReader";
 import {PassageDataItem, SC2DataInfo, SC2DataInfoCache} from "./SC2DataInfoCache";
 import {SimulateMergeResult} from "./SimulateMerge";
 import {replaceMergeSC2DataInfoCache, replaceMergeSC2DataInfoCacheForce} from "./MergeSC2DataInfoCache";
 import JSZip from "jszip";
-import {ModInfo} from "./ModLoader";
+import {ModInfo, ModLoader} from "./ModLoader";
 import {LogWrapper, ModLoadController} from "./ModLoadController";
 import {AddonPluginManager} from "./AddonPlugin";
 import {SemVerToolsType} from "./SemVer/InfiniteSemVer";
@@ -353,6 +353,10 @@ export class ModUtils {
         return this.pSC2DataManager.getModLoadController();
     }
 
+    getModLoader(): ModLoader {
+        return this.pSC2DataManager.getModLoader();
+    }
+
     getAddonPluginManager(): AddonPluginManager {
         return this.pSC2DataManager.getAddonPluginManager();
     }
@@ -394,6 +398,10 @@ export class ModUtils {
 
     getNowMainLanguage(): 'en' | 'zh' | string {
         return this.getLanguageManager().mainLanguage;
+    }
+
+    getIdbKeyValRef() {
+        return new IdbKeyValRef();
     }
 
 }
