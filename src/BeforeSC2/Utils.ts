@@ -26,7 +26,7 @@ import {IdbKeyValRef, IdbRef} from "./IdbKeyValRef";
 export class ModUtils {
 
     get version(): string {
-        return '2.23.1';
+        return '2.23.2';
     }
 
     constructor(
