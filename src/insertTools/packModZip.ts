@@ -2,7 +2,7 @@ import JSZip from 'jszip';
 import fs from 'fs';
 import path from 'path';
 import {promisify} from 'util';
-import {every, get, has, isArray, isObject, isString} from 'lodash';
+import {every, get, has, isArray, isObject, isPlainObject, isString} from 'lodash';
 import JSON5 from 'json5';
 
 // export async function img2base64Url(fPath: string) {
@@ -105,7 +105,7 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
 
     // optional
     if (c && has(bootJ, 'nikeName')) {
-        c = c && isString(get(bootJ, 'nikeName'));
+        c = c && (isString(get(bootJ, 'nikeName')) || (isPlainObject(get(bootJ, 'nikeName'))));
     }
     if (c && has(bootJ, 'alias')) {
         c = c && (isArray(get(bootJ, 'alias')) && every(get(bootJ, 'alias'), isString));
@@ -145,7 +145,7 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
             every(get(bootJ, 'imgFileList'), isString),
 
             'nikeName',
-            has(bootJ, 'nikeName') ? isString(get(bootJ, 'nikeName')) : true,
+            has(bootJ, 'nikeName') ? (isString(get(bootJ, 'nikeName')) || (isPlainObject(get(bootJ, 'nikeName')))) : true,
 
             'alias',
             has(bootJ, 'alias') &&

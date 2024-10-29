@@ -1,5 +1,5 @@
 import JSZip from "jszip";
-import {every, get, has, isArray, isString, uniq} from "lodash";
+import {every, get, has, isArray, isPlainObject, isString, uniq} from "lodash";
 import {get as keyval_get, set as keyval_set, del as keyval_del, createStore, UseStore, setMany} from 'idb-keyval';
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {checkDependenceInfo, checkModBootJsonAddonPlugin, ModBootJson, ModImgGetterDefault, ModInfo} from "./ModLoader";
@@ -194,7 +194,7 @@ export class ModZipReader {
 
         // optional
         if (c && has(bootJ, 'nikeName')) {
-            c = c && isString(get(bootJ, 'nikeName'));
+            c = c && (isString(get(bootJ, 'nikeName')) || (isPlainObject(get(bootJ, 'nikeName'))));
         }
         if (c && has(bootJ, 'alias')) {
             c = c && (isArray(get(bootJ, 'alias')) && every(get(bootJ, 'alias'), isString));
@@ -233,8 +233,8 @@ export class ModZipReader {
                 isArray(get(bootJ, 'imgFileList')),
                 every(get(bootJ, 'imgFileList'), isString),
 
-                'nikeName',
-                has(bootJ, 'nikeName') ? isString(get(bootJ, 'nikeName')) : true,
+                // 'nikeName',
+                // has(bootJ, 'nikeName') ? isString(get(bootJ, 'nikeName')) : true,
 
                 'alias',
                 has(bootJ, 'alias') &&

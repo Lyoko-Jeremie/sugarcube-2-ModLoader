@@ -146,9 +146,11 @@ export function checkDependenceInfo(v: any): v is DependenceInfo {
         && isString(get(v, 'version'));
 }
 
+export type ModNikeName = ({ [key in string]?: string } & { cn?: string, en?: string }) | string | undefined;
+
 export interface ModBootJson {
     name: string;
-    nikeName?: string;
+    nikeName?: ModNikeName;
     alias?: string[];
     version: string;
     styleFileList: string[];
@@ -167,7 +169,7 @@ export interface ModBootJson {
 
 export interface ModInfo {
     name: string;
-    nikeName?: string;
+    nikeName?: ModNikeName;
     alias: string[];
     version: string;
     cache: SC2DataInfo;
