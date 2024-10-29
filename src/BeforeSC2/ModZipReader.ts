@@ -308,7 +308,7 @@ export class ModZipReader {
             this.modInfo = {
                 name: bootJ.name,
                 nikeName: bootJ.nikeName || undefined,
-                alias: bootJ.alias || [],
+                alias: bootJ.alias ?? [],
                 version: bootJ.version,
                 cache: new SC2DataInfo(
                     this.log,
