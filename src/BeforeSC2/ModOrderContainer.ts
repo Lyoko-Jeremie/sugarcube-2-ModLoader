@@ -160,6 +160,54 @@ export class ModOrderContainer_One_ReadonlyMap extends CustomReadonlyMapHelper<s
 
 }
 
+export class ModOrderContainer_OneAlias_ReadonlyMap extends CustomReadonlyMapHelper<string, ModOrderItem> {
+    constructor(
+        public parent: ModOrderContainer,
+    ) {
+        super();
+        parent.checkAlias();
+        parent.checkNameUniq();
+    }
+
+    get size() {
+        return this.parent.nameRefWithAlias.size;
+    };
+
+    entries(): IterableIterator<[string, ModOrderItem]> {
+        return new CustomIterableIterator<[string, ModOrderItem], ModOrderContainer, string[]>(
+            this.parent,
+            (index, p, ito) => {
+                if (index >= p.container.size) {
+                    return {done: true, value: undefined};
+                } else {
+                    const it = ito.cache[index];
+                    const itt = this.get(it);
+                    // console.log('entries()', index, it, itt);
+                    if (!it || !itt) {
+                        console.error('entries() (!it || !itt)', index, it, itt);
+                        throw new Error('entries() (!it || !itt)');
+                    }
+                    return {done: false, value: [it, itt]};
+                }
+            },
+            Array.from(this.parent.nameRefWithAlias.keys()),
+        );
+    }
+
+    get(key: string): ModOrderItem | undefined {
+        const name = this.parent.nameRefWithAlias.get(key);
+        if (!name) {
+            return undefined;
+        }
+        return this.parent.container.get(name)?.values().next().value;
+    }
+
+    has(key: string): boolean {
+        return this.parent.nameRefWithAlias.has(key);
+    }
+
+}
+
 export function isModOrderContainer(a: any): a is ModOrderContainer {
     return a
         && isArray(a.order)
@@ -190,6 +238,10 @@ export class ModOrderContainer {
      */
     get_One_Map(): ModOrderContainer_One_ReadonlyMap {
         return new ModOrderContainer_One_ReadonlyMap(this);
+    }
+
+    get_One_Map_WithAlias(): ModOrderContainer_OneAlias_ReadonlyMap {
+        return new ModOrderContainer_OneAlias_ReadonlyMap(this);
     }
 
     /**
@@ -317,6 +369,26 @@ export class ModOrderContainer {
                 console.error('ModOrderContainer checkNameUniq() name not uniq.', [name, m]);
                 return false;
             }
+        }
+        return true;
+    }
+
+    /**
+     * O(n)
+     */
+    checkAlias(): boolean {
+        const alias = new Set<string>();
+        for (const [name, m] of this.container) {
+            alias.add(name);
+            for (const a of m.values()) {
+                for (const al of a.mod.alias) {
+                    alias.add(al);
+                }
+            }
+        }
+        if (alias.size !== this.nameRefWithAlias.size) {
+            console.error('ModOrderContainer checkAlias() alias invalid.', [alias, this.nameRefWithAlias]);
+            return false;
         }
         return true;
     }
