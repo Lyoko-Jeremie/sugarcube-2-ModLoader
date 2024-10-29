@@ -18,6 +18,7 @@ import {
     ModLoadFromSourceType,
     ModOrderContainer,
     ModOrderContainer_One_ReadonlyMap,
+    ModOrderContainer_OneAlias_ReadonlyMap,
     ModOrderItem
 } from "./ModOrderContainer";
 import {LRUCache} from 'lru-cache';
@@ -261,6 +262,10 @@ export class ModLoader {
      */
     public getModCacheMap(): ModOrderContainer_One_ReadonlyMap {
         return this.modCache.get_One_Map();
+    }
+
+    public getModCacheMapWithAlias(): ModOrderContainer_OneAlias_ReadonlyMap {
+        return this.modCache.get_One_Map_WithAlias();
     }
 
     /**
