@@ -20,6 +20,8 @@ Or download the DoL with ModLoader version automatic build ：[DoLModLoaderBuild
 | [ModLoaderGui](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoaderGui)                                                | Built-in | Usable     | Mod管理器，用于管理Mod的加载顺序，启用/禁用Mod，以及查看Mod加载日志                            |
 | [ConflictChecker](https://github.com/Lyoko-Jeremie/ConflictCheckerAddon)                                                 | Built-in | Stable     | Mod冲突检查器，提供附加的约束条件来检查Mod之间的冲突                                       |
 | [ImageLoaderHook](https://github.com/Lyoko-Jeremie/DoL_ImgLoaderHooker)                                                  | Built-in | Stable     | 图片替换功能，用于替换游戏中的图片                                                   |
+| [BeautySelectorAddon](https://github.com/Lyoko-Jeremie/DoL_BeautySelectorAddonMod)                                       | Built-in | Stable     | 美化切换功能，类似于ImageLoaderHook，但可在同一个mod中内置多组美化并随意切换                     |
+| [ModSubUiAngularJs](https://github.com/Lyoko-Jeremie/ModSubUiAngularJs)                                       | Built-in | Stable     | 基于AngularJs提供可复用的复杂逻辑UI组件                                           |
 | [ReplacePatch](https://github.com/Lyoko-Jeremie/Degrees-of-Lewdity_Mod_ReplacePatch)                                     | Built-in | Stable     | 提供对js/css/passage的简单替换                                              |
 | [I18nTweeList](https://github.com/Lyoko-Jeremie/I18nTweeListAddonMod)                                                    | Built-in | Stable     | 为tweeFileList提供i18n支持                                               |
 | [I18nScriptList](https://github.com/Lyoko-Jeremie/I18nScriptListAddonMod)                                                | Built-in | Stable     | 为scriptFileList提供i18n支持                                             |
@@ -41,8 +43,8 @@ Or download the DoL with ModLoader version automatic build ：[DoLModLoaderBuild
 | [CryptoI18n](https://github.com/Lyoko-Jeremie/CryptoI18nMod)                                                             | Example  | Demo       | v2.0.0 版本的mod加密功能的demo。以i18n mod作为范例。                               |
 | [ExampleModModifyMod](https://github.com/Lyoko-Jeremie/ExampleModModifyMod)                                              | Example  | Demo       | 关于如何使用Mod B读取并修改Mod A的数据和行为的示范Mod                                   |
 | [SimpleCryptWrapper](https://github.com/Lyoko-Jeremie/SimpleCryptWrapperMod)                                             | Tools    | Stable     | 一个简易Mod加密封装工具，用来将另一个mod封装成在加载时需要输入解密密码的加密mod，设计用来保护图片资源             |
-| [DoLModWebpackExampleTs](https://github.com/Lyoko-Jeremie/DoLModWebpackExampleTs)                                       | Template | Demo       | 使用webpack打包的TypeScript模板项目，用于展示如何使用TypeScript开发Mod                  |
-| [DoLModWebpackExampleJs](https://github.com/Lyoko-Jeremie/DoLModWebpackExampleJs)                                       | Template | Demo       | 使用webpack打包的JavaScript模板项目，用于展示如何使用JavaScript开发Mod                 |
+| [DoLModWebpackExampleTs](https://github.com/Lyoko-Jeremie/DoLModWebpackExampleTs)                                        | Template | Demo       | 使用webpack打包的TypeScript模板项目，用于展示如何使用TypeScript开发Mod                  |
+| [DoLModWebpackExampleJs](https://github.com/Lyoko-Jeremie/DoLModWebpackExampleJs)                                        | Template | Demo       | 使用webpack打包的JavaScript模板项目，用于展示如何使用JavaScript开发Mod                  |
 
 
 有关各个mod的功能及用法，详见对应mod项目的README.md文件。
@@ -119,6 +121,10 @@ The format is as follows (sample src/insertTools/MyMod/boot.json):
 ```json5
 {
   "name": "MyMod",    // （必须存在） mod名字
+  "nikeName": "A Example Mod",    // （可选） 用户友好的名字，会在mod管理器中显示
+  "alias": [ // （可选） mod别名，用于提供兼容性。例如，如果一个mod的名字变更了，可以在这里添加旧名字，以便在加载时找到正确的mod。
+    "OldModName"  // 常见的用例是，需要跨游戏迁移mod，但又需要让其他旧游戏的mod能在新游戏上正常识别到此mod，可以设置别名，表示当前mod提供的功能与旧mod相同。
+  ], 
   "version": "1.0.0", // （必须存在） mod版本
   "scriptFileList_inject_early": [  // （可选） 提前注入的 js 脚本 ， 会在当前mod加载后立即插入到dom中由浏览器按照script的标注执行方式执行
     "MyMod_script_inject_early_example.js"
