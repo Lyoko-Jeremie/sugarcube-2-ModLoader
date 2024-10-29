@@ -122,6 +122,10 @@ The format is as follows (sample src/insertTools/MyMod/boot.json):
 {
   "name": "MyMod",    // （必须存在） mod名字
   "nikeName": "A Example Mod",    // （可选） 用户友好的名字，会在mod管理器中显示
+//  "nikeName": {   // （可选） 写法2：多语言支持
+//    "cn": "Chinse Name",
+//    "en": "English Name"
+//  },
   "alias": [ // （可选） mod别名，用于提供兼容性。例如，如果一个mod的名字变更了，可以在这里添加旧名字，以便在加载时找到正确的mod。
     "OldModName"  // 常见的用例是，需要跨游戏迁移mod，但又需要让其他旧游戏的mod能在新游戏上正常识别到此mod，可以设置别名，表示当前mod提供的功能与旧mod相同。
   ], 
