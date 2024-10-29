@@ -11,6 +11,7 @@ import {LogWrapper, ModLoadController} from "./ModLoadController";
 import {AddonPluginManager} from "./AddonPlugin";
 import {SemVerToolsType} from "./SemVer/InfiniteSemVer";
 import {IdbKeyValRef, IdbRef} from "./IdbKeyValRef";
+import {ModLoadFromSourceType} from "./ModOrderContainer";
 // import {
 //     enumerable,
 //     sealed,
@@ -62,6 +63,18 @@ export class ModUtils {
      */
     getMod(name: string): ModInfo | undefined {
         return this.pSC2DataManager.getModLoader().getModCacheByAliseOne(name)?.mod;
+    }
+
+    getModAndFromInfo(name: string): undefined | { name: string, mod: ModInfo, from: ModLoadFromSourceType } {
+        const m = this.pSC2DataManager.getModLoader().getModCacheByAliseOne(name);
+        if (!m) {
+            return undefined;
+        }
+        return {
+            name: m.name,
+            from: m.from,
+            mod: m.mod,
+        };
     }
 
     /**
