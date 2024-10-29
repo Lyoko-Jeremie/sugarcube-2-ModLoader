@@ -57,7 +57,7 @@ export class DependenceChecker {
                 }
                 const find: ModOrderItem[] = [];
                 for (const modCache of modCaches) {
-                    const fr = modCache.getByName(d.modName);
+                    const fr = modCache.getModOrderItemByNameWithAlias(d.modName);
                     fr?.forEach(T => find.push(T));
                 }
                 if (find.length === 0) {

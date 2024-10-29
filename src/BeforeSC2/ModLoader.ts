@@ -147,6 +147,8 @@ export function checkDependenceInfo(v: any): v is DependenceInfo {
 
 export interface ModBootJson {
     name: string;
+    nikeName?: string;
+    alias?: string[];
     version: string;
     styleFileList: string[];
     scriptFileList: string[];
@@ -164,6 +166,8 @@ export interface ModBootJson {
 
 export interface ModInfo {
     name: string;
+    nikeName?: string;
+    alias: string[];
     version: string;
     cache: SC2DataInfo;
     imgs: ModImg[];
@@ -248,6 +252,10 @@ export class ModLoader {
         return this.modCache.get_Array();
     }
 
+    public getModAllName(): string[] {
+        return this.modCache.getAllName();
+    }
+
     /**
      O(1)
      */
@@ -274,6 +282,10 @@ export class ModLoader {
      */
     public getModCacheByNameOne(modName: string): ModOrderItem | undefined {
         return this.modCache.getByNameOne(modName);
+    }
+
+    public getModCacheByAliseOne(modName: string): ModOrderItem | undefined {
+        return this.modCache.getByNameOneWithAlias(modName);
     }
 
     public getModReadCache(): ModOrderContainer {

@@ -178,6 +178,8 @@ export class ModOrderContainer {
     // keep order
     order: ModOrderItem[] = [];
 
+    nameRefWithAlias: Map<string, string> = new Map<string, string>();
+
     constructor() {
     }
 
@@ -208,10 +210,24 @@ export class ModOrderContainer {
     }
 
     /**
+     * O(n)
+     */
+    getAllName(): string[] {
+        return Array.from(this.nameRefWithAlias.keys());
+    }
+
+    /**
      * O(1)
      */
     getHasByName(name: string): boolean {
         return this.container.has(name) && this.container.get(name)!.size > 0;
+    }
+
+    /**
+     * O(1)
+     */
+    getHasByNameWithAlias(name: string): boolean {
+        return this.nameRefWithAlias.has(name);
     }
 
     /**
@@ -231,6 +247,17 @@ export class ModOrderContainer {
     /**
      * O(1)
      */
+    getModOrderItemByNameWithAlias(name: string): Map<ModLoadFromSourceType, ModOrderItem> | undefined {
+        const n = this.nameRefWithAlias.get(name);
+        if (!n) {
+            return undefined;
+        }
+        return this.container.get(n);
+    }
+
+    /**
+     * O(1)
+     */
     getByNameOne(name: string, noError = false): ModOrderItem | undefined {
         this.checkNameUniq();
         const nn = this.container.get(name);
@@ -243,6 +270,33 @@ export class ModOrderContainer {
         }
         if (nn.size > 1) {
             console.error('ModOrderContainer getByNameOne() has more than one mod.', [name, nn]);
+        }
+        return nn.values().next().value;
+    }
+
+    /**
+     * O(1)
+     */
+    getByNameOneWithAlias(name: string, noError = false): ModOrderItem | undefined {
+        this.checkNameUniq();
+        const na = this.nameRefWithAlias.get(name);
+        if (!na) {
+            if (noError) {
+                return undefined;
+            }
+            console.error('ModOrderContainer getByNameOneWithAlias() cannot find name/alias.', [name, this.clone()]);
+            return undefined;
+        }
+        const nn = this.container.get(na);
+        if (!nn) {
+            if (noError) {
+                return undefined;
+            }
+            console.error('ModOrderContainer getByNameOneWithAlias() cannot find name.', [name, na, this.clone()]);
+            return undefined;
+        }
+        if (nn.size > 1) {
+            console.error('ModOrderContainer getByNameOneWithAlias() has more than one mod.', [name, na, nn]);
         }
         return nn.values().next().value;
     }
@@ -298,12 +352,13 @@ export class ModOrderContainer {
         const m = this.container.get(name);
         if (m) {
             if (m.has(from)) {
+                const mod = m.get(from)!;
                 m.delete(from);
                 if (m.size === 0) {
                     this.container.delete(name);
                 }
                 this.order = this.order.filter(T => T.name !== name && T.from !== from);
-                this.checkData();
+                this.removeModNameRefWithAlias(mod);
                 return true;
             }
         }
@@ -318,6 +373,7 @@ export class ModOrderContainer {
         if (m) {
             this.container.delete(name);
             this.order = this.order.filter(T => T.name !== name);
+            this.rebuildNameRefWithAlias();
             this.checkData();
             return true;
         }
@@ -359,6 +415,7 @@ export class ModOrderContainer {
             this.order.splice(ii, 1);
         }
         this.order = [obj, ...this.order];
+        this.addModNameRefWithAlias(obj);
         this.checkData();
         return true;
     }
@@ -382,6 +439,7 @@ export class ModOrderContainer {
             this.order.splice(ii, 1);
         }
         this.order.push(obj);
+        this.addModNameRefWithAlias(obj);
         this.checkData();
         return true;
     }
@@ -404,6 +462,7 @@ export class ModOrderContainer {
         if (ii >= 0) {
             this.order.splice(ii, 0, obj);
         }
+        this.rebuildNameRefWithAlias();
         this.checkData();
         return true;
     }
@@ -421,6 +480,7 @@ export class ModOrderContainer {
                     this.container.delete(name);
                 }
                 this.order = this.order.filter(T => T.name !== n.name && T.from !== n.from);
+                this.removeModNameRefWithAlias(n);
                 this.checkData();
                 return n;
             }
@@ -436,6 +496,7 @@ export class ModOrderContainer {
         if (m) {
             this.container.delete(name);
             this.order = this.order.filter(T => T.name !== name);
+            this.rebuildNameRefWithAlias();
             this.checkData();
             return Array.from(m.values());
         }
@@ -454,6 +515,7 @@ export class ModOrderContainer {
                 if (m.size === 0) {
                     this.container.delete(obj.name);
                 }
+                this.removeModNameRefWithAlias(obj);
                 this.checkData();
                 return obj;
             }
@@ -467,6 +529,7 @@ export class ModOrderContainer {
     clear(): void {
         this.container.clear();
         this.order = [];
+        this.nameRefWithAlias.clear();
     }
 
     /**
@@ -493,8 +556,33 @@ export class ModOrderContainer {
         for (const item of this.order) {
             r.order.push(r.createModOrderItem(item.zip, item.from)!);
         }
+        r.rebuildNameRefWithAlias();
         r.checkData();
         return r;
+    }
+
+    private rebuildNameRefWithAlias(): void {
+        this.nameRefWithAlias.clear();
+        for (const item of this.order) {
+            this.nameRefWithAlias.set(item.name, item.name);
+            for (const alias of item.mod.alias) {
+                this.nameRefWithAlias.set(alias, item.name);
+            }
+        }
+    }
+
+    private addModNameRefWithAlias(modOrderItem: ModOrderItem) {
+        this.nameRefWithAlias.set(modOrderItem.name, modOrderItem.name);
+        for (const alias of modOrderItem.mod.alias) {
+            this.nameRefWithAlias.set(alias, modOrderItem.name);
+        }
+    }
+
+    private removeModNameRefWithAlias(modOrderItem: ModOrderItem) {
+        this.nameRefWithAlias.delete(modOrderItem.name);
+        for (const alias of modOrderItem.mod.alias) {
+            this.nameRefWithAlias.delete(alias);
+        }
     }
 
     /**
@@ -502,7 +590,12 @@ export class ModOrderContainer {
      */
     private rebuildContainerFromOrder(): void {
         this.container.clear();
+        this.nameRefWithAlias.clear();
         for (const item of this.order) {
+            this.nameRefWithAlias.set(item.name, item.name);
+            for (const alias of item.mod.alias) {
+                this.nameRefWithAlias.set(alias, item.name);
+            }
             if (!this.container.has(item.name)) {
                 this.container.set(item.name, new Map<ModLoadFromSourceType, ModOrderItem>());
             }
