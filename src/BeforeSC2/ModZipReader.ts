@@ -193,8 +193,8 @@ export class ModZipReader {
             && every(get(bootJ, 'imgFileList'), isString);
 
         // optional
-        if (c && has(bootJ, 'nikeName')) {
-            c = c && (isString(get(bootJ, 'nikeName')) || (isPlainObject(get(bootJ, 'nikeName'))));
+        if (c && has(bootJ, 'nickName')) {
+            c = c && (isString(get(bootJ, 'nickName')) || (isPlainObject(get(bootJ, 'nickName'))));
         }
         if (c && has(bootJ, 'alias')) {
             c = c && (isArray(get(bootJ, 'alias')) && every(get(bootJ, 'alias'), isString));
@@ -233,8 +233,8 @@ export class ModZipReader {
                 isArray(get(bootJ, 'imgFileList')),
                 every(get(bootJ, 'imgFileList'), isString),
 
-                // 'nikeName',
-                // has(bootJ, 'nikeName') ? isString(get(bootJ, 'nikeName')) : true,
+                // 'nickName',
+                // has(bootJ, 'nickName') ? isString(get(bootJ, 'nickName')) : true,
 
                 'alias',
                 has(bootJ, 'alias') &&
@@ -307,7 +307,7 @@ export class ModZipReader {
         if (ModZipReader.validateBootJson(bootJ, this.log)) {
             this.modInfo = {
                 name: bootJ.name,
-                nikeName: bootJ.nikeName || undefined,
+                nickName: bootJ.nickName || undefined,
                 alias: bootJ.alias ?? [],
                 version: bootJ.version,
                 cache: new SC2DataInfo(

@@ -121,8 +121,8 @@ The format is as follows (sample src/insertTools/MyMod/boot.json):
 ```json5
 {
   "name": "MyMod",    // （必须存在） mod名字
-  "nikeName": "A Example Mod",    // （可选） 用户友好的名字，会在mod管理器中显示
-//  "nikeName": {   // （可选） 写法2：多语言支持
+  "nickName": "A Example Mod",    // （可选） 用户友好的名字，会在mod管理器中显示
+//  "nickName": {   // （可选） 写法2：多语言支持
 //    "cn": "Chinse Name",
 //    "en": "English Name"
 //  },

@@ -104,8 +104,8 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
         && every(get(bootJ, 'imgFileList'), isString);
 
     // optional
-    if (c && has(bootJ, 'nikeName')) {
-        c = c && (isString(get(bootJ, 'nikeName')) || (isPlainObject(get(bootJ, 'nikeName'))));
+    if (c && has(bootJ, 'nickName')) {
+        c = c && (isString(get(bootJ, 'nickName')) || (isPlainObject(get(bootJ, 'nickName'))));
     }
     if (c && has(bootJ, 'alias')) {
         c = c && (isArray(get(bootJ, 'alias')) && every(get(bootJ, 'alias'), isString));
@@ -144,8 +144,8 @@ export function validateBootJson(bootJ: any): bootJ is ModBootJson {
             isArray(get(bootJ, 'imgFileList')),
             every(get(bootJ, 'imgFileList'), isString),
 
-            'nikeName',
-            has(bootJ, 'nikeName') ? (isString(get(bootJ, 'nikeName')) || (isPlainObject(get(bootJ, 'nikeName')))) : true,
+            'nickName',
+            has(bootJ, 'nickName') ? (isString(get(bootJ, 'nickName')) || (isPlainObject(get(bootJ, 'nickName')))) : true,
 
             'alias',
             has(bootJ, 'alias') &&
