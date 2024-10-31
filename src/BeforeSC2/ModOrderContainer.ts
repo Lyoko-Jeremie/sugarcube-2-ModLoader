@@ -356,6 +356,13 @@ export class ModOrderContainer {
     /**
      * O(n)
      */
+    getByFromTypeByOrder(from: ModLoadFromSourceType): ModOrderItem[] {
+        return this.order.filter(T => T.from === from);
+    }
+
+    /**
+     * O(n)
+     */
     getByOrder(name: string): ModOrderItem[] {
         return this.order.filter(T => T.name === name);
     }

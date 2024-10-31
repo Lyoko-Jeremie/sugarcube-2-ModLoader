@@ -295,6 +295,10 @@ export class ModLoader {
         return this.modCache.getByNameOneWithAlias(modName);
     }
 
+    public getModCacheByFromType(from: ModLoadFromSourceType): ModOrderItem[] {
+        return this.modCache.getByFromTypeByOrder(from);
+    }
+
     public getModReadCache(): ModOrderContainer {
         return this.modReadCache;
     }
