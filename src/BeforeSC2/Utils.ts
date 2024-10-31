@@ -77,6 +77,23 @@ export class ModUtils {
         };
     }
 
+    getAllModInfoByFromType(
+        from: ModLoadFromSourceType,
+    ): {
+        name: string,
+        mod: ModInfo,
+        from: ModLoadFromSourceType
+    }[] {
+        const ml = this.pSC2DataManager.getModLoader().getModCacheByFromType(from);
+        return ml.map(m => {
+            return {
+                name: m.name,
+                from: m.from,
+                mod: m.mod,
+            };
+        })
+    }
+
     /**
      * 获取指定mod的Zip
      * @param modName ModName
