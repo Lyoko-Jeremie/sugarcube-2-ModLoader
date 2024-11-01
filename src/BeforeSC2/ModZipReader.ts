@@ -704,10 +704,10 @@ export class LocalStorageLoader extends LoaderBase {
     }
 
     setConfigKey(
-        modDataLocalStorageZipListKey: string,
+        modDataLocalStorageZipListKey?: string,
         modDataLocalStorageZipPrefix?: string,
     ) {
-        LocalStorageLoader.modDataLocalStorageZipList = modDataLocalStorageZipListKey;
+        LocalStorageLoader.modDataLocalStorageZipList = modDataLocalStorageZipListKey ?? LocalStorageLoader.modDataLocalStorageZipList;
         LocalStorageLoader.modDataLocalStorageZipPrefix = modDataLocalStorageZipPrefix ?? LocalStorageLoader.modDataLocalStorageZipPrefix;
     }
 }
@@ -816,7 +816,7 @@ export class IndexDBLoader extends LoaderBase {
             console.error('ModLoader ====== IndexDBLoader setModList() modeList has duplicate items. invalid');
             return;
         }
-        console.log('[ModLoader] IndexDBLoader setModList() modDataIndexDBZipListHidden', IndexDBLoader.modDataIndexDBZipList);
+        console.log('[ModLoader] IndexDBLoader setModList() modDataIndexDBZipList', IndexDBLoader.modDataIndexDBZipList);
         console.log('[ModLoader] IndexDBLoader setModList() dbName', IndexDBLoader.dbName);
         console.log('[ModLoader] IndexDBLoader setModList() storeName', IndexDBLoader.storeName);
         await keyval_set(IndexDBLoader.modDataIndexDBZipList, JSON.stringify(modeList), createStore(IndexDBLoader.dbName, IndexDBLoader.storeName));
@@ -862,7 +862,7 @@ export class IndexDBLoader extends LoaderBase {
     }
 
     static async listMod() {
-        console.log('[ModLoader] IndexDBLoader listMod() modDataIndexDBZipListHidden', IndexDBLoader.modDataIndexDBZipList);
+        console.log('[ModLoader] IndexDBLoader listMod() modDataIndexDBZipList', IndexDBLoader.modDataIndexDBZipList);
         console.log('[ModLoader] IndexDBLoader listMod() dbName', IndexDBLoader.dbName);
         console.log('[ModLoader] IndexDBLoader listMod() storeName', IndexDBLoader.storeName);
         const ls = await keyval_get(IndexDBLoader.modDataIndexDBZipList, createStore(IndexDBLoader.dbName, IndexDBLoader.storeName));
@@ -931,15 +931,15 @@ export class IndexDBLoader extends LoaderBase {
     }
 
     setConfigKey(
-        dbName: string,
-        storeName: string,
-        modDataIndexDBZipList: string,
-        modDataIndexDBZipListHidden: string,
+        dbName?: string,
+        storeName?: string,
+        modDataIndexDBZipList?: string,
+        modDataIndexDBZipListHidden?: string,
     ) {
-        IndexDBLoader.dbName = dbName;
-        IndexDBLoader.storeName = storeName;
-        IndexDBLoader.modDataIndexDBZipList = modDataIndexDBZipList;
-        IndexDBLoader.modDataIndexDBZipListHidden = modDataIndexDBZipListHidden;
+        IndexDBLoader.dbName = dbName ?? IndexDBLoader.dbName;
+        IndexDBLoader.storeName = storeName ?? IndexDBLoader.storeName;
+        IndexDBLoader.modDataIndexDBZipList = modDataIndexDBZipList ?? IndexDBLoader.modDataIndexDBZipList;
+        IndexDBLoader.modDataIndexDBZipListHidden = modDataIndexDBZipListHidden ?? IndexDBLoader.modDataIndexDBZipListHidden;
     }
 
 }
@@ -1020,8 +1020,8 @@ export class LocalLoader extends LoaderBase {
         return Promise.resolve(false);
     }
 
-    setConfigKey(modDataValueZipListPath: string) {
-        this.modDataValueZipListPath = modDataValueZipListPath;
+    setConfigKey(modDataValueZipListPath?: string) {
+        this.modDataValueZipListPath = modDataValueZipListPath ?? this.modDataValueZipListPath;
     }
 
 }
@@ -1133,10 +1133,12 @@ export class LoaderKeyConfig {
     getLoaderKey(k: string, d: string) {
         this.init();
         const n = this.config.get(k);
-        console.log('LoaderKeyConfig getLoaderKey:', k, d, n);
+        console.log('LoaderKeyConfig getLoaderKey state:', k, d, n);
         if (isString(n) && n.length > 1) {
+            console.log('LoaderKeyConfig getLoaderKey return:', k, n);
             return n;
         } else {
+            console.log('LoaderKeyConfig getLoaderKey return:', k, d);
             return d;
         }
     }
