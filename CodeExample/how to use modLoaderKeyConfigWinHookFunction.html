@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        // write a `script` tag to register the `modLoaderKeyConfigWinHookFunction` function
+        // `loaderKeyConfig.config.set()` is a replace lookup table, it means "change params1 to params2"
+        // after the replacement, will read from url query and do next replace step
+        window.modLoaderKeyConfigWinHookFunction = (loaderKeyConfig) => {
+            // LocalStorageLoader
+            loaderKeyConfig.config.set('modDataLocalStorageZipList', 'CoT_modDataLocalStorageZipList');
+            loaderKeyConfig.config.set('modDataLocalStorageZip', 'CoT_modDataLocalStorageZip');
+
+            // IndexDBLoader
+            loaderKeyConfig.config.set('modDataIndexDBZipListHidden', 'CoT_modDataIndexDBZipListHidden');
+            loaderKeyConfig.config.set('modDataIndexDBZipList', 'CoT_modDataIndexDBZipList');
+            loaderKeyConfig.config.set('modDataIndexDBZip', 'CoT_modDataIndexDBZip');
+
+            // RemoteLoader
+            loaderKeyConfig.config.set('modList.json', '/path/to/modList/CoT_modList.json');
+
+            // BeautySelectorAddon
+            loaderKeyConfig.config.set('BeautySelectorAddon_OrderSaveKey', 'CoT_BeautySelectorAddon_OrderSaveKey');
+        };
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>
