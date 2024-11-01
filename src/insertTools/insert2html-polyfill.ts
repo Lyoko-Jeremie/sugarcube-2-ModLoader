@@ -69,11 +69,15 @@ export async function loadFileAsBase64(fPath: string) {
     // CSP modify for mod update and other use-case
     const csp_findString = `content="default-src 'self' 'unsafe-eval' 'unsafe-inline'`;
     const csp_replaceString = `content="default-src 'self' 'unsafe-eval' 'unsafe-inline' *`;
+    let newHtmlF2;
     if (htmlF.indexOf(csp_findString) === -1) {
-        console.error('csp_findString not found');
-        process.exit(1);
+        console.error('csp_findString not found !!! skip!');
+        // process.exit(1);
+        // ignore ir
+        newHtmlF2 = htmlF;
+    } else {
+        newHtmlF2 = htmlF.replace(csp_findString, csp_replaceString);
     }
-    const newHtmlF2 = htmlF.replace(csp_findString, csp_replaceString);
 
     const insertContent = `<script type="text/javascript">window.modDataValueZipList = ${JSON.stringify(modListStringObj)};</script>`;
     const insertJSContent = `<script type="text/javascript">${jsF}</script>`;
