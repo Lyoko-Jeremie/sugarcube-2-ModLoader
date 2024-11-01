@@ -816,6 +816,9 @@ export class IndexDBLoader extends LoaderBase {
             console.error('ModLoader ====== IndexDBLoader setModList() modeList has duplicate items. invalid');
             return;
         }
+        console.log('[ModLoader] IndexDBLoader setModList() modDataIndexDBZipListHidden', IndexDBLoader.modDataIndexDBZipList);
+        console.log('[ModLoader] IndexDBLoader setModList() dbName', IndexDBLoader.dbName);
+        console.log('[ModLoader] IndexDBLoader setModList() storeName', IndexDBLoader.storeName);
         await keyval_set(IndexDBLoader.modDataIndexDBZipList, JSON.stringify(modeList), createStore(IndexDBLoader.dbName, IndexDBLoader.storeName));
         console.log('ModLoader ====== IndexDBLoader setModList() done');
     }
@@ -829,11 +832,17 @@ export class IndexDBLoader extends LoaderBase {
             console.error('ModLoader ====== IndexDBLoader setHiddenModList() modeList has duplicate items. invalid');
             return;
         }
+        console.log('[ModLoader] IndexDBLoader setHiddenModList() modDataIndexDBZipListHidden', IndexDBLoader.modDataIndexDBZipListHidden);
+        console.log('[ModLoader] IndexDBLoader setHiddenModList() dbName', IndexDBLoader.dbName);
+        console.log('[ModLoader] IndexDBLoader setHiddenModList() storeName', IndexDBLoader.storeName);
         await keyval_set(IndexDBLoader.modDataIndexDBZipListHidden, JSON.stringify(modeList), createStore(IndexDBLoader.dbName, IndexDBLoader.storeName));
         console.log('ModLoader ====== IndexDBLoader setHiddenModList() done');
     }
 
     static async loadHiddenModList() {
+        console.log('[ModLoader] IndexDBLoader loadHiddenModList() modDataIndexDBZipListHidden', IndexDBLoader.modDataIndexDBZipListHidden);
+        console.log('[ModLoader] IndexDBLoader loadHiddenModList() dbName', IndexDBLoader.dbName);
+        console.log('[ModLoader] IndexDBLoader loadHiddenModList() storeName', IndexDBLoader.storeName);
         const ls = await keyval_get(IndexDBLoader.modDataIndexDBZipListHidden, createStore(IndexDBLoader.dbName, IndexDBLoader.storeName));
         if (!ls) {
             console.log('ModLoader ====== IndexDBLoader loadHiddenModList() cannot find modDataIndexDBZipListHidden');
@@ -853,6 +862,9 @@ export class IndexDBLoader extends LoaderBase {
     }
 
     static async listMod() {
+        console.log('[ModLoader] IndexDBLoader listMod() modDataIndexDBZipListHidden', IndexDBLoader.modDataIndexDBZipList);
+        console.log('[ModLoader] IndexDBLoader listMod() dbName', IndexDBLoader.dbName);
+        console.log('[ModLoader] IndexDBLoader listMod() storeName', IndexDBLoader.storeName);
         const ls = await keyval_get(IndexDBLoader.modDataIndexDBZipList, createStore(IndexDBLoader.dbName, IndexDBLoader.storeName));
         if (!ls) {
             console.log('ModLoader ====== IndexDBLoader listMod() cannot find modDataIndexDBZipList');
