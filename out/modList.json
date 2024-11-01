@@ -1,8 +1,8 @@
 [
   "mod/ModLoaderGui/ModLoaderGui.mod.zip",
   "mod/ConflictChecker/ConflictChecker.mod.zip",
-  "mod/ModSubUiAngularJs/ModSubUiAngularJs.mod.zip",
   "mod/ImageLoaderHook/ModLoader DoL ImageLoaderHook.mod.zip",
+  "mod/ModSubUiAngularJs/ModSubUiAngularJs.mod.zip",
   "mod/BeautySelectorAddon/BeautySelectorAddon.mod.zip",
   "mod/CheckGameVersion/CheckGameVersion.mod.zip",
   "mod/CheckDoLCompressorDictionaries/CheckDoLCompressorDictionaries.mod.zip",
