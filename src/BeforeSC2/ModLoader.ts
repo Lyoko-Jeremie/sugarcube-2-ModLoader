@@ -91,15 +91,15 @@ export class ModImgGetterDefault implements IModImgGetter {
         const imgFile = this.zip.zip.file(this.imgPath);
         if (imgFile) {
             const data = await imgFile.async('base64');
-            const imgCache = imgWrapBase64Url(key, data);
-            StaticModImgLruCache.set(this.imgPath, {
+            const imgCache = imgWrapBase64Url(this.imgPath, data);
+            StaticModImgLruCache.set(key, {
                 imageBase64: imgCache,
                 invalid: false,
             });
             return imgCache;
         }
         this.invalid = true;
-        StaticModImgLruCache.set(this.imgPath, {
+        StaticModImgLruCache.set(key, {
             imageBase64: '',
             invalid: true,
         });
