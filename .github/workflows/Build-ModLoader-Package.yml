@@ -203,6 +203,20 @@ jobs:
           source: ${{ github.workspace }}/mod/CheckGameVersion/CheckGameVersion.mod.zip
           target: ${{ github.workspace }}/out
 
+      - name: Build CheckGameVersionCot
+        working-directory: ${{ github.workspace }}/mod/CheckGameVersionCot
+        run: |
+          cd ${{ github.workspace }}/mod/CheckGameVersionCot
+          yarn install
+          yarn run build:ts
+          yarn run build:webpack
+          node "${{ github.workspace }}/dist-insertTools/packModZip.js" "boot.json"
+      - name: Copy CheckGameVersionCot
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/CheckGameVersionCot/CheckGameVersionCot.mod.zip
+          target: ${{ github.workspace }}/out
+
       - name: Build Diff3WayMerge
         working-directory: ${{ github.workspace }}/mod/Diff3WayMerge
         run: |
