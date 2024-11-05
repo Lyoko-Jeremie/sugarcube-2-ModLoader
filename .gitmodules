@@ -100,3 +100,9 @@
 [submodule "mod/ModSubUiAngularJs"]
 	path = mod/ModSubUiAngularJs
 	url = https://github.com/Lyoko-Jeremie/ModSubUiAngularJs
+[submodule "mod/CheckGameVersionCot"]
+	path = mod/CheckGameVersionCot
+	url = https://github.com/Lyoko-Jeremie/CheckGameVersionCot.git
+[submodule "mod/ImageLoaderHook2BeautySelectorAddon"]
+	path = mod/ImageLoaderHook2BeautySelectorAddon
+	url = https://github.com/Lyoko-Jeremie/ImageLoaderHook2BeautySelectorAddon.git

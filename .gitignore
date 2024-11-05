@@ -47,5 +47,7 @@ src/insertTools/**/*.zip
 !mod/DoLLinkButtonFilter
 !mod/HookMacroRng
 !mod/ModSubUiAngularJs
+!mod/ImageLoaderHook2BeautySelectorAddon
+!mod/CheckGameVersionCot
 mod
 
