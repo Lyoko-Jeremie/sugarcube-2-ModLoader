@@ -120,6 +120,7 @@ export class ModZipReader {
         public loaderBase: LoaderBase,
         public modLoadControllerCallback: ModLoadControllerCallback,
     ) {
+        this.log = getLogFromModLoadControllerCallback(modLoadControllerCallback);
         if (typeof FinalizationRegistry === 'undefined') {
             this.gcFinalizationRegistry = new FinalizationRegistryMock(() => {
                 // never be call
@@ -138,7 +139,6 @@ export class ModZipReader {
         this._zip = zip;
         this.modZipReaderHash = new ModZipReaderHash(zipBase64String);
         this.gcFinalizationRegistry.register(this._zip, undefined, this);
-        this.log = getLogFromModLoadControllerCallback(modLoadControllerCallback);
     }
 
     modInfo?: ModInfo;
