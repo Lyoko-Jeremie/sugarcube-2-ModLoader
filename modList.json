@@ -4,6 +4,7 @@
   "mod/ImageLoaderHook/ModLoader DoL ImageLoaderHook.mod.zip",
   "mod/ModSubUiAngularJs/ModSubUiAngularJs.mod.zip",
   "mod/BeautySelectorAddon/BeautySelectorAddon.mod.zip",
+  "mod/ImageLoaderHook2BeautySelectorAddon/ImageLoaderHook2BeautySelectorAddon.mod.zip",
   "mod/CheckGameVersion/CheckGameVersion.mod.zip",
   "mod/CheckDoLCompressorDictionaries/CheckDoLCompressorDictionaries.mod.zip",
   "mod/TweeReplacerLinker/TweeReplacerLinker.mod.zip",
@@ -22,5 +23,5 @@
   "mod/ModuleCssReplacer/ModuleCssReplacer.mod.zip",
   "mod/DoLHookWidget/DoLHookWidget.mod.zip",
   "mod/DoLLinkButtonFilter/DoLLinkButtonFilter.mod.zip",
-  "mod/HookMacroRng/HookMacroRng.mod.zip"
+  "mod/HookMacroRng/HookMacroRng.mod.zip",
 ]
