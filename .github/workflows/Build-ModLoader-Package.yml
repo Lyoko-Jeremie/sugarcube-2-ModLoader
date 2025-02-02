@@ -471,13 +471,13 @@ jobs:
           target: ${{ github.workspace }}/out
 
       - name: Upload ModLoader Package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ModLoader Package
           path: ${{ github.workspace }}/out
 
       - name: Upload insertTools
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: insertTools
           path: ${{ github.workspace }}/dist-insertTools
