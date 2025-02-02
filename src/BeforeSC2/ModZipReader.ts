@@ -903,9 +903,12 @@ export class IndexDBLoader extends LoaderBase {
     static async removeMod(name: string) {
         let l = await this.listMod() || [];
         l = l.filter(T => T !== name);
+        let lH = await this.loadHiddenModList() || [];
+        lH = lH.filter(T => T !== name);
         const db = createStore(IndexDBLoader.dbName, IndexDBLoader.storeName);
         const k = this.calcModNameKey(name);
         await keyval_set(this.modDataIndexDBZipList, JSON.stringify(l), db);
+        await keyval_set(this.modDataIndexDBZipListHidden, JSON.stringify(lH), db);
         await keyval_del(k, db);
     }
 
