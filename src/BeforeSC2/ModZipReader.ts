@@ -1,5 +1,5 @@
 import JSZip from "jszip";
-import {every, get, has, isArray, isPlainObject, isString, uniq} from "lodash";
+import {every, get, has, isArray, isPlainObject, isString, uniq, isEqual} from "lodash";
 import {get as keyval_get, set as keyval_set, del as keyval_del, createStore, UseStore, setMany} from 'idb-keyval';
 import {SC2DataInfo} from "./SC2DataInfoCache";
 import {checkDependenceInfo, checkModBootJsonAddonPlugin, ModBootJson, ModImgGetterDefault, ModInfo} from "./ModLoader";
@@ -7,7 +7,8 @@ import {getLogFromModLoadControllerCallback, LogWrapper, ModLoadControllerCallba
 import {extname} from "./extname";
 import {ReplacePatcher, checkPatchInfo} from "./ReplacePatcher";
 import JSON5 from 'json5';
-import fnv1a from '@sindresorhus/fnv1a';
+
+// import fnv1a from '@sindresorhus/fnv1a';
 
 export interface Twee2PassageR {
     name: string;
@@ -62,32 +63,64 @@ export async function blobToBase64(blob: Blob) {
 }
 
 export class ModZipReaderHash {
-    hash: BigInt;
+    hash: number[] | undefined;
+    _zipBase64String: string | undefined;
 
     constructor(
         zipBase64String: string,
     ) {
-        this.hash = fnv1a(zipBase64String, {size: 64});
+        // this.hash = fnv1a(zipBase64String, {size: 64});
+        this._zipBase64String = zipBase64String;
+    }
+
+    // https://developer.mozilla.org/zh-CN/docs/Web/API/SubtleCrypto/digest
+    protected async digestMessage(message: string) {
+        const msgUint8 = new TextEncoder().encode(message); // 编码为（utf-8）Uint8Array
+        const hashBuffer = await window.crypto.subtle.digest("SHA-256", msgUint8); // 计算消息的哈希值
+        const hashArray = Array.from(new Uint8Array(hashBuffer)); // 将缓冲区转换为字节数组
+        return hashArray;
+    }
+
+    async init() {
+        if (this.hash) {
+            this._zipBase64String = undefined;
+            return;
+        }
+        if (!this._zipBase64String) {
+            // never go there
+            console.error('ModZipReaderHash init() this._zipBase64String is undefined.');
+            throw new Error('ModZipReaderHash init() this._zipBase64String is undefined.');
+        }
+        this.hash = await this.digestMessage(this._zipBase64String);
+        this._zipBase64String = undefined;
     }
 
     compare(h: ModZipReaderHash) {
-        return this.hash === h.hash;
+        return isEqual(this.hash, h.hash);
     }
 
     compareWithString(h: string) {
         try {
-            return this.hash === BigInt(h);
+            return isEqual(this.hash, this.fromString(h));
         } catch (e) {
             return false;
         }
     }
 
     toString() {
-        return this.hash.toString();
+        if (!this.hash) {
+            // never go there
+            console.error('ModZipReaderHash toString() this._hash is undefined.');
+            throw new Error('ModZipReaderHash toString() this._hash is undefined.');
+        }
+        const hashHex = this.hash
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join(""); // 将字节数组转换为十六进制字符串
+        return hashHex;
     }
 
-    fromString(hash: string) {
-        return BigInt(hash);
+    fromString(hash: string): number[] {
+        return hash.match(/.{2}/g)!.map((byte) => parseInt(byte, 16));
     }
 
 }
@@ -278,6 +311,7 @@ export class ModZipReader {
     // }
 
     async init() {
+        await this.modZipReaderHash.init();
         const bootJsonFile = this.zip.file(ModZipReader.modBootFilePath);
         if (!bootJsonFile) {
             console.log('ModLoader ====== ModZipReader init() cannot find :', ModZipReader.modBootFilePath);
