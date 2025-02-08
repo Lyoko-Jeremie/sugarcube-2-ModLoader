@@ -63,7 +63,7 @@ export async function blobToBase64(blob: Blob) {
 }
 
 export class ModZipReaderHash {
-    hash: number[] | undefined;
+    _hash: number[] | undefined;
     _zipBase64String: string | undefined;
 
     constructor(
@@ -82,7 +82,7 @@ export class ModZipReaderHash {
     }
 
     async init() {
-        if (this.hash) {
+        if (this._hash) {
             this._zipBase64String = undefined;
             return;
         }
@@ -91,29 +91,29 @@ export class ModZipReaderHash {
             console.error('ModZipReaderHash init() this._zipBase64String is undefined.');
             throw new Error('ModZipReaderHash init() this._zipBase64String is undefined.');
         }
-        this.hash = await this.digestMessage(this._zipBase64String);
+        this._hash = await this.digestMessage(this._zipBase64String);
         this._zipBase64String = undefined;
     }
 
     compare(h: ModZipReaderHash) {
-        return isEqual(this.hash, h.hash);
+        return isEqual(this._hash, h._hash);
     }
 
     compareWithString(h: string) {
         try {
-            return isEqual(this.hash, this.fromString(h));
+            return isEqual(this._hash, this.fromString(h));
         } catch (e) {
             return false;
         }
     }
 
     toString() {
-        if (!this.hash) {
+        if (!this._hash) {
             // never go there
             console.error('ModZipReaderHash toString() this._hash is undefined.');
             throw new Error('ModZipReaderHash toString() this._hash is undefined.');
         }
-        const hashHex = this.hash
+        const hashHex = this._hash
             .map((b) => b.toString(16).padStart(2, "0"))
             .join(""); // 将字节数组转换为十六进制字符串
         return hashHex;
@@ -452,7 +452,7 @@ export class ModZipReader {
                 }
             }
 
-            console.log('ModLoader ====== ModZipReader init() modInfo', this.modInfo, this.modZipReaderHash.hash);
+            console.log('ModLoader ====== ModZipReader init() modInfo', this.modInfo, this.modZipReaderHash._hash);
             this.log.log(`ModLoader ====== ModZipReader init() modInfo: [${this.modInfo.name}] [${this.modInfo.version}]`);
 
             return true;
