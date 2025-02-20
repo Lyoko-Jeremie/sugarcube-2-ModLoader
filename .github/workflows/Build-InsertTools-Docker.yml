@@ -25,6 +25,10 @@ jobs:
         with:
           images: |
             name=ghcr.io/${{ github.repository }}-inserttools
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha
+            type=ref
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
