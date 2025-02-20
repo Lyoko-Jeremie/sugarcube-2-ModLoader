@@ -18,6 +18,8 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           path: dist
           github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Debug artifact list
+        run: ls -R dist 
 
       - name: Meta Docker Image
         id: insertToolMeta
