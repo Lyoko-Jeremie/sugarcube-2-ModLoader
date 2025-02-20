@@ -460,6 +460,35 @@ node "H:\Code\sugarcube-2\ModLoader\dist-insertTools\packModZip.js" "boot.json"
 MyMod.mod.zip
 ```
 
+### 自动打包方法（Docker）
+
+这个方法需要已安装Docker并可访问ghcr.io
+
+打包：
+
+拉取镜像
+
+```bash
+docker pull ghcr.io/lyoko-jeremie/sugarcube-2-modloader-inserttools:latest
+```
+
+切换到 Mod 所在文件夹，（即boot.json所在文件夹）
+
+```shell
+cd src/insertTools/MyMod
+```
+
+进行打包
+
+```shell
+docker run --rm -v $(pwd):/src ghcr.io/lyoko-jeremie/sugarcube-2-modloader-inserttools:latest
+```
+
+之后会在当前目录下打包生成一个以boot.js文件中的mod名命名的zip文件，例如：
+
+```
+MyMod.mod.zip
+```
 
 ---
 
