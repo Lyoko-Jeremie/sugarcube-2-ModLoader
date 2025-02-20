@@ -17,6 +17,7 @@ jobs:
           name: insertTools
           run-id: ${{ github.event.workflow_run.id }}
           path: ${{ github.workspace }}/dist-insertTools
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Meta Docker Image
         id: insertToolMeta
