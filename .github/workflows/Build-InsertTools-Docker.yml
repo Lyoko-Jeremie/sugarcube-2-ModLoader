@@ -1,4 +1,4 @@
-name: Build InsertTool Docker Image
+name: Build InsertTools Docker Image
 
 on:
   workflow_run:
@@ -16,7 +16,7 @@ jobs:
         with:
           name: insertTools
           run-id: ${{ github.event.workflow_run.id }}
-          path: ${{ github.workspace }}/dist-insertTools
+          path: dist
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Meta Docker Image
