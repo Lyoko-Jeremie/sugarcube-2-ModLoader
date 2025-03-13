@@ -13,10 +13,61 @@ import JSON5 from 'json5';
 export interface Twee2PassageR {
     name: string;
     tags: string[];
-    contect: string;
+    content: string;
 }
 
 
+export function Twee2Passage2(s: string): Twee2PassageR[] {
+    const tweeList: Twee2PassageR[] = [];
+    const lines = s.split(/\r?\n/);
+    // let lastTwee: Twee2PassageR = {
+    //     name: '',
+    //     tags: [],
+    //     content: '',
+    // };
+    let lastTwee: Twee2PassageR | undefined = undefined;
+    let lastStartLine = -1;
+    for (let i = 0; i < lines.length; ++i) {
+        const l = lines[i];
+        if (l.startsWith(':: ')) {
+            const r = l.split('[');
+
+            const a = r[0];
+            const name = a.slice(':: '.length);
+
+            const nextTwee: Twee2PassageR = {
+                name: name.trim(),
+                tags: [],
+                content: '',
+            };
+
+            if (r.length < 2) {
+                nextTwee.tags = [];
+            } else {
+                if (!r[1].includes(']')) {
+                    // bad
+                    continue;
+                }
+                const b = r[1].split(']')[0];
+
+                nextTwee.tags = b.split(' ').map(T => T.trim());
+            }
+
+            if (lastTwee) {
+                lastTwee.content = lines.slice(lastStartLine + 1, i + 1).join('\n');
+                tweeList.push(lastTwee);
+            }
+            lastTwee = nextTwee;
+            lastStartLine = i;
+
+        }
+    }
+    if (lastTwee) {
+        lastTwee.content = lines.slice(lastStartLine + 1).join('\n');
+        tweeList.push(lastTwee);
+    }
+    return tweeList;
+}
 
 export function Twee2Passage(s: string): Twee2PassageR[] {
     // match:
@@ -37,7 +88,7 @@ export function Twee2Passage(s: string): Twee2PassageR[] {
             rr.push({
                 name: r[++i],
                 tags: r[++i]?.split(' ') || [],
-                contect: r[++i],
+                content: r[++i],
             });
         }
     }
@@ -512,7 +563,7 @@ export class ModZipReader {
                     // this.replaceImgWithBase64String(p.contect);
                     this.modInfo.cache.passageDataItems.items.push({
                         name: p.name,
-                        content: p.contect,
+                        content: p.content,
                         id: 0,
                         tags: p.tags,
                     });
