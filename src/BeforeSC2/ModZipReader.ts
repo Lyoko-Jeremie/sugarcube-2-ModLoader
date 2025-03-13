@@ -16,6 +16,8 @@ export interface Twee2PassageR {
     contect: string;
 }
 
+
+
 export function Twee2Passage(s: string): Twee2PassageR[] {
     // match:
     //      :: Widgets Bodywriting Objects [widget]
@@ -23,7 +25,9 @@ export function Twee2Passage(s: string): Twee2PassageR[] {
     //      :: Widgets Bodywriting Objects [widget asdasd]
     // special allow :
     //      :: Widgets Bodywriting Objects []
-    const r = s.split(/^(:: +((?:[^:"\\/\n\r\[\] ]+ *)+)(?: +\[((?:\w+ *)+)?\] *|))$/gm);
+    // const r = s.split(/^(:: +((?:[^:"\\/\n\r\[\] ]+ *)+)(?: +\[((?:\w+ *)+)?\] *|))$/gm);
+    // :: Widgets Bodywriting Objects [widget asdasd aaa©复活😊]
+    const r = s.split(/^(:: +((?:[^:"\/\n\r\[\] ]+ *)+)(?: *\[((?:[^ \]]+ *)+ *)\] *|))$/gm);
     // console.log('Twee2Passage split ', r, [s]);
     // ['xxx', ':: Widgets Bodywriting Objects [widget]', 'Widgets Bodywriting Objects', 'widget', 'xxx']
     // ['xxx', ':: Widgets Bodywriting Objects [widget]', 'Widgets Bodywriting Objects', undefined, 'xxx']
