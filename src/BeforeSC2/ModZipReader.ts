@@ -86,7 +86,7 @@ export function Twee2Passage(s: string): Twee2PassageR[] {
     for (let i = 0; i < r.length; i++) {
         if (r[i].startsWith(':: ')) {
             rr.push({
-                name: r[++i],
+                name: r[++i].trim(),
                 tags: r[++i]?.split(' ') || [],
                 content: r[++i],
             });
