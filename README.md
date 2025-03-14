@@ -462,8 +462,9 @@ MyMod.mod.zip
 
 ### 自动打包方法（Docker）
 
-这个方法需要已安装Docker并可访问ghcr.io
-
+<details>
+  <summary>这个方法需要已安装Docker并可访问ghcr.io</summary>  
+  
 打包：
 
 拉取镜像
@@ -489,6 +490,9 @@ docker run --rm -v $(pwd):/src ghcr.io/lyoko-jeremie/sugarcube-2-modloader-inser
 ```
 MyMod.mod.zip
 ```
+
+
+</details>
 
 ---
 
