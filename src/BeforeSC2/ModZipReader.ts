@@ -8,7 +8,17 @@ import {extname} from "./extname";
 import {ReplacePatcher, checkPatchInfo} from "./ReplacePatcher";
 import JSON5 from 'json5';
 
-// import fnv1a from '@sindresorhus/fnv1a';
+import xxHash from "xxhash-wasm";
+
+let xxHashApi: Awaited<ReturnType<typeof xxHash>> | undefined;
+
+export async function getXxHash() {
+    if (!xxHashApi) {
+        xxHashApi = await xxHash();
+        console.log('xxHashApi', xxHashApi);
+    }
+    return xxHashApi;
+}
 
 export interface Twee2PassageR {
     name: string;
@@ -118,22 +128,17 @@ export async function blobToBase64(blob: Blob) {
 }
 
 export class ModZipReaderHash {
-    _hash: number[] | undefined;
+    _hash: string | undefined;
     _zipBase64String: string | undefined;
 
     constructor(
         zipBase64String: string,
     ) {
-        // this.hash = fnv1a(zipBase64String, {size: 64});
         this._zipBase64String = zipBase64String;
     }
 
-    // https://developer.mozilla.org/zh-CN/docs/Web/API/SubtleCrypto/digest
     protected async digestMessage(message: string) {
-        const msgUint8 = new TextEncoder().encode(message); // 编码为（utf-8）Uint8Array
-        const hashBuffer = await window.crypto.subtle.digest("SHA-256", msgUint8); // 计算消息的哈希值
-        const hashArray = Array.from(new Uint8Array(hashBuffer)); // 将缓冲区转换为字节数组
-        return hashArray;
+        return (await getXxHash()).h64ToString(message);
     }
 
     async init() {
@@ -168,14 +173,11 @@ export class ModZipReaderHash {
             console.error('ModZipReaderHash toString() this._hash is undefined.');
             throw new Error('ModZipReaderHash toString() this._hash is undefined.');
         }
-        const hashHex = this._hash
-            .map((b) => b.toString(16).padStart(2, "0"))
-            .join(""); // 将字节数组转换为十六进制字符串
-        return hashHex;
+        return this._hash;
     }
 
-    fromString(hash: string): number[] {
-        return hash.match(/.{2}/g)!.map((byte) => parseInt(byte, 16));
+    fromString(hash: string): (typeof this._hash) {
+        return this._hash;
     }
 
 }
