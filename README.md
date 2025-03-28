@@ -927,8 +927,8 @@ window.modSC2DataManager.getHtmlTagSrcHook().requestImageBySrc('图片路径').t
 ## TODO
 
 - [x] 安全模式 Safe Mode   
-- [ ] Mod排序(ModLoaderGUI) Mod sorting
-- [ ] Mod禁用启用(可选加载)  
+- [x] Mod排序(ModLoaderGUI) Mod sorting
+- [x] Mod禁用启用(可选加载)  
 - [ ] 游戏内Mod设置界面  
 - [x] 修改其他Mod(Mod i18n pack(eg. english a cn mod))  Modify other mods   
 - [ ] 在线编辑passage   
