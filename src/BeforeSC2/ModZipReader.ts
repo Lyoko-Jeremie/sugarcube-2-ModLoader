@@ -9,6 +9,7 @@ import {ReplacePatcher, checkPatchInfo} from "./ReplacePatcher";
 import JSON5 from 'json5';
 
 import xxHash from "xxhash-wasm";
+// import moment from "moment";
 
 let xxHashApi: Awaited<ReturnType<typeof xxHash>> | undefined;
 
@@ -138,6 +139,11 @@ export class ModZipReaderHash {
     }
 
     protected async digestMessage(message: string) {
+        // const t1 = moment();
+        // const r = (await getXxHash()).h64ToString(message);
+        // const t2 = moment();
+        // console.log('digestMessage', r, t2.diff(t1));
+        // return r;
         return (await getXxHash()).h64ToString(message);
     }
 
