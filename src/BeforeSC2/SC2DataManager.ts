@@ -161,19 +161,46 @@ export class SC2DataManager {
     }
 
     /**
+   * 0.5.4.x sc2 引擎获取到的 data 与之前不一样, 多了 filepath, 故增加此临时修复方法
+   * TODO: find way to fix sc2 engine
+   */
+    stripFileMap(originalMap: Map<string, any>): Map<string, any> {
+        const strippedItems: Record<string, any> = {};
+        for (const [fullPath, value] of originalMap.entries()) {
+          const fileName = fullPath.split(/[/\\]+/).pop();
+          if (fileName) {
+            strippedItems[fileName] = {
+              ...value,
+              name: fileName,
+            };
+          }
+        }
+        return new Map(Object.entries(strippedItems));
+    }
+    
+    /**
      * 读取原始的没有被修改过的SC2Data，
      * 对于mod来说，如无必要不要使用这里的数据，
      * 特别是合并时不要使用此处的数据作为数据源，而是使用 getSC2DataInfoAfterPatch()，否则会覆盖之前的mod的修改，导致之前的修改无效
      */
     getSC2DataInfoCache(): SC2DataInfoCache {
         this.initSC2DataInfoCache();
-        // console.log('getSC2DataInfoCache() get', this.originSC2DataInfoCache);
+    
         if (!this.originSC2DataInfoCache) {
-            console.error('getSC2DataInfoCache() (!this.originSC2DataInfoCache)');
-            this.getModLoadController().getLog().error('getSC2DataInfoCache() (!this.originSC2DataInfoCache)');
+          console.error("getSC2DataInfoCache() (!this.originSC2DataInfoCache)");
+          this.getModLoadController()
+            .getLog()
+            .error("getSC2DataInfoCache() (!this.originSC2DataInfoCache)");
         }
-        // TODO a immutable clone
-        return this.originSC2DataInfoCache!;
+        
+        const stripedOriginSC2DataInfoCache = this.originSC2DataInfoCache!;
+        if (stripedOriginSC2DataInfoCache.scriptFileItems?.map instanceof Map) {
+            stripedOriginSC2DataInfoCache.scriptFileItems.map = this.stripFileMap(
+            stripedOriginSC2DataInfoCache.scriptFileItems.map
+          );
+        }
+    
+        return stripedOriginSC2DataInfoCache;
     }
 
     private modLoader?: ModLoader;
@@ -303,22 +330,27 @@ export class SC2DataManager {
      * 获取最新的SC2Data，此处获得的是之前的mod修改后的最新的SC2Data数据，
      * 此处使用了缓存，如果修改了SC2Data，请调用 flushAfterPatchCache() 来清除缓存，重新从html中读取最新的SC2Data
      */
-    getSC2DataInfoAfterPatch() {
-        // keep originSC2DataInfoCache valid
+    getSC2DataInfoAfterPatch(): SC2DataInfoCache {
         this.initSC2DataInfoCache();
+        
         if (!this.cSC2DataInfoAfterPatchCache) {
-            this.cSC2DataInfoAfterPatchCache = new SC2DataInfoCache(
-                this.getModLoadController().getLog(),
-                'orgin',
-                Array.from(this.scriptNode),
-                Array.from(this.styleNode),
-                Array.from(this.passageDataNodeList) as HTMLElement[],
-            );
-            // console.log('getSC2DataInfoAfterPatch() init', this.cSC2DataInfoAfterPatchCache);
-            console.log('getSC2DataInfoAfterPatch() init cloneSC2DataInfo', this.cSC2DataInfoAfterPatchCache.cloneSC2DataInfo());
+          this.cSC2DataInfoAfterPatchCache = new SC2DataInfoCache(
+            this.getModLoadController().getLog(),
+            "orgin",
+            Array.from(this.scriptNode),
+            Array.from(this.styleNode),
+            Array.from(this.passageDataNodeList) as HTMLElement[]
+          );
         }
-        // console.log('getSC2DataInfoAfterPatch() get', this.cSC2DataInfoAfterPatchCache);
-        return this.cSC2DataInfoAfterPatchCache;
+        
+        const stripedSC2DataInfoAfterPatchCache = this.cSC2DataInfoAfterPatchCache;
+        if (stripedSC2DataInfoAfterPatchCache.scriptFileItems?.map instanceof Map) {
+            stripedSC2DataInfoAfterPatchCache.scriptFileItems.map = this.stripFileMap(
+            stripedSC2DataInfoAfterPatchCache.scriptFileItems.map
+          );
+        }
+    
+        return stripedSC2DataInfoAfterPatchCache;
     }
 
     flushAfterPatchCache() {
