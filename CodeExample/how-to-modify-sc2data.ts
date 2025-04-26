@@ -25,7 +25,8 @@ const sc: SC2DataInfo = scOld.cloneSC2DataInfo();
     pp.content.replace('aaaa', 'bbbb');
 
     // similar like above, you can modify the js code
-    sc.scriptFileItems.map.get('scriptName.js')?.content.replace('aaaa', 'bbbb');
+    // use the `getByNameWithNoPath()` to skip js file issue
+    sc.scriptFileItems.getByNameWithNoPath('scriptName.js')?.content.replace('aaaa', 'bbbb');
 
     {
         // add new passage
