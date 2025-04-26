@@ -45,16 +45,28 @@ export class CacheRecord<T extends { name: string, content: string }> {
         return path[path.length - 1];
     }
 
-    noPathCache?: Map<string, string> = new Map<string, string>();
+    noPathCache?: Map<string, string[]> = new Map<string, string[]>();
 
     buildNoPathCache() {
         if (!this.needBuildNoPathCache) {
             this.noPathCache = undefined;
             return;
         }
-        this.noPathCache = new Map<string, string>();
+        this.noPathCache = new Map<string, string[]>();
         for (const k of this.map.keys()) {
-            this.noPathCache.set(this.getNoPathNameFromString(k), k);
+            const kk = this.getNoPathNameFromString(k);
+            if (!this.noPathCache.has(kk)) {
+                this.noPathCache.set(kk, [k]);
+            } else {
+                this.noPathCache.get(kk)!.push(k);
+            }
+        }
+        // check noPathCache no duplicate
+        for (const [k, v] of this.noPathCache) {
+            if (v.length > 1) {
+                console.warn('CacheRecord.buildNoPathCache() has duplicate name:', k, v);
+                this.log.warn(`CacheRecord.buildNoPathCache() has duplicate name: [${k}] [${v.join('], [')}]`);
+            }
         }
     }
 
@@ -137,8 +149,8 @@ export class CacheRecord<T extends { name: string, content: string }> {
     }
 
     public getByNameWithNoPath(s: string): T | undefined {
-        const orgS = this.noPathCache?.get(s) ?? s;
-        return this.map.get(orgS);
+        const orgS = this.noPathCache?.get(s) ?? [s];
+        return this.map.get(orgS[0]);
     }
 
 }
