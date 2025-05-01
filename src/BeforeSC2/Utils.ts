@@ -447,6 +447,14 @@ export class ModUtils {
         return new IdbRef();
     }
 
+    /**
+     *
+     * const modAddonPluginsParams = window.modUtils.getAddonParamsFromModInfo(modInfo, 'BeautySelectorAddon', 'BeautySelectorAddon');
+     *
+     * @param modInfo   params 2 of registerMod callback
+     * @param addonPluginModName params 1 of registerAddonPlugin
+     * @param addonName  params 2 of registerAddonPlugin
+     */
     getAddonParamsFromModInfo<P>(modInfo: ModInfo, addonPluginModName: string, addonName: string): P | undefined;
     getAddonParamsFromModInfo(modInfo: ModInfo, addonPluginModName: string, addonName: string): ModBootJsonAddonPlugin['params'] | undefined ;
     getAddonParamsFromModInfo<P extends any>(modInfo: ModInfo, addonPluginModName: string, addonName: string): P | ModBootJsonAddonPlugin['params'] | undefined {
