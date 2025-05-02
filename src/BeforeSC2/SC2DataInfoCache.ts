@@ -153,6 +153,15 @@ export class CacheRecord<T extends { name: string, content: string }> {
         return this.map.get(orgS[0]);
     }
 
+    public getByNameWithOrWithoutPath(s: string): T | undefined {
+        const o = this.map.get(s);
+        if (o) {
+            return o;
+        }
+        const orgS = this.noPathCache?.get(s) ?? [s];
+        return this.map.get(orgS[0]);
+    }
+
 }
 
 export class SC2DataInfo {
