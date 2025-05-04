@@ -70,6 +70,16 @@ export class CacheRecord<T extends { name: string, content: string }> {
         }
     }
 
+    destroy() {
+        this.items = [];
+        this.map.clear();
+        this.noPathCache?.clear();
+        this.noPathCache = undefined;
+        this.noName = [];
+        this.dataSource = '';
+        this.cacheRecordName = '';
+    }
+
     clean() {
         this.items = [];
         this.map.clear();
@@ -183,6 +193,12 @@ export class SC2DataInfo {
     clean() {
         this.scriptFileItems.clean();
     }
+
+    destroy() {
+        this.styleFileItems.destroy();
+        this.scriptFileItems.destroy();
+        this.passageDataItems.destroy();
+    }
 }
 
 export class SC2DataInfoCache extends SC2DataInfo {
@@ -196,6 +212,10 @@ export class SC2DataInfoCache extends SC2DataInfo {
         r.scriptFileItems = cloneDeep(this.scriptFileItems);
         r.passageDataItems = cloneDeep(this.passageDataItems);
         return r;
+    }
+
+    destroy() {
+        super.destroy();
     }
 
     constructor(

@@ -142,8 +142,10 @@ export class SC2DataManager {
 
     cleanAllCacheAfterModLoadEnd() {
         this.originSC2DataInfoCache?.clean();
+        this.originSC2DataInfoCache?.destroy();
         this.originSC2DataInfoCache = undefined;
         this.cSC2DataInfoAfterPatchCache?.clean();
+        this.cSC2DataInfoAfterPatchCache?.destroy();
         this.cSC2DataInfoAfterPatchCache = undefined;
     }
 
@@ -322,6 +324,7 @@ export class SC2DataManager {
     }
 
     flushAfterPatchCache() {
+        this.cSC2DataInfoAfterPatchCache?.destroy();
         this.cSC2DataInfoAfterPatchCache = undefined;
         this.getSC2DataInfoAfterPatch();
     }
@@ -353,6 +356,7 @@ export class SC2DataManager {
         await this.getModLoadController().PatchModToGame_start();
 
         const modOrder = this.getModLoader().getModCacheArray();
+        this.cSC2DataInfoAfterPatchCache?.destroy();
         this.cSC2DataInfoAfterPatchCache = undefined;
         this.flushAfterPatchCache();
         const originSC2DataInfoCache = this.getSC2DataInfoAfterPatch();
