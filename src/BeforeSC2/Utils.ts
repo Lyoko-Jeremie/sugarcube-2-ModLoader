@@ -27,7 +27,7 @@ import {ModLoadFromSourceType} from "./ModOrderContainer";
 export class ModUtils {
 
     get version(): string {
-        return '2.31.3';
+        return '2.32.0';
     }
 
     constructor(
