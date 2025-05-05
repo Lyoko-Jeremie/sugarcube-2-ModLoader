@@ -22,10 +22,12 @@ export async function loadFileAsBase64(fPath: string) {
     const jsonPath = process.argv[3];
     const jsPath = process.argv[4];
     const polyfillPath = process.argv[5];
+    const polyfillManualPath = process.argv[6];
     console.log('htmlPath', htmlPath);
     console.log('jsonPath', jsonPath);
     console.log('jsPath', jsPath);
     console.log('polyfillPath', polyfillPath);
+    console.log('polyfillManualPath', polyfillManualPath);
     if (!htmlPath) {
         console.error('no htmlPath');
         process.exit(1);
@@ -46,10 +48,16 @@ export async function loadFileAsBase64(fPath: string) {
         process.exit(1);
         return;
     }
+    if (!polyfillManualPath) {
+        console.error('no polyfillManualPath');
+        process.exit(1);
+        return;
+    }
     const htmlF = await promisify(fs.readFile)(htmlPath, {encoding: 'utf-8'});
     const jsonF = await promisify(fs.readFile)(jsonPath, {encoding: 'utf-8'});
     const jsF = await promisify(fs.readFile)(jsPath, {encoding: 'utf-8'});
     const polyfillF = await promisify(fs.readFile)(polyfillPath, {encoding: 'utf-8'});
+    const polyfillManualF = await promisify(fs.readFile)(polyfillManualPath, {encoding: 'utf-8'});
     // console.log('jsonF', jsonF.slice(0, 10));
     const data: string[] = JSON5.parse(jsonF);
     // data: path[]
@@ -82,9 +90,11 @@ export async function loadFileAsBase64(fPath: string) {
     const insertContent = `<script type="text/javascript">window.modDataValueZipList = ${JSON.stringify(modListStringObj)};</script>`;
     const insertJSContent = `<script type="text/javascript">${jsF}</script>`;
     const polyfillJSContent = `<script id="polyfill" type="text/javascript">${polyfillF}</script>`;
+    const polyfillManualJSContent = `<script id="polyfillManual" type="text/javascript">${polyfillManualF}</script>`;
 
     const newHtmlF =
         newHtmlF2.slice(0, firstScriptIndex) +
+        '\n' + polyfillManualJSContent +
         '\n' + polyfillJSContent +
         '\n' + insertContent +
         '\n' + insertJSContent +
