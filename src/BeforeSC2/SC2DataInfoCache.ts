@@ -186,7 +186,7 @@ export class SC2DataInfo {
     ) {
         // init on there for fix babel https://github.com/babel/babel/issues/13779
         this.styleFileItems = new CacheRecord<StyleTextFileItem>(this.log, this.dataSource, 'styleFileItems');
-        this.scriptFileItems = new CacheRecord<ScriptTextFileItem>(this.log, this.dataSource, 'scriptFileItems');
+        this.scriptFileItems = new CacheRecord<ScriptTextFileItem>(this.log, this.dataSource, 'scriptFileItems', true);
         this.passageDataItems = new CacheRecord<PassageDataItem>(this.log, this.dataSource, 'passageDataItems');
     }
 
