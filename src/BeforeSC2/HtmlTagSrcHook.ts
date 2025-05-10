@@ -1,8 +1,11 @@
 import {SC2DataManager} from "./SC2DataManager";
 import {LogWrapper} from "./ModLoadController";
+import {isString} from "lodash";
 
 export type HtmlTagSrcHookType = (el: HTMLImageElement | HTMLElement, mlSrc: string, field: string) => Promise<boolean>;
 export type HtmlTagSrcReturnModeHookType = (mlSrc: string) => Promise<[boolean, string]>;
+// true: exist ; false: not exist ; undefined: not exist but not sure (maybe exist) ;
+export type HtmlTagSrcHookCheckModType = (mlSrc: string) => boolean | undefined;
 
 /**
  * this class replace html image tag src/href attribute ,
@@ -19,6 +22,7 @@ export class HtmlTagSrcHook {
 
     private hookTable: Map<string, HtmlTagSrcHookType> = new Map<string, HtmlTagSrcHookType>();
     private hookReturnModeTable: Map<string, HtmlTagSrcReturnModeHookType> = new Map<string, HtmlTagSrcReturnModeHookType>();
+    private hookCheckExistTable: Map<string, HtmlTagSrcHookCheckModType> = new Map<string, HtmlTagSrcHookCheckModType>();
 
     public addHook(hookKey: string, hook: HtmlTagSrcHookType) {
         if (this.hookTable.has(hookKey)) {
@@ -34,6 +38,57 @@ export class HtmlTagSrcHook {
             this.logger.error(`[HtmlTagSrcHook] addReturnModeHook: hookKey[${hookKey}] already exist!`);
         }
         this.hookReturnModeTable.set(hookKey, hook);
+    }
+
+    public addCheckExistHook(hookKey: string, hook: HtmlTagSrcHookCheckModType) {
+        if (this.hookCheckExistTable.has(hookKey)) {
+            console.error(`[HtmlTagSrcHook] addCheckExistHook: hookKey already exist!`, [hookKey, hook]);
+            this.logger.error(`[HtmlTagSrcHook] addCheckExistHook: hookKey[${hookKey}] already exist!`);
+        }
+        this.hookCheckExistTable.set(hookKey, hook);
+    }
+
+    /**
+     * check image exist
+     *
+     * @param src
+     * @return true: exist ; false: not exist ; undefined: not exist but not sure (maybe exist but now not find.);
+     */
+    public checkImageExist(src: string): boolean | undefined {
+        // console.log('[HtmlTagSrcHook] checkImageExist: handing src', [src]);
+        if (!src || !isString(src) || src.length === 0) {
+            console.error(`[HtmlTagSrcHook] checkImageExist: no src`, [src]);
+            this.logger.error(`[HtmlTagSrcHook] checkImageExist: no src [${src}]`);
+            return undefined;
+        }
+        if (src.startsWith('data:')) {
+            // skip data URI
+            return true;
+        }
+        // call hook to find a mod hook to handle the image
+        let maybeExist = false;
+        for (const [hookKey, hook] of this.hookCheckExistTable) {
+            try {
+                const r = hook(src);
+                switch (r) {
+                    case true:
+                        // find it
+                        return true;
+                    case false:
+                        // not find
+                        continue;
+                    case undefined:
+                        // not sure
+                        maybeExist = true;
+                    default:
+                        continue;
+                }
+            } catch (e: Error | any) {
+                console.error(`[HtmlTagSrcHook] checkImageExist: call hookKey error`, [hookKey, hook, e]);
+                this.logger.error(`[HtmlTagSrcHook] checkImageExist: call hookKey[${hookKey}] error [${e?.message ? e.message : e}]`);
+            }
+        }
+        return maybeExist ? undefined : false;
     }
 
     /**
