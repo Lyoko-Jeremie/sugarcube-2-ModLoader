@@ -31,6 +31,7 @@ export interface IModImgGetter {
     getBase64Image(/*lruCache?: IModImgGetterLRUCache*/): Promise<string | undefined>;
 
     imgCache?: string;
+    // if true, this is invalid image, cannot get it from zip file.
     invalid: boolean;
 
     forceCache(): Promise<any>;
