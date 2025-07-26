@@ -232,7 +232,7 @@ export class ModZipReader {
     // private _zipWeakRef: WeakRef<JSZip>;
     private _zipIsExist: boolean | null;
 
-    public get zip() {
+    public get zip(): JSZipLikeReadOnlyInterface {
         if (!this._zip) {
             console.error('ModZipReader zip was released.', [this.modInfo, this]);
             this.log.error(`ModZipReader zip was released. [${this.modInfo?.name}]`);
@@ -1057,7 +1057,7 @@ export class IndexDBLoader extends LoaderBase {
         const db = createStore(IndexDBLoader.dbName, IndexDBLoader.storeName);
         // const modBin = isString(modBase64String) ? uint8ToBase64.decode(modBase64String) : modBase64String;
         const modBin = isString(modBase64String) ? base64ToUint8Array(modBase64String) : modBase64String;
-            await setMany([
+        await setMany([
             [k, modBin],
             [this.modDataIndexDBZipList, JSON.stringify(Array.from(l))],
         ], db);
