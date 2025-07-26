@@ -555,6 +555,9 @@ export class ModPackFileReader {
             }
         }
 
+        // append 'boot.json'
+        modMeta.fileMeta['boot.json'] = modMeta.bootJsonFile;
+
         let xchacha20Key;
         let xchacha20Nonce;
         if (modMeta.cryptoInfo && password) {
@@ -695,6 +698,9 @@ export class ModPackFileReader {
         try {
             const fileTree = BSON.deserialize(fileTreeBuffer) as Record<string, any>;
             this.fileTree = fileTree;
+            this.fileTree['boot.json'] = {
+                '_f_': true,
+            }; // Add boot.json file meta to the file tree
             return fileTree;
         } catch (error) {
             console.error('[ModPackFileReader] Failed to deserialize file tree:', error);
