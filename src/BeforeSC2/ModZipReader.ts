@@ -30,6 +30,15 @@ export interface Twee2PassageR {
     content: string;
 }
 
+function base64ToUint8Array(base64: string): Uint8Array {
+    const binaryString = atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+}
 
 export function Twee2Passage2(s: string): Twee2PassageR[] {
     const tweeList: Twee2PassageR[] = [];
@@ -1046,8 +1055,9 @@ export class IndexDBLoader extends LoaderBase {
         const k = this.calcModNameKey(name);
         l.add(name);
         const db = createStore(IndexDBLoader.dbName, IndexDBLoader.storeName);
-        const modBin = isString(modBase64String) ? uint8ToBase64.decode(modBase64String) : modBase64String;
-        await setMany([
+        // const modBin = isString(modBase64String) ? uint8ToBase64.decode(modBase64String) : modBase64String;
+        const modBin = isString(modBase64String) ? base64ToUint8Array(modBase64String) : modBase64String;
+            await setMany([
             [k, modBin],
             [this.modDataIndexDBZipList, JSON.stringify(Array.from(l))],
         ], db);
@@ -1178,10 +1188,14 @@ export class LocalLoader extends LoaderBase {
                 for (const modDataValueZip of modDataValueZipList) {
                     try {
                         const mpr = new ModPackFileReaderJsZipAdaptor();
+                        // console.log('ModPackFileReaderJsZipAdaptor', mpr);
                         const modPack = await mpr.loadAsync(modDataValueZip, {base64: true});
+                        // console.log('ModLoader ====== LocalLoader load() modDataValueZip', [/*modDataValueZip*/, modPack]);
                         if (modPack) {
                             const m = new ModZipReader(modPack, '', this, this.log);
+                            // console.log('modDataValueZip boot', await m.zip.file('boot.json')?.async('string'));
                             if (await m.init()) {
+                                // console.log('modDataValueZip m', m);
                                 this.modList.push(m);
                             }
                         } else {

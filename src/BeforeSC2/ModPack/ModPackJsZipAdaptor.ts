@@ -156,8 +156,8 @@ export class ModPackJsZipObjectAdaptor {
         }
         switch (type) {
             case 'base64':
-                // return btoa(String.fromCharCode(...data)) as OutputByType[T];
-                return uint8ToBase64.encode(data) as OutputByType[T];
+                return btoa(String.fromCharCode(...data)) as OutputByType[T];
+                // return uint8ToBase64.encode(data) as OutputByType[T];
             case 'string':
             case 'text':
                 return new TextDecoder('utf-8').decode(data) as OutputByType[T];
@@ -359,8 +359,8 @@ export class ModPackFileReaderJsZipAdaptor extends ModPackFileReader {
         const dataView = new DataView(modPackBuffer.buffer);
         const xxHashValue = dataView.getBigUint64(dataView.byteLength - 8, true);
         const hashValue = calcXxHash64(modPackBuffer.subarray(0, modPackBuffer.length - 8), xxhashApi);
-        console.log('[ModPackFileReader] xxHashValue:', XxHashH64Bigint2String(xxHashValue));
-        console.log('[ModPackFileReader] hashValue:', XxHashH64Bigint2String(hashValue));
+        // console.log('[ModPackFileReader] xxHashValue:', XxHashH64Bigint2String(xxHashValue));
+        // console.log('[ModPackFileReader] hashValue:', XxHashH64Bigint2String(hashValue));
         if (xxHashValue !== hashValue) {
             console.error(`[ModPackFileReader] Invalid xxHash value: ${XxHashH64Bigint2String(xxHashValue)}, expected: ${XxHashH64Bigint2String(hashValue)}`);
             return false;
