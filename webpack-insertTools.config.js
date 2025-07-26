@@ -17,6 +17,7 @@ const config = {
   // https://webpack.js.org/configuration/entry-context/#entry
   entry: {
     packModZip: './src/insertTools/packModZip.ts',
+    packModPack: './src/insertTools/packModPack.ts',
     insert2html: './src/insertTools/insert2html.ts',
     "insert2html-polyfill": './src/insertTools/insert2html-polyfill.ts',
     sc2ReplaceTool: './src/insertTools/sc2ReplaceTool.ts',

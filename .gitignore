@@ -19,6 +19,7 @@ label
 !label/.gitkeep
 dist*
 
+src/mod/**/*.zip
 src/insertTools/**/*.zip
 src/insertTools/**/*.modpack
 src/insertTools/**/*.modpack.crypt
