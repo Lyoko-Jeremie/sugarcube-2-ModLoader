@@ -137,7 +137,7 @@ export class ModPackJsZipObjectAdaptor {
         return this.myPathInFileTree.join('/');
     }
 
-    async async<T extends keyof OutputByType>(type: T): Promise<OutputByType[T]> {
+    async async<T extends keyof OutputByType>(type: T, onUpdate_Useless?: any): Promise<OutputByType[T]> {
         if (!this._isValid) {
             console.error('[ModPackJsZipAdaptor] Invalid ModPackJsZipAdaptor instance.');
             throw new Error('[ModPackJsZipAdaptor] Invalid ModPackJsZipAdaptor instance.');

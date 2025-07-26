@@ -822,7 +822,14 @@ export class LocalStorageLoader extends LoaderBase {
     // get bootJson from zip
     static async checkModZipFile(modBase64String: string) {
         try {
-            const zip = await JSZip.loadAsync(modBase64String, {base64: true});
+            const mpr = new ModPackFileReaderJsZipAdaptor();
+            const modPack = await mpr.loadAsync(modBase64String, {base64: true});
+            let zip: JSZipLikeReadOnlyInterface;
+            if (modPack) {
+                zip = modPack;
+            } else {
+                zip = await JSZip.loadAsync(modBase64String, {base64: true});
+            }
             const bootJsonFile = zip.file(ModZipReader.modBootFilePath);
             if (!bootJsonFile) {
                 console.log('ModLoader ====== LocalStorageLoader checkModeZipFile() cannot find bootJsonFile:', ModZipReader.modBootFilePath);
@@ -1038,8 +1045,9 @@ export class IndexDBLoader extends LoaderBase {
         const k = this.calcModNameKey(name);
         l.add(name);
         const db = createStore(IndexDBLoader.dbName, IndexDBLoader.storeName);
+        const modBin = Uint8Array.from(atob(modBase64String), c => c.charCodeAt(0));
         await setMany([
-            [k, modBase64String],
+            [k, modBin],
             [this.modDataIndexDBZipList, JSON.stringify(Array.from(l))],
         ], db);
         // await keyval_set(k, modBase64String, db);
@@ -1061,13 +1069,20 @@ export class IndexDBLoader extends LoaderBase {
     // get bootJson from zip
     static async checkModZipFile(modBase64String: string) {
         try {
-            const zip = await JSZip.loadAsync(modBase64String, {base64: true});
+            const mpr = new ModPackFileReaderJsZipAdaptor();
+            const modPack = await mpr.loadAsync(modBase64String, {base64: true});
+            let zip: JSZipLikeReadOnlyInterface;
+            if (modPack) {
+                zip = modPack;
+            } else {
+                zip = await JSZip.loadAsync(modBase64String, {base64: true});
+            }
             const bootJsonFile = zip.file(ModZipReader.modBootFilePath);
             if (!bootJsonFile) {
                 console.log('ModLoader ====== IndexDBLoader checkModeZipFile() cannot find bootJsonFile:', ModZipReader.modBootFilePath);
                 return `bootJsonFile ${ModZipReader.modBootFilePath} Invalid`;
             }
-            const bootJson = await bootJsonFile.async('string')
+            const bootJson = await bootJsonFile.async('string');
             const bootJ = JSON5.parse(bootJson);
             if (ModZipReader.validateBootJson(bootJ)) {
                 return bootJ;

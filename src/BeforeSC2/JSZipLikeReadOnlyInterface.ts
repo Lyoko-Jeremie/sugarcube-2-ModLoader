@@ -1,13 +1,13 @@
 import JSZip from "jszip";
 
 export interface JSZipObjectLikeReadOnlyInterface {
-    async(type: 'string'): Promise<string>;
+    async(type: 'string', a?: any): Promise<string>;
 
-    async(type: 'base64'): Promise<string>;
+    async(type: 'base64', a?: any): Promise<string>;
 
-    async(type: 'uint8array'): Promise<Uint8Array>;
+    async(type: 'uint8array', a?: any): Promise<Uint8Array>;
 
-    async(type: 'blob'): Promise<Blob>;
+    async(type: 'blob', a?: any): Promise<Blob>;
 
     get name(): string;
 

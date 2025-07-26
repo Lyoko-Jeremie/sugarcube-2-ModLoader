@@ -410,7 +410,14 @@ export class ModUtils {
     async lazyRegisterNewModZipData(data: ArgumentTypes<JSZipLikeReadOnlyInterface['loadAsync']>[0], options?: any /*JSZip.JSZipLoadOptions*/) {
         console.log('lazyRegisterNewModZipData', data);
         try {
-            const zip = await JSZip.loadAsync(data, options);
+            const mpr = new ModPackFileReaderJsZipAdaptor();
+            const modPack = await mpr.loadAsync(data);
+            let zip: JSZipLikeReadOnlyInterface;
+            if (modPack) {
+                zip = modPack;
+            } else {
+                zip = await JSZip.loadAsync(data, options);
+            }
             return await this.pSC2DataManager.getModLoader().lazyRegisterNewMod(zip);
         } catch (e: Error | any) {
             console.error(e);
