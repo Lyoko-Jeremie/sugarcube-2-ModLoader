@@ -93,9 +93,9 @@ function paddingToBlockSize(data: Uint8Array, blockSize: number): {
     paddedDataLength: number,
     filePath?: string,
 } {
-    const paddingLength = blockSize - (data.length % blockSize);
-    const blocks = Math.ceil(data.length / blockSize);
-    if (paddingLength === blockSize) {
+    let paddingLength = blockSize - (data.length % blockSize);
+    let blocks = Math.ceil(data.length / blockSize);
+    if (blocks > 0 && paddingLength === blockSize) {
         return {
             blocks: blocks,
             dataLength: data.length,
@@ -103,6 +103,11 @@ function paddingToBlockSize(data: Uint8Array, blockSize: number): {
             paddedData: data, // No padding needed
             paddedDataLength: data.length,
         }
+    }
+    if (blocks === 0) {
+        // If the data is empty, we still need at least one block
+        blocks = 1;
+        paddingLength = blockSize; // Full padding for the single block
     }
     if (paddingLength < 0 || paddingLength > blockSize) {
         throw new Error(`Invalid padding length: ${paddingLength}. Data length: ${data.length}, Block size: ${blockSize}`);
@@ -184,7 +189,7 @@ export async function covertFromZipMod(
 
     // make file tree from filePathList
     const fileTree = createFileTreeFromFileList(filePathList);
-    console.log('fileTree', JSON.stringify(fileTree, null, 2));
+    // console.log('fileTree', JSON.stringify(fileTree, null, 2));
     const fileTreeBuffer = BSON.serialize(fileTree);
     const fileTreeBufferPadded = paddingToBlockSize(
         fileTreeBuffer,
@@ -424,6 +429,13 @@ export class ModPackFileReader {
     static xxhashApi?: Awaited<ReturnType<typeof xxhash>>;
     private xxHashValue?: bigint;
 
+    get modPackBufferSize(): number {
+        if (!this.isInit) {
+            throw new Error('ModPackFileReader is not initialized. Please call load() first.');
+        }
+        return this.modPackBuffer.length;
+    }
+
     get modMetaInfo(): ModMeta {
         if (!this.isInit) {
             throw new Error('ModPackFileReader is not initialized. Please call load() first.');
@@ -507,6 +519,8 @@ export class ModPackFileReader {
             console.error('[ModPackFileReader] Invalid magic number in mod meta');
             throw new Error('[ModPackFileReader] Invalid magic number in mod meta');
         }
+
+        this.modMeta = modMeta;
 
         // check ModMeta valid
         if (modMeta.protocolVersion !== ModMetaProtocolVersion) {
