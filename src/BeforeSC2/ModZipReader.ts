@@ -7,6 +7,7 @@ import {getLogFromModLoadControllerCallback, LogWrapper, ModLoadControllerCallba
 import {extname} from "./extname";
 import {ReplacePatcher, checkPatchInfo} from "./ReplacePatcher";
 import JSON5 from 'json5';
+import uint8ToBase64 from 'uint8-to-base64';
 
 import xxHash from "xxhash-wasm";
 import {JSZipLikeReadOnlyInterface} from "JSZipLikeReadOnlyInterface";
@@ -1040,12 +1041,12 @@ export class IndexDBLoader extends LoaderBase {
         return `${this.modDataIndexDBZipPrefix}:${name}`;
     }
 
-    static async addMod(name: string, modBase64String: string) {
+    static async addMod(name: string, modBase64String: string | Uint8Array) {
         let l = new Set(await this.listMod() || []);
         const k = this.calcModNameKey(name);
         l.add(name);
         const db = createStore(IndexDBLoader.dbName, IndexDBLoader.storeName);
-        const modBin = Uint8Array.from(atob(modBase64String), c => c.charCodeAt(0));
+        const modBin = isString(modBase64String) ? uint8ToBase64.decode(modBase64String) : modBase64String;
         await setMany([
             [k, modBin],
             [this.modDataIndexDBZipList, JSON.stringify(Array.from(l))],
@@ -1067,15 +1068,15 @@ export class IndexDBLoader extends LoaderBase {
     }
 
     // get bootJson from zip
-    static async checkModZipFile(modBase64String: string) {
+    static async checkModZipFile(modBase64String: string | Uint8Array) {
         try {
             const mpr = new ModPackFileReaderJsZipAdaptor();
-            const modPack = await mpr.loadAsync(modBase64String, {base64: true});
+            const modPack = await mpr.loadAsync(modBase64String, {base64: isString(modBase64String)});
             let zip: JSZipLikeReadOnlyInterface;
             if (modPack) {
                 zip = modPack;
             } else {
-                zip = await JSZip.loadAsync(modBase64String, {base64: true});
+                zip = await JSZip.loadAsync(modBase64String, {base64: isString(modBase64String)});
             }
             const bootJsonFile = zip.file(ModZipReader.modBootFilePath);
             if (!bootJsonFile) {

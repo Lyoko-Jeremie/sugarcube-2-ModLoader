@@ -341,7 +341,14 @@ export class ModLoadController implements ModLoadControllerCallback {
     }
 
     public removeLifeTimeCircleHook(hook: LifeTimeCircleHook) {
-        // TODO
+        for (const [id, h] of this.lifeTimeCircleHookTable) {
+            if (h === hook) {
+                this.lifeTimeCircleHookTable.delete(id);
+                return;
+            }
+        }
+        console.error('ModLoadController removeLifeTimeCircleHook() hook not found.');
+        this.logError('ModLoadController removeLifeTimeCircleHook() hook not found.');
     }
 
     public clearLifeTimeCircleHook() {
@@ -380,7 +387,7 @@ export class ModLoadController implements ModLoadControllerCallback {
         return await IndexDBLoader.loadHiddenModList() || [];
     }
 
-    public addModIndexDB(name: string, modBase64String: string) {
+    public addModIndexDB(name: string, modBase64String: string | Uint8Array) {
         return IndexDBLoader.addMod(name, modBase64String);
     }
 
@@ -388,7 +395,7 @@ export class ModLoadController implements ModLoadControllerCallback {
         return IndexDBLoader.removeMod(name);
     }
 
-    public async checkModZipFileIndexDB(modBase64String: string) {
+    public async checkModZipFileIndexDB(modBase64String: string | Uint8Array) {
         return IndexDBLoader.checkModZipFile(modBase64String);
     }
 
