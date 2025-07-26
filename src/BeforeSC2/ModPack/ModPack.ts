@@ -26,7 +26,7 @@ import {
 // 每一个部分都对齐到 BlockSize ， 不满足的数据在末尾padding随机字符串
 // ----------
 // block -1 : 文件头魔数 MagicNumber ：JeremieModLoader
-// 三个 8byte 长度数据(bigint) : ModMeta开始位置(byte)， ModMeta结束位置(byte)， 所有文件数据开始位置(byte)
+// block -1 : 包括三个 8byte 长度数据(bigint) : ModMeta开始位置(byte)， ModMeta结束位置(byte)， 所有文件数据开始位置(byte)
 // block -1 : BSON(ModMeta)
 // block 0 ~ n-1 : 文件数据部分
 // block n : BSON(文件树 file tree) 文件树 被作为一个文件对待。
@@ -85,7 +85,7 @@ export interface ModMeta {
     fileMeta: Record<string, FileMeta>;
 }
 
-function paddingToBlockSize(data: Uint8Array, blockSize: number): {
+function paddingToBlockSize(data: Uint8Array, blockSize: number, padN?: number): {
     blocks: number,
     dataLength: number,
     paddingLength: number,
@@ -114,7 +114,8 @@ function paddingToBlockSize(data: Uint8Array, blockSize: number): {
     }
     const padding = new Uint8Array(paddingLength);
     for (let i = 0; i < paddingLength; i++) {
-        padding[i] = randombytes_uniform(0xff); // Fill padding with random bytes
+        // Fill padding with random bytes
+        padding[i] = padN === undefined ? randombytes_uniform(0xff) : (padN & 0xff);
     }
     const paddedData = new Uint8Array(data.length + paddingLength);
     paddedData.set(data);
@@ -292,13 +293,15 @@ export async function covertFromZipMod(
     // console.log('modMetaBuffer length:', modMetaBuffer.length);
     // console.log(modMetaBuffer);
 
-    const magicNumberPadded = paddingToBlockSize(MagicNumber, BlockSize);
-    const modMetaBufferPadded = paddingToBlockSize(modMetaBuffer, BlockSize);
+    const magicNumberPadded = paddingToBlockSize(MagicNumber, BlockSize, 0);
+    const modMetaBufferPadded = paddingToBlockSize(modMetaBuffer, BlockSize, 0);
 
     // Calculate the total file length
     // magicNumber (16 bytes) + 8 bytes modMetaBuffer start pos + 8 bytes modMetaBuffer end pos + 8 bytes all file data start pos
     // + modMetaBuffer + (boot file data + all file data)
-    const fileLength = magicNumberPadded.paddedDataLength + 8 + 8 + 8
+    const fileLength = magicNumberPadded.paddedDataLength
+        // + 8 + 8 + 8
+        + BlockSize  // the 8 + 8 + 8
         + modMetaBufferPadded.paddedDataLength + bootJsonFile.paddedDataLength
         + fileBlockList.reduce((acc, block) => acc + block.paddedDataLength, 0)
         + fileTreeBufferPadded.paddedDataLength
@@ -308,6 +311,7 @@ export async function covertFromZipMod(
     // console.log('fileLength', fileLength);
 
     const modPackBuffer = new Uint8Array(fileLength);
+    modPackBuffer.fill(0); // Fill with zeros initially
     // console.log('modPackBuffer.length', modPackBuffer.length);
 
     let offset = 0;
@@ -316,13 +320,10 @@ export async function covertFromZipMod(
     offset += magicNumberPadded.paddedDataLength;
     // console.log('offset', offset);
     const dataView = new DataView(modPackBuffer.buffer);
-    dataView.setBigUint64(offset, BigInt(magicNumberPadded.paddedDataLength + 8 + 8 + 8), true); // modMetaBuffer start pos
-    offset += 8;
-    dataView.setBigUint64(offset, BigInt(magicNumberPadded.paddedDataLength + 8 + 8 + 8 + modMetaBuffer.length), true); // modMetaBuffer end pos
-    offset += 8;
-    // console.log('offset', offset);
-    dataView.setBigUint64(offset, BigInt(magicNumberPadded.paddedDataLength + 8 + 8 + 8 + modMetaBufferPadded.paddedDataLength), true); // all file data start pos
-    offset += 8;
+    dataView.setBigUint64(offset + 8 * 0, BigInt(magicNumberPadded.paddedDataLength + BlockSize), true); // modMetaBuffer start pos
+    dataView.setBigUint64(offset + 8 * 1, BigInt(magicNumberPadded.paddedDataLength + BlockSize + modMetaBuffer.length), true); // modMetaBuffer end pos
+    dataView.setBigUint64(offset + 8 * 2, BigInt(magicNumberPadded.paddedDataLength + BlockSize + modMetaBufferPadded.paddedDataLength), true); // all file data start pos
+    offset += BlockSize;
     // console.log('offset', offset, modMetaBufferPadded.paddedData.length, modMetaBufferPadded.paddedDataLength);
     modPackBuffer.set(modMetaBufferPadded.paddedData, offset);
     offset += modMetaBufferPadded.paddedDataLength;
@@ -497,9 +498,9 @@ export class ModPackFileReader {
 
         // const modMetaStartPos = magicNumberLength + 8 + 8 + 8; // magic
         const dataView = new DataView(this.modPackBuffer.buffer);
-        const modMetaBufferStartPos = dataView.getBigUint64(magicNumberLength, true);
-        const modMetaBufferEndPos = dataView.getBigUint64(magicNumberLength + 8, true);
-        const fileDataStartPos = dataView.getBigUint64(magicNumberLength + 8 + 8, true);
+        const modMetaBufferStartPos = dataView.getBigUint64(magicNumberLength + 8 * 0, true);
+        const modMetaBufferEndPos = dataView.getBigUint64(magicNumberLength + 8 * 1, true);
+        const fileDataStartPos = dataView.getBigUint64(magicNumberLength + 8 * 2, true);
         const modMetaBufferLength = modMetaBufferEndPos - modMetaBufferStartPos;
         // console.log('[ModPackFileReader] modMetaBufferStartPos:', modMetaBufferStartPos);
         // console.log('[ModPackFileReader] modMetaBufferEndPos:', modMetaBufferEndPos);
@@ -536,7 +537,7 @@ export class ModPackFileReader {
             throw new Error(`[ModPackFileReader] Invalid boot json file meta: ${JSON.stringify(modMeta.bootJsonFile)}`);
         }
         for (const [filePath, fileMeta] of Object.entries(modMeta.fileMeta)) {
-            if (fileMeta.b < 0 || fileMeta.e < fileMeta.b || fileMeta.l <= 0) {
+            if (fileMeta.b < 0 || fileMeta.e < fileMeta.b || fileMeta.l < 0) {
                 console.error(`[ModPackFileReader] Invalid file meta for ${filePath}: ${JSON.stringify(fileMeta)}`);
                 throw new Error(`[ModPackFileReader] Invalid file meta for ${filePath}: ${JSON.stringify(fileMeta)}`);
             }
