@@ -5,6 +5,7 @@ import {
 } from './ModPack';
 // @ts-ignore
 import xxhash, {XXHashAPI} from "xxhash-wasm";
+import uint8ToBase64 from 'uint8-to-base64';
 
 function splitAndNormalizePath(path: string): string[] {
     // Split the path by both forward and backward slashes
@@ -155,7 +156,8 @@ export class ModPackJsZipObjectAdaptor {
         }
         switch (type) {
             case 'base64':
-                return btoa(String.fromCharCode(...data)) as OutputByType[T];
+                // return btoa(String.fromCharCode(...data)) as OutputByType[T];
+                return uint8ToBase64.encode(data) as OutputByType[T];
             case 'string':
             case 'text':
                 return new TextDecoder('utf-8').decode(data) as OutputByType[T];
@@ -224,6 +226,7 @@ export class ModPackJsZipObjectAdaptor {
         };
     }
 
+    // internalStream()
 }
 
 export class ModPackFileReaderJsZipAdaptor extends ModPackFileReader {
@@ -245,8 +248,9 @@ export class ModPackFileReaderJsZipAdaptor extends ModPackFileReader {
     }
 
     public async prepareForZipAdaptor() {
-        const files = this.files;
         this._isPrepared = true;
+        const fileTree = await this.getFileTree();
+        const files = this.files;
     }
 
     get files(): Record<string, ModPackJsZipObjectAdaptor> {
