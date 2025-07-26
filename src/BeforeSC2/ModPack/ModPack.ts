@@ -375,7 +375,7 @@ export async function covertFromZipMod(
 
     let blockPosIndex = 0;
     const blockIndexLast = bockIndex;
-    const startPos = magicNumberPadded.paddedDataLength + 8 + 8 + 8 + modMetaBufferPadded.paddedDataLength;
+    const startPos = magicNumberPadded.paddedDataLength + BlockSize + modMetaBufferPadded.paddedDataLength;
     for (let blockIndex = 0; blockIndex < blockIndexLast; blockIndex++) {
 
         const blockStartPos = startPos + blockPosIndex * BlockSize;
