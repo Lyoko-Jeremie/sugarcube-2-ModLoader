@@ -3,6 +3,7 @@ import {SC2DataManager} from "SC2DataManager";
 import JSZip from "jszip";
 import {IndexDBLoader, LocalStorageLoader} from "./ModZipReader";
 import moment from "moment/moment";
+import {JSZipLikeReadOnlyInterface} from "./JSZipLikeReadOnlyInterface";
 
 
 export interface LogWrapper {
@@ -21,7 +22,7 @@ export interface ModLoadControllerCallback {
      * @param bootJson
      * @param zip
      */
-    canLoadThisMod(bootJson: ModBootJson, zip: JSZip): Promise<boolean>;
+    canLoadThisMod(bootJson: ModBootJson, zip: JSZipLikeReadOnlyInterface): Promise<boolean>;
 
     /**
      * use this to modify a mod, like i18n a mod
@@ -29,7 +30,7 @@ export interface ModLoadControllerCallback {
      * @param zip       carefully modify zip file
      * @param modInfo   you can modify the all info in there. read: [ModZipReader.init()]
      */
-    afterModLoad(bootJson: ModBootJson, zip: JSZip, modInfo: ModInfo): Promise<any>;
+    afterModLoad(bootJson: ModBootJson, zip: JSZipLikeReadOnlyInterface, modInfo: ModInfo): Promise<any>;
 
     InjectEarlyLoad_start(modName: string, fileName: string): Promise<any>;
 
@@ -279,7 +280,7 @@ export class ModLoadController implements ModLoadControllerCallback {
     logWarning!: (s: string) => void;
     ModLoaderLoadEnd!: () => Promise<any>;
 
-    async canLoadThisMod(bootJson: ModBootJson, zip: JSZip): Promise<boolean> {
+    async canLoadThisMod(bootJson: ModBootJson, zip: JSZipLikeReadOnlyInterface): Promise<boolean> {
         for (const [hookId, hook] of this.lifeTimeCircleHookTable) {
             try {
                 if (hook.canLoadThisMod) {
@@ -298,7 +299,7 @@ export class ModLoadController implements ModLoadControllerCallback {
         return true;
     }
 
-    async afterModLoad(bootJson: ModBootJson, zip: JSZip, modInfo: ModInfo): Promise<any> {
+    async afterModLoad(bootJson: ModBootJson, zip: JSZipLikeReadOnlyInterface, modInfo: ModInfo): Promise<any> {
         for (const [id, hook] of this.lifeTimeCircleHookTable) {
             try {
                 if (hook.afterModLoad) {

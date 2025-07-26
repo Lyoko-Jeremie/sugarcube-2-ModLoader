@@ -9,6 +9,8 @@ import {ReplacePatcher, checkPatchInfo} from "./ReplacePatcher";
 import JSON5 from 'json5';
 
 import xxHash from "xxhash-wasm";
+import {JSZipLikeReadOnlyInterface} from "JSZipLikeReadOnlyInterface";
+import {ModPackFileReaderJsZipAdaptor} from "./ModPack/ModPackJsZipAdaptor";
 // import moment from "moment";
 
 let xxHashApi: Awaited<ReturnType<typeof xxHash>> | undefined;
@@ -135,9 +137,19 @@ export class ModZipReaderHash {
     _zipBase64String: string | undefined;
 
     constructor(
-        zipBase64String: string,
+        zipBase64String: string | undefined,
+        hash?: string | undefined,
     ) {
-        this._zipBase64String = zipBase64String;
+        if (hash) {
+            this._hash = hash;
+        } else {
+            if (!zipBase64String) {
+                // never go there
+                console.error('[ModZipReaderHash] constructor zipBase64String is undefined if hash is undefined.');
+                throw new Error('[ModZipReaderHash] constructor zipBase64String is undefined if hash is undefined.');
+            }
+            this._zipBase64String = zipBase64String;
+        }
     }
 
     protected async digestMessage(message: string) {
@@ -149,6 +161,15 @@ export class ModZipReaderHash {
         return (await getXxHash()).h64ToString(message);
     }
 
+    // https://github.com/jungomi/xxhash-wasm/blob/5923f26411ed763044bed17a1fec33fee74e47a0/src/xxhash.js#L148
+    protected XxHashH64Bigint2String(h64: bigint): string {
+        return h64.toString(16).padStart(16, "0");
+    }
+
+    protected XxHashH32Number2String(h32: bigint): string {
+        return h32.toString(16).padStart(8, "0");
+    }
+
     async init() {
         if (this._hash) {
             this._zipBase64String = undefined;
@@ -156,8 +177,8 @@ export class ModZipReaderHash {
         }
         if (!this._zipBase64String) {
             // never go there
-            console.error('ModZipReaderHash init() this._zipBase64String is undefined.');
-            throw new Error('ModZipReaderHash init() this._zipBase64String is undefined.');
+            console.error('[ModZipReaderHash] init() this._zipBase64String is undefined.');
+            throw new Error('[ModZipReaderHash] init() this._zipBase64String is undefined.');
         }
         this._hash = await this.digestMessage(this._zipBase64String);
         this._zipBase64String = undefined;
@@ -178,8 +199,8 @@ export class ModZipReaderHash {
     toString() {
         if (!this._hash) {
             // never go there
-            console.error('ModZipReaderHash toString() this._hash is undefined.');
-            throw new Error('ModZipReaderHash toString() this._hash is undefined.');
+            console.error('[ModZipReaderHash] toString() this._hash is undefined.');
+            throw new Error('[ModZipReaderHash] toString() this._hash is undefined.');
         }
         return this._hash;
     }
@@ -196,7 +217,7 @@ export class ModZipReader {
 
     private gcFinalizationRegistry;
 
-    private _zip: JSZip | undefined;
+    private _zip: JSZipLikeReadOnlyInterface | undefined;
     // NOTE: the WeakRef cannot work on all browser, temp disable it.
     // private _zipWeakRef: WeakRef<JSZip>;
     private _zipIsExist: boolean | null;
@@ -213,7 +234,7 @@ export class ModZipReader {
     public modZipReaderHash: ModZipReaderHash;
 
     constructor(
-        zip: JSZip,
+        zip: JSZipLikeReadOnlyInterface,
         zipBase64String: string,
         public loaderBase: LoaderBase,
         public modLoadControllerCallback: ModLoadControllerCallback,
@@ -235,8 +256,16 @@ export class ModZipReader {
         }
         // this._zipWeakRef = new WeakRef(zip);
         this._zip = zip;
-        this.modZipReaderHash = new ModZipReaderHash(zipBase64String);
+        this.modZipReaderHash = new ModZipReaderHash(zipBase64String, zip.hashString);
         this.gcFinalizationRegistry.register(this._zip, undefined, this);
+    }
+
+    get isModPack() {
+        return this.zip.is_JeremieModLoader_ModPack === true;
+    }
+
+    get isJsZip() {
+        return this.zip.is_JeremieModLoader_ModPack === undefined;
     }
 
     modInfo?: ModInfo;
@@ -728,11 +757,20 @@ export class LocalStorageLoader extends LoaderBase {
                 continue;
             }
             try {
-                const m = await JSZip.loadAsync(base64ZipString, {base64: true}).then(zip => {
-                    return new ModZipReader(zip, base64ZipString, this, this.log);
-                });
-                if (await m.init()) {
-                    this.modList.push(m);
+                const mpr = new ModPackFileReaderJsZipAdaptor();
+                const modPack = await mpr.loadAsync(base64ZipString, {base64: true});
+                if (modPack) {
+                    const m = new ModZipReader(modPack, '', this, this.log);
+                    if (await m.init()) {
+                        this.modList.push(m);
+                    }
+                } else {
+                    const m = await JSZip.loadAsync(base64ZipString, {base64: true}).then(zip => {
+                        return new ModZipReader(zip, base64ZipString, this, this.log);
+                    });
+                    if (await m.init()) {
+                        this.modList.push(m);
+                    }
                 }
             } catch (E) {
                 console.error(E);
@@ -867,11 +905,20 @@ export class IndexDBLoader extends LoaderBase {
                 continue;
             }
             try {
-                const m = await JSZip.loadAsync(base64ZipString, {base64: true}).then(zip => {
-                    return new ModZipReader(zip, base64ZipString, this, this.log);
-                });
-                if (await m.init()) {
-                    this.modList.push(m);
+                const mpr = new ModPackFileReaderJsZipAdaptor();
+                const modPack = await mpr.loadAsync(base64ZipString, {base64: true});
+                if (modPack) {
+                    const m = new ModZipReader(modPack, '', this, this.log);
+                    if (await m.init()) {
+                        this.modList.push(m);
+                    }
+                } else {
+                    const m = await JSZip.loadAsync(base64ZipString, {base64: true}).then(zip => {
+                        return new ModZipReader(zip, base64ZipString, this, this.log);
+                    });
+                    if (await m.init()) {
+                        this.modList.push(m);
+                    }
                 }
             } catch (E) {
                 console.error(E);
@@ -1062,11 +1109,20 @@ export class Base64ZipStringLoader extends LoaderBase {
         // modDataBase64ZipStringList: base64[]
         for (const base64ZipString of this.base64ZipStringList) {
             try {
-                const m = await JSZip.loadAsync(base64ZipString, {base64: true}).then(zip => {
-                    return new ModZipReader(zip, base64ZipString, this, this.log);
-                });
-                if (await m.init()) {
-                    this.modList.push(m);
+                const mpr = new ModPackFileReaderJsZipAdaptor();
+                const modPack = await mpr.loadAsync(base64ZipString, {base64: true});
+                if (modPack) {
+                    const m = new ModZipReader(modPack, '', this, this.log);
+                    if (await m.init()) {
+                        this.modList.push(m);
+                    }
+                } else {
+                    const m = await JSZip.loadAsync(base64ZipString, {base64: true}).then(zip => {
+                        return new ModZipReader(zip, base64ZipString, this, this.log);
+                    });
+                    if (await m.init()) {
+                        this.modList.push(m);
+                    }
                 }
             } catch (E) {
                 console.error(E);
@@ -1105,11 +1161,20 @@ export class LocalLoader extends LoaderBase {
                 // modDataValueZipList: base64[]
                 for (const modDataValueZip of modDataValueZipList) {
                     try {
-                        const m = await JSZip.loadAsync(modDataValueZip, {base64: true}).then(zip => {
-                            return new ModZipReader(zip, modDataValueZip, this, this.log);
-                        });
-                        if (await m.init()) {
-                            this.modList.push(m);
+                        const mpr = new ModPackFileReaderJsZipAdaptor();
+                        const modPack = await mpr.loadAsync(modDataValueZip, {base64: true});
+                        if (modPack) {
+                            const m = new ModZipReader(modPack, '', this, this.log);
+                            if (await m.init()) {
+                                this.modList.push(m);
+                            }
+                        } else {
+                            const m = await JSZip.loadAsync(modDataValueZip, {base64: true}).then(zip => {
+                                return new ModZipReader(zip, modDataValueZip, this, this.log);
+                            });
+                            if (await m.init()) {
+                                this.modList.push(m);
+                            }
                         }
                     } catch (E) {
                         console.error(E);
@@ -1152,9 +1217,17 @@ export class RemoteLoader extends LoaderBase {
                     const m = await fetch(modFileZipPath)
                         .then(async (T) => {
                             const blob = await T.blob();
-                            const base64ZipString = await blobToBase64(blob);
-                            const zipFile = await JSZip.loadAsync(blob);
-                            return new ModZipReader(zipFile, base64ZipString, this, this.log);
+
+                            const mpr = new ModPackFileReaderJsZipAdaptor();
+                            const modPack = await mpr.loadAsync(blob);
+                            if (modPack) {
+                                const zipFile = new ModZipReader(modPack, '', this, this.log);
+                                return zipFile;
+                            } else {
+                                const base64ZipString = await blobToBase64(blob);
+                                const zipFile = await JSZip.loadAsync(blob);
+                                return new ModZipReader(zipFile, base64ZipString, this, this.log);
+                            }
                         });
                     if (await m.init()) {
                         this.modList.push(m);
@@ -1177,9 +1250,16 @@ export class RemoteLoader extends LoaderBase {
 
 export class LazyLoader extends LoaderBase {
 
-    async add(modeZip: JSZip) {
+    async add(modeZip: JSZipLikeReadOnlyInterface) {
         try {
-            const base64ZipString = await modeZip.generateAsync({type: "base64"});
+            if (modeZip.is_JeremieModLoader_ModPack) {
+                const m = new ModZipReader(modeZip, '', this, this.log);
+                if (await m.init()) {
+                    this.modList.push(m);
+                }
+                return m;
+            }
+            const base64ZipString = await modeZip.generateAsync!({type: "base64"});
             const m = new ModZipReader(modeZip, base64ZipString, this, this.log);
             if (await m.init()) {
                 this.modList.push(m);

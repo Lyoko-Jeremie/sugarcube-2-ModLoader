@@ -12,6 +12,9 @@ import {AddonPluginManager} from "./AddonPlugin";
 import {SemVerToolsType} from "./SemVer/InfiniteSemVer";
 import {IdbKeyValRef, IdbRef} from "./IdbKeyValRef";
 import {ModLoadFromSourceType} from "./ModOrderContainer";
+import {JSZipLikeReadOnlyInterface} from "./JSZipLikeReadOnlyInterface";
+import {ModPackFileReader} from "./ModPack/ModPack";
+import {ModPackFileReaderJsZipAdaptor} from "./ModPack/ModPackJsZipAdaptor";
 // import {
 //     enumerable,
 //     sealed,
@@ -404,7 +407,7 @@ export class ModUtils {
         return this.getModLoadController().getLog();
     }
 
-    async lazyRegisterNewModZipData(data: ArgumentTypes<typeof JSZip.loadAsync>[0], options?: JSZip.JSZipLoadOptions) {
+    async lazyRegisterNewModZipData(data: ArgumentTypes<JSZipLikeReadOnlyInterface['loadAsync']>[0], options?: any /*JSZip.JSZipLoadOptions*/) {
         console.log('lazyRegisterNewModZipData', data);
         try {
             const zip = await JSZip.loadAsync(data, options);
@@ -414,6 +417,11 @@ export class ModUtils {
             this.getLogger().error(`lazyRegisterNewMod() error:[${e?.message ? e.message : e}]`);
             return false;
         }
+    }
+
+    async parseModPack(modPackBuffer: Uint8Array, password?: string | undefined) {
+        const modPackFileReader = new ModPackFileReaderJsZipAdaptor();
+        return await modPackFileReader.load(modPackBuffer, password);
     }
 
     getNowRunningModName(): string | undefined {

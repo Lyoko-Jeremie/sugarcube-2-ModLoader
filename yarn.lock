@@ -2119,6 +2119,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/libsodium-wrappers-sumo@npm:^0.7.8":
+  version: 0.7.8
+  resolution: "@types/libsodium-wrappers-sumo@npm:0.7.8"
+  dependencies:
+    "@types/libsodium-wrappers": "*"
+  checksum: 878106ea886da94e3d0136f2af437dc90327248f72c2877400f7249b24a397b8b85bfdc3491d8f0d4e17b7f80bad02f242f2841e8cc4d6045efd3c8eb37bd9e7
+  languageName: node
+  linkType: hard
+
+"@types/libsodium-wrappers@npm:*":
+  version: 0.7.14
+  resolution: "@types/libsodium-wrappers@npm:0.7.14"
+  checksum: 565d178cd12aa5f7abc03149e50a962450d797e995935368ca1abe1cb5a5b96d81f3115a91f6b6f7dcff210d25f104003708b4bfc5a34751f23460efeb169fa4
+  languageName: node
+  linkType: hard
+
 "@types/libsodium-wrappers@npm:^0.7.11":
   version: 0.7.11
   resolution: "@types/libsodium-wrappers@npm:0.7.11"
@@ -2502,12 +2518,14 @@ __metadata:
     "@types/core-js": ^2.5.8
     "@types/jquery": ^3.5.20
     "@types/libsodium-wrappers": ^0.7.11
+    "@types/libsodium-wrappers-sumo": ^0.7.8
     "@types/lodash": ^4.14.198
     "@types/node": ^20.6.0
     "@types/semver": ^7.5.2
     "@webpack-cli/generators": ^3.0.7
     babel-loader: ^9.1.3
     browserslist: ^4.22.1
+    bson: ^6.10.4
     cheerio: ^1.0.0-rc.12
     core-js: ^3.37.1
     css-loader: ^6.8.1
@@ -2520,6 +2538,7 @@ __metadata:
     json5: ^2.2.3
     jszip: ^3.10.1
     libsodium-wrappers: ^0.7.13
+    libsodium-wrappers-sumo: ^0.7.15
     lodash: ^4.17.21
     lru-cache: ^10.0.1
     moment: ^2.29.4
@@ -3029,6 +3048,13 @@ __metadata:
   bin:
     browserslist: cli.js
   checksum: 7e6b10c53f7dd5d83fd2b95b00518889096382539fed6403829d447e05df4744088de46a571071afb447046abc3c66ad06fbc790e70234ec2517452e32ffd862
+  languageName: node
+  linkType: hard
+
+"bson@npm:^6.10.4":
+  version: 6.10.4
+  resolution: "bson@npm:6.10.4"
+  checksum: 5b0b625ac9b3661497aa1baec58c8e8979cc501a5c490a5740001b3cc415d0d5d51f16bf9da433b28ffd1303b6f98c1427e8192cf4220b13b09a9a4184bfceb2
   languageName: node
   linkType: hard
 
@@ -5606,6 +5632,22 @@ __metadata:
     picocolors: ^1.0.0
     shell-quote: ^1.7.3
   checksum: 48e4230643e8fdb5c14c11314706d58d9f3fbafe2606be3d6e37da1918ad8bfe39dd87875c726a1b59b9f4da99d87ec3e36d4c528464f0b820f9e91e5cb1c02d
+  languageName: node
+  linkType: hard
+
+"libsodium-sumo@npm:^0.7.15":
+  version: 0.7.15
+  resolution: "libsodium-sumo@npm:0.7.15"
+  checksum: 77dc9a43420b7d7d8827c1c2d6329126aaff236ba9b26197d9a2ab373fdcbc79f56641e9f29cf9f1038b31341dd5bd6711ebeb9504ba8c07a4f2820cb5994955
+  languageName: node
+  linkType: hard
+
+"libsodium-wrappers-sumo@npm:^0.7.15":
+  version: 0.7.15
+  resolution: "libsodium-wrappers-sumo@npm:0.7.15"
+  dependencies:
+    libsodium-sumo: ^0.7.15
+  checksum: 5e2e72c9abbc8cb5be62afb82cdf96694b0dce0d9878dec9b2dce62891aac753f7f76e6669d901eab6d7ccabc7f23e3085ee0eea0dde8dcc48af7e1e840002e5
   languageName: node
   linkType: hard
 

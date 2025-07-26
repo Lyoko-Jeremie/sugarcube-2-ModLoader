@@ -23,6 +23,7 @@ import {
 } from "./ModOrderContainer";
 import {LRUCache} from 'lru-cache';
 import JSZip from 'jszip';
+import {JSZipLikeReadOnlyInterface} from "./JSZipLikeReadOnlyInterface";
 
 export interface IModImgGetter {
     /**
@@ -492,7 +493,7 @@ export class ModLoader {
         return canLoadList;
     }
 
-    public async lazyRegisterNewMod(modeZip: JSZip) {
+    public async lazyRegisterNewMod(modeZip: JSZipLikeReadOnlyInterface) {
         console.log('ModLoader ====== lazyRegisterNewMod() LazyLoader load start: ', [modeZip]);
         const modLazyLoader = this.getLazyLoader();
         try {
