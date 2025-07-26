@@ -20,6 +20,8 @@ label
 dist*
 
 src/insertTools/**/*.zip
+src/insertTools/**/*.modpack
+src/insertTools/**/*.modpack.crypt
 
 !mod/.gitkeep
 !mod/i18n
