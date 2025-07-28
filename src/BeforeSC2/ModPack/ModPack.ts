@@ -21,69 +21,8 @@ import {
     crypto_pwhash_MEMLIMIT_INTERACTIVE,
 } from 'libsodium-wrappers-sumo';
 
-
-// 文件结构
-// 每一个部分都对齐到 BlockSize ， 不满足的数据在末尾padding随机字符串
-// ----------
-// block -1 : 文件头魔数 MagicNumber ：JeremieModLoader
-// block -1 : 包括三个 8byte 长度数据(bigint) : ModMeta开始位置(byte)， ModMeta结束位置(byte)， 所有文件数据开始位置(byte)
-// block -1 : BSON(ModMeta)
-// block 0 ~ n-1 : 文件数据部分
-// block n : BSON(文件树 file tree) 文件树 被作为一个文件对待。
-// 8byte xxHash64 值在文件末尾， 用于校验文件完整性 ， hash 时计算除 xxHash64 值外前面的所有数据
-// ----------
-// 在加密模式下，block 0 ~ n 的所有文件数据部分都使用 crypto_stream_xchacha20_xor_ic 流加密模式加密
-// 文件头和 ModMeta 部分不加密， 每一个文件都对其到 BlockSize ， 而 BlockSize 是 crypto_stream_xchacha20_xor_ic 块大小
-// 利用 crypto_stream_xchacha20_xor_ic 可以按块计算和解密的特性，实现随机文件访问和读取
-// 加密时可以原位加密，解密时只发生一次数据拷贝
-// ----------
-// 可扩展性：
-// 因为 ModMeta 本质上是一个二进制 json ， 可以在 ModMeta 中添加新的字段来附加较短的新数据。
-// 对于较大的新的定义，可以如同 FileTree 一样在文件树中添加新的文件，并在 ModMeta 中添加对应的字段存储指向到这个文件元数据即可。
-// ----------
-
-
-export interface FileMeta {
-    // begin block index
-    b: number;
-    // end block index
-    e: number;
-    // file length (byte)
-    l: number;
-}
-
-export interface CryptoInfo {
-    // xchacha20 nonce in base64 . if not crypted, it is empty string
-    // if node crypted, the file ext is ( .modpack )
-    // if crypted, the file ext is ( .modpack.crypt )
-    Xchacha20NonceBase64: string;
-    PwhashSaltBase64: string;
-}
-
-export const MagicNumber = new Uint8Array([0x4A, 0x65, 0x72, 0x65, 0x6D, 0x69, 0x65, 0x4D, 0x6F, 0x64, 0x4C, 0x6F, 0x61, 0x64, 0x65, 0x72]);
-export const ModMetaProtocolVersion = 1; // Version of the mod pack protocol
-export const BlockSize = 64; // default block size
-
-export interface ModMeta {
-    // magic number, 0x4A, 0x65, 0x72, 0x65, 0x6D, 0x69, 0x65, 0x4D, 0x6F, 0x64, 0x4C, 0x6F, 0x61, 0x64, 0x65, 0x72
-    // to_base64(MagicNumber)
-    magicNumber: string;
-    // mod name
-    name: string;
-    // PAK file protocol version ModMetaProtocolVersion
-    protocolVersion: number;
-    // default: 64-byte . for xchacha20 fast lookup block
-    blockSize: number;
-    cryptoInfo?: CryptoInfo;
-    // the file tree
-    fileTreeBlock: FileMeta;
-    // the boot.json file meta
-    bootJsonFile: FileMeta;
-    // <filepath , FileMeta>
-    // dont forgot to verify the FileMeta not overlap when decompressing
-    // and the filePath is relative path, not absolute path
-    fileMeta: Record<string, FileMeta>;
-}
+import {BlockSize, CryptoInfo, FileMeta, MagicNumber, ModMeta, ModMetaProtocolVersion} from "./ModMeta";
+import {ModPackFileReaderInterface} from "./ModPackFileReaderInterface";
 
 function paddingToBlockSize(data: Uint8Array, blockSize: number, padN?: number): {
     blocks: number,
@@ -175,10 +114,13 @@ export async function covertFromZipMod(
     filePathList: string[],
     fileReaderFunc: (filePath: string) => Promise<Uint8Array | undefined>,
     password: string | undefined = undefined,
+    progressCallback?: (progress: number) => any | Promise<any>,
     bootFilePath: string = 'boot.json',
 ) {
     await ready;
     const xxhashApi = await xxhash();
+
+    await progressCallback?.(0);
 
     // filePathList duplicate check
     const filePathSet = new Set(filePathList);
@@ -226,6 +168,10 @@ export async function covertFromZipMod(
         // );
     }
 
+    await progressCallback?.(1);
+    const progressPerFile = Math.floor((100 - 6) * (cryptoInfo ? 0.5 : 1) / (filePathList.length + 1));
+    // console.log('progressPerFile', progressPerFile);
+
     const bootFile = await fileReaderFunc(bootFilePath);
     if (!bootFile) {
         console.error(`Boot file ${bootFilePath} not found`);
@@ -237,8 +183,12 @@ export async function covertFromZipMod(
     );
     bootJsonFile['filePath'] = bootFilePath;
 
+    let fileCount = 0;
+    await progressCallback?.(1 + progressPerFile * ++fileCount);
+
     const fileBlockList: ReturnType<typeof paddingToBlockSize>[] = [];
     for (const filePath of filePathList) {
+        // console.log(`Reading file: `, filePath);
         const fileData = await fileReaderFunc(filePath);
         if (!fileData) {
             console.error(`File ${filePath} not found`);
@@ -250,6 +200,7 @@ export async function covertFromZipMod(
         );
         fileBlock['filePath'] = filePath;
         fileBlockList.push(fileBlock);
+        await progressCallback?.(1 + progressPerFile * ++fileCount);
     }
 
     const modMeta: ModMeta = {
@@ -289,9 +240,13 @@ export async function covertFromZipMod(
     modMeta.fileTreeBlock.l = fileTreeBufferPadded.dataLength;
     bockIndex += fileTreeBufferPadded.blocks;
 
+    await progressCallback?.(1 + progressPerFile * fileCount + 1);
+
     const modMetaBuffer = BSON.serialize(modMeta);
     // console.log('modMetaBuffer length:', modMetaBuffer.length);
     // console.log(modMetaBuffer);
+
+    await progressCallback?.(1 + progressPerFile * fileCount + 2);
 
     const magicNumberPadded = paddingToBlockSize(MagicNumber, BlockSize, 0);
     const modMetaBufferPadded = paddingToBlockSize(modMetaBuffer, BlockSize, 0);
@@ -314,6 +269,10 @@ export async function covertFromZipMod(
     modPackBuffer.fill(0); // Fill with zeros initially
     // console.log('modPackBuffer.length', modPackBuffer.length);
 
+    await progressCallback?.(1 + progressPerFile * fileCount + 3);
+
+    await progressCallback?.(1 + progressPerFile * fileCount + 4);
+
     let offset = 0;
     // console.log('offset', offset, magicNumberPadded.paddedData.length, magicNumberPadded.paddedDataLength);
     modPackBuffer.set(magicNumberPadded.paddedData, offset);
@@ -331,6 +290,7 @@ export async function covertFromZipMod(
     modPackBuffer.set(bootJsonFile.paddedData, offset);
     offset += bootJsonFile.paddedDataLength;
     // console.log('offset for', offset);
+    await progressCallback?.(1 + progressPerFile * fileCount + 5);
     for (const fileBlock of fileBlockList) {
         // console.log('offset', offset, fileBlock.paddedData.length, fileBlock.paddedDataLength);
         modPackBuffer.set(fileBlock.paddedData, offset);
@@ -339,12 +299,15 @@ export async function covertFromZipMod(
     }
     modPackBuffer.set(fileTreeBufferPadded.paddedData, offset);
     offset += fileTreeBufferPadded.paddedDataLength;
+    await progressCallback?.(1 + progressPerFile * fileCount + 6);
 
     if (!cryptoInfo) {
+        await progressCallback?.(99);
         const xxHashPos = offset;
         const hashValue = calcXxHash64(modPackBuffer.subarray(0, xxHashPos), xxhashApi);
         dataView.setBigUint64(xxHashPos, BigInt(hashValue), true); // Store the xxHash value at the end of the mod pack buffer
 
+        await progressCallback?.(100);
         return {
             modMeta: modMeta,
             modPackBuffer: modPackBuffer,
@@ -353,6 +316,8 @@ export async function covertFromZipMod(
             hashString: XxHashH64Bigint2String(hashValue),
         };
     }
+
+    // console.log('start crypt modPackBuffer with xchacha20');
 
     // ==========================================================================================================
     // Encrypt the modPackBuffer with xchacha20 , only the file data part , block by block , inplace encryption
@@ -376,6 +341,7 @@ export async function covertFromZipMod(
     let blockPosIndex = 0;
     const blockIndexLast = bockIndex;
     const startPos = magicNumberPadded.paddedDataLength + BlockSize + modMetaBufferPadded.paddedDataLength;
+    const progressPerCryptoBlock = Math.floor((100 - 6) * 0.5 / (blockIndexLast + 1));
     for (let blockIndex = 0; blockIndex < blockIndexLast; blockIndex++) {
 
         const blockStartPos = startPos + blockPosIndex * BlockSize;
@@ -396,12 +362,16 @@ export async function covertFromZipMod(
         );
         modPackBuffer.set(encryptedBlock, blockStartPos);
         blockPosIndex++;
+
+        await progressCallback?.(1 + progressPerFile * fileCount + 6 + (blockIndex + 1) * progressPerCryptoBlock);
     }
 
+    await progressCallback?.(99);
     const xxHashPos = startPos + blockPosIndex * BlockSize;
     const hashValue = calcXxHash64(modPackBuffer.subarray(0, xxHashPos), xxhashApi);
     dataView.setBigUint64(xxHashPos, BigInt(hashValue), true); // Store the xxHash value at the end of the mod pack buffer
 
+    await progressCallback?.(100);
     return {
         modMeta: modMeta,
         modPackBuffer: modPackBuffer,
@@ -412,7 +382,7 @@ export async function covertFromZipMod(
 
 }
 
-export class ModPackFileReader {
+export class ModPackFileReader implements ModPackFileReaderInterface {
     constructor() {
     }
 
@@ -429,6 +399,11 @@ export class ModPackFileReader {
     private fileTree?: Record<string, any>;
     static xxhashApi?: Awaited<ReturnType<typeof xxhash>>;
     private xxHashValue?: bigint;
+    protected _progressCallback?: (progress: number) => any | Promise<any>;
+
+    set progressCallback(callback: (progress: number) => any | Promise<any>) {
+        this._progressCallback = callback;
+    }
 
     get modPackBufferSize(): number {
         if (!this.isInit) {
@@ -464,8 +439,8 @@ export class ModPackFileReader {
         const dataView = new DataView(this.modPackBuffer.buffer);
         const xxHashValue = dataView.getBigUint64(dataView.byteLength - 8, true);
         const hashValue = calcXxHash64(this.modPackBuffer.subarray(0, this.modPackBuffer.length - 8), xxhashApi);
-        console.log('[ModPackFileReader] xxHashValue:', XxHashH64Bigint2String(xxHashValue));
-        console.log('[ModPackFileReader] hashValue:', XxHashH64Bigint2String(hashValue));
+        // console.log('[ModPackFileReader] xxHashValue:', XxHashH64Bigint2String(xxHashValue));
+        // console.log('[ModPackFileReader] hashValue:', XxHashH64Bigint2String(hashValue));
         if (xxHashValue !== hashValue) {
             console.error(`[ModPackFileReader] Invalid xxHash value: ${XxHashH64Bigint2String(xxHashValue)}, expected: ${XxHashH64Bigint2String(hashValue)}`);
             return false;
@@ -491,10 +466,14 @@ export class ModPackFileReader {
             throw new Error('Invalid magic number in mod pack buffer');
         }
 
+        await this._progressCallback?.(0);
+
         if (!await this.checkHash(this.modPackBuffer)) {
             console.error('[ModPackFileReader] Mod pack hash check failed');
             throw new Error('[ModPackFileReader] Mod pack hash check failed');
         }
+
+        await this._progressCallback?.(10);
 
         // const modMetaStartPos = magicNumberLength + 8 + 8 + 8; // magic
         const dataView = new DataView(this.modPackBuffer.buffer);
@@ -513,6 +492,7 @@ export class ModPackFileReader {
         const modMetaBuffer = this.modPackBuffer.subarray(Number(modMetaBufferStartPos), Number(modMetaBufferEndPos));
         // console.log('[ModPackFileReader] modMetaBuffer length:', modMetaBuffer.length);
         // console.log(modMetaBuffer);
+        await this._progressCallback?.(20);
         const modMeta = BSON.deserialize(modMetaBuffer) as ModMeta;
         // console.log('[ModPackFileReader] modMeta:', modMeta);
         // console.log('[ModPackFileReader] modMeta.magicNumber:', from_base64(modMeta.magicNumber));
@@ -522,6 +502,7 @@ export class ModPackFileReader {
         }
 
         this.modMeta = modMeta;
+        await this._progressCallback?.(30);
 
         // check ModMeta valid
         if (modMeta.protocolVersion !== ModMetaProtocolVersion) {
@@ -542,6 +523,7 @@ export class ModPackFileReader {
                 throw new Error(`[ModPackFileReader] Invalid file meta for ${filePath}: ${JSON.stringify(fileMeta)}`);
             }
         }
+        await this._progressCallback?.(60);
 
         // check fileMeta not overlap
         const fileMetaList = Object.values(modMeta.fileMeta);
@@ -554,6 +536,7 @@ export class ModPackFileReader {
                 throw new Error(`[ModPackFileReader] File meta overlap detected between ${JSON.stringify(current)} and ${JSON.stringify(next)}`);
             }
         }
+        await this._progressCallback?.(80);
 
         // append 'boot.json'
         modMeta.fileMeta['boot.json'] = modMeta.bootJsonFile;
@@ -587,11 +570,16 @@ export class ModPackFileReader {
             );
         }
 
+        await this._progressCallback?.(99);
+
         // ok
         this.modMeta = modMeta;
         this.fileDataStartPos = fileDataStartPos;
         this.xchacha20Key = xchacha20Key;
         this.xchacha20Nonce = xchacha20Nonce;
+
+        await this._progressCallback?.(100);
+
         return modMeta;
     }
 

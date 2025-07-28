@@ -1,11 +1,11 @@
 import {
-    BlockSize,
-    calcXxHash64, MagicNumber,
-    ModPackFileReader, XxHashH64Bigint2String,
+    calcXxHash64,
+    ModPackFileReader,
+    XxHashH64Bigint2String,
 } from './ModPack';
+import {BlockSize, MagicNumber} from "./ModMeta";
 // @ts-ignore
-import xxhash, {XXHashAPI} from "xxhash-wasm";
-import uint8ToBase64 from 'uint8-to-base64';
+import xxhash from "xxhash-wasm";
 
 function splitAndNormalizePath(path: string): string[] {
     // Split the path by both forward and backward slashes
@@ -157,7 +157,7 @@ export class ModPackJsZipObjectAdaptor {
         switch (type) {
             case 'base64':
                 return btoa(String.fromCharCode(...data)) as OutputByType[T];
-                // return uint8ToBase64.encode(data) as OutputByType[T];
+            // return uint8ToBase64.encode(data) as OutputByType[T];
             case 'string':
             case 'text':
                 return new TextDecoder('utf-8').decode(data) as OutputByType[T];
