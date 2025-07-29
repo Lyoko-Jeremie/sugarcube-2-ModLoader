@@ -1,4 +1,5 @@
 import JSZip from "jszip";
+import type {ModPackFileReaderJsZipAdaptor} from "./ModPack/ModPackJsZipAdaptor";
 
 export interface JSZipObjectLikeReadOnlyInterface {
     async(type: 'string', a?: any): Promise<string>;
@@ -46,4 +47,10 @@ export interface JSZipLikeReadOnlyInterface {
     hashString?: string;
 
     generateAsync?: typeof JSZip['generateAsync'];
+}
+
+export function isModPackFileReaderJsZipAdaptor(
+    obj: any,
+): obj is ModPackFileReaderJsZipAdaptor {
+    return obj.is_JeremieModLoader_ModPack;
 }
