@@ -2,13 +2,7 @@ import JSZip from "jszip";
 import type {ModPackFileReaderJsZipAdaptor} from "./ModPack/ModPackJsZipAdaptor";
 
 export interface JSZipObjectLikeReadOnlyInterface {
-    async(type: 'string', a?: any): Promise<string>;
-
-    async(type: 'base64', a?: any): Promise<string>;
-
-    async(type: 'uint8array', a?: any): Promise<Uint8Array>;
-
-    async(type: 'blob', a?: any): Promise<Blob>;
+    async<T extends OutputType>(type: T, onUpdate?: any): Promise<OutputByType[T]>;
 
     get name(): string;
 
@@ -29,7 +23,22 @@ interface InputByType {
 }
 
 // from JsZip
-type InputFileFormat = InputByType[keyof InputByType] | Promise<InputByType[keyof InputByType]>;
+interface OutputByType {
+    base64: string;
+    string: string;
+    // text: string;
+    // binarystring: string;
+    // array: number[];
+    uint8array: Uint8Array;
+    // arraybuffer: ArrayBuffer;
+    blob: Blob;
+    // nodebuffer: Buffer;
+}
+
+// from JsZip
+export type InputFileFormat = InputByType[keyof InputByType] | Promise<InputByType[keyof InputByType]>;
+
+export type OutputType = keyof OutputByType;
 
 export interface JSZipLikeReadOnlyInterface {
     file(path: string): JSZipObjectLikeReadOnlyInterface | null;
@@ -47,6 +56,8 @@ export interface JSZipLikeReadOnlyInterface {
     hashString?: string;
 
     generateAsync?: typeof JSZip['generateAsync'];
+
+    get files(): Record<string, JSZipObjectLikeReadOnlyInterface>;
 }
 
 export function isModPackFileReaderJsZipAdaptor(
