@@ -10,7 +10,7 @@ import JSON5 from 'json5';
 import uint8ToBase64 from 'uint8-to-base64';
 
 import xxHash from "xxhash-wasm";
-import {JSZipLikeReadOnlyInterface} from "JSZipLikeReadOnlyInterface";
+import {JSZipLikeReadOnlyInterface} from "./JSZipLikeReadOnlyInterface";
 import {ModPackFileReaderJsZipAdaptor} from "./ModPack/ModPackJsZipAdaptor";
 // import moment from "moment";
 
