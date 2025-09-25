@@ -476,6 +476,14 @@ export class ModUtils {
         return modInfo?.bootJson?.addonPlugin?.find(T => T.modName === addonPluginModName && T.addonName === addonName)?.params;
     }
 
+    /**
+     * call this to tell ModLoader don't clean SC2DataInfoCache after ModLoader finished and before game start.
+     * this will use more memory.
+     */
+    keepSC2DataInfoCache() {
+        this.pSC2DataManager.needKeepSC2DataInfoCache = true;
+    }
+
 }
 
 // https://stackoverflow.com/questions/51851677/how-to-get-argument-types-from-function-in-typescript
