@@ -330,7 +330,7 @@ export class SC2DataManager {
         this.getSC2DataInfoAfterPatch();
     }
 
-    needKeepSC2DataInfoCache = false;
+    needKeepSC2DataInfoCache = true;
 
     cleanAllSC2DataInfoCache() {
         if (this.needKeepSC2DataInfoCache) {
