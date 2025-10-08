@@ -292,7 +292,6 @@ export class SC2DataManager {
         await this.getAddonPluginManager().triggerHook('beforePatchModToGame');
         await this.patchModToGame();
         await this.getAddonPluginManager().triggerHook('afterPatchModToGame');
-        this.cleanAllSC2DataInfoCache();
         this.getModLoadController().logInfo('ModLoader ====== SC2DataManager startInit() end. To Start JsPreloader.....');
     }
 
@@ -328,16 +327,6 @@ export class SC2DataManager {
         this.cSC2DataInfoAfterPatchCache?.destroy();
         this.cSC2DataInfoAfterPatchCache = undefined;
         this.getSC2DataInfoAfterPatch();
-    }
-
-    needKeepSC2DataInfoCache = true;
-
-    cleanAllSC2DataInfoCache() {
-        if (this.needKeepSC2DataInfoCache) {
-            return;
-        }
-        this.originSC2DataInfoCache?.clean();
-        this.cSC2DataInfoAfterPatchCache?.clean();
     }
 
     async applyReplacePatcher(modSC2DataInfoCache: SC2DataInfo) {
