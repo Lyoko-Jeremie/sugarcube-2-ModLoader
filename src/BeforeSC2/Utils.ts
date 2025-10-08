@@ -30,7 +30,7 @@ import {ModPackFileReaderJsZipAdaptor} from "./ModPack/ModPackJsZipAdaptor";
 export class ModUtils {
 
     get version(): string {
-        return '2.60.2';
+        return '2.61.0';
     }
 
     constructor(
@@ -474,14 +474,6 @@ export class ModUtils {
     getAddonParamsFromModInfo(modInfo: ModInfo, addonPluginModName: string, addonName: string): ModBootJsonAddonPlugin['params'] | undefined ;
     getAddonParamsFromModInfo<P extends any>(modInfo: ModInfo, addonPluginModName: string, addonName: string): P | ModBootJsonAddonPlugin['params'] | undefined {
         return modInfo?.bootJson?.addonPlugin?.find(T => T.modName === addonPluginModName && T.addonName === addonName)?.params;
-    }
-
-    /**
-     * call this to tell ModLoader don't clean SC2DataInfoCache after ModLoader finished and before game start.
-     * this will use more memory.
-     */
-    keepSC2DataInfoCache() {
-        this.pSC2DataManager.needKeepSC2DataInfoCache = true;
     }
 
 }
