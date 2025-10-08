@@ -59,8 +59,8 @@ export class JsPreloader {
         this.logger.log('ModLoader ====== JsPreloader startLoad() start');
         // keep originSC2DataInfoCache valid, keep it have the unmodified vanilla data
         this.pSC2DataManager.initSC2DataInfoCache();
-        for (const modName of this.modUtils.getModListName()) {
-            const mod = this.modUtils.getMod(modName);
+        for (const modName of this.modUtils.getModListNameNoAlias()) {
+            const mod = this.modUtils.getAnyModByNameNoAlias(modName);
             // ??? TODO ??? LazyLoad Same Mod can work ok ? (CryptoMod)
             if (!mod) {
                 console.error('ModLoader ====== JsPreloader startLoad() mod not found: ', modName);
