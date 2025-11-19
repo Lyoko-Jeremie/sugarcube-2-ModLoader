@@ -1,0 +1,135 @@
+import type {SC2DataManager} from '../dist-BeforeSC2/SC2DataManager';
+import type {ModUtils} from '../dist-BeforeSC2/Utils';
+import type {} from '../src/BeforeSC2/global';
+
+// const gUtils: ModUtils = window.modUtils;
+const gSC2DataManager: SC2DataManager = window.modSC2DataManager;
+const modSC2DataManager: SC2DataManager = window.modSC2DataManager;
+
+// 建议放在 scriptFileList_inject_early 中注册钩子
+
+modSC2DataManager.getAddonPluginManager().registerAddonPlugin(
+  'MyMod_script_hook_example',  //  mod名称
+  'MyMod_script_hook_example',  // 插件名称，必须唯一，一个mod可以挂多个插件，可以使用mod名称
+  {
+    // 参见类型定义：src/BeforeSC2/AddonPlugin.ts
+    // export type AddonPluginHookPointEx =
+    //     AddonPluginHookPoint
+    //     & AddonPluginHookPointExOptional
+    //     & AddonPluginHookPointExMustImplement
+    //     & AddonPluginHookPointWhenSC2;
+    registerMod: async (addonName, mod, modZip) => {
+      // 其他mod使用addonPlugin注册到本插件时执行
+      // !!!!!!!!!!! 必须实现此钩子 !!!!!!!!!!!
+      // 函数内容可以是空的，但是必须实现
+      console.log('MyMod_script_hook_example.js', '  ', '其他mod注册到本mod时执行');
+    },
+    afterInjectEarlyLoad: async () => {
+      // 所有 EarlyInject 脚本插入后
+      // 可选钩子
+      console.log('MyMod_script_hook_example.js', '  ', '所有 EarlyInject 脚本插入后');
+    },
+    afterModLoad: async () => {
+      // 所有 mod 加载后 ， 且 LifeTimeCircleHook.afterModLoad 触发后
+      // 可选钩子
+      console.log('MyMod_script_hook_example.js', '  ', '所有 mod 加载后 ， 且 LifeTimeCircleHook.afterModLoad 触发后');
+    },
+    afterEarlyLoad: async () => {
+      // 所有 EarlyLoad 脚本执行后
+      // 可选钩子
+      console.log('MyMod_script_hook_example.js', '  ', '所有 EarlyLoad 脚本执行后');
+    },
+    afterRegisterMod2Addon: async () => {
+      // 所有 Mod 注册到 Addon 后
+      // 可选钩子
+      console.log('MyMod_script_hook_example.js', '  ', '所有 Mod 注册到 Addon 后');
+    },
+    beforePatchModToGame: async () => {
+      // 所有 mod 数据覆盖到游戏前
+      // 可选钩子
+      console.log('MyMod_script_hook_example.js', '  ', '所有 mod 数据覆盖到游戏前');
+    },
+    afterPatchModToGame: async () => {
+      // 所有 mod 数据覆盖到游戏后
+      // 可选钩子
+      console.log('MyMod_script_hook_example.js', '  ', '所有 mod 数据覆盖到游戏后');
+    },
+    afterPreload: async () => {
+      // 所有 Preload 脚本执行后
+      // 可选钩子
+      console.log('MyMod_script_hook_example.js', '  ', '所有 Preload 脚本执行后');
+    },
+  },
+);
+
+modSC2DataManager.getModLoadController().addLifeTimeCircleHook(
+  'MyMod_script_hook_example',  // 钩子名称，必须唯一，一个mod可以挂多个钩子。可以直接使用mod名称
+  {
+    // 参见类型定义：src/BeforeSC2/ModLoadController.ts
+    // export interface LifeTimeCircleHook extends Partial<ModLoadControllerCallback> {}
+    // export interface ModLoadControllerCallback {}
+    canLoadThisMod: async (bootJson, zip) => {
+      // 检查并拦截mod加载，返回true则加载，返回false则不加载
+      // 安全模式就是使用此钩子实现的
+      // 可选钩子
+      return true;
+    },
+    exportDataZip: async (zip) => {
+      // 在debug模式导出mod数据，传入JSZip对象，返回插入了需要导出的数据后的JSZip对象
+      // mod需要导出自定义数据时实现此钩子，只需要往 zip 变量中写入数据即可
+      // 可选钩子
+      return zip;
+    },
+    InjectEarlyLoad_start: async (modName, fileName) => {
+      // 某Mod注入InjectEarlyLoad脚本前
+      // 可选钩子
+    },
+    InjectEarlyLoad_end: async (modName, fileName) => {
+      // 某Mod注入InjectEarlyLoad脚本后
+      // 可选钩子
+    },
+    EarlyLoad_start: async (modName, fileName) => {
+      // 某Mod执行EarlyLoad脚本前
+      // 可选钩子
+    },
+    EarlyLoad_end: async (modName, fileName) => {
+      // 某Mod执行EarlyLoad脚本后
+      // 可选钩子
+    },
+    LazyLoad_start: async (modName) => {
+      // 懒加载某Mod前
+      // 可选钩子
+    },
+    LazyLoad_end: async (modName) => {
+      // 懒加载某Mod后
+      // 可选钩子
+    },
+    Load_start: async (modName, fileName) => {
+      // 加载某Mod前
+      // 可选钩子
+    },
+    Load_end: async (modName, fileName) => {
+      // 加载某Mod后
+      // 可选钩子
+    },
+    PatchModToGame_start: async () => {
+      // 计算所有需要添加和覆盖的passage/js/css游戏数据前
+      // 可选钩子
+    },
+    PatchModToGame_end: async () => {
+      // 添加和覆盖的passage/js/css游戏数据后
+      // 可选钩子
+    },
+    ReplacePatcher_start: async (modName, fileName) => {
+      // 可选钩子，已弃用
+    },
+    ReplacePatcher_end: async (modName, fileName) => {
+      // 可选钩子，已弃用
+    },
+    ModLoaderLoadEnd: async () => {
+      // ModLoader加载完毕后
+      // 这是SC2开始执行前，ModLoader启动完成后，游戏启动前，的最后一个钩子
+      // 可选钩子
+    },
+  },
+);
