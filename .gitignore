@@ -10,6 +10,8 @@
 #!.yarn/cache
 #.pnp.*
 
+.idea/copilot.*
+
 node_modules
 dist
 img
@@ -23,6 +25,8 @@ src/mod/**/*.zip
 src/insertTools/**/*.zip
 src/insertTools/**/*.modpack
 src/insertTools/**/*.modpack.crypt
+src/mod/**/*.modpack
+src/mod/**/*.modpack.crypt
 
 !mod/.gitkeep
 !mod/i18n
