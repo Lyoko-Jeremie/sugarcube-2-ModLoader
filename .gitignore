@@ -11,6 +11,7 @@
 #.pnp.*
 
 .idea/copilot.*
+mod/**/.idea/copilot.*
 
 node_modules
 dist
@@ -27,6 +28,8 @@ src/insertTools/**/*.modpack
 src/insertTools/**/*.modpack.crypt
 src/mod/**/*.modpack
 src/mod/**/*.modpack.crypt
+mod/**/*.modpack
+mod/**/*.modpack.crypt
 
 !mod/.gitkeep
 !mod/i18n
