@@ -47,7 +47,7 @@ export const StaticModImgLruCache = new LRUCache<string, ImgLruCacheItemType>({
     max: 30,
     ttl: 1000 * 60 * 1,
     dispose: (value: ImgLruCacheItemType, key: string, reason: LRUCache.DisposeReason) => {
-        console.log('ModImgLruCache dispose', [value], [reason]);
+        // console.log('ModImgLruCache dispose', [value], [reason]);
     },
     updateAgeOnGet: true,
     updateAgeOnHas: true,
