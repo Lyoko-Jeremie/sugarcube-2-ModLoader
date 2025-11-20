@@ -92,6 +92,77 @@ export class HtmlTagSrcHook {
     }
 
     /**
+     * usually called by sc2 hook
+     *
+     * @example:
+     * @code
+     * ```js
+     *      window.modSC2DataManager?.getHtmlTagSrcHook?.()?.fastWrapHtmlImageElement?.(node);
+     * ```
+     */
+    public async fastWrapHtmlImageElement(el: HTMLImageElement | HTMLElement, field: string = 'src') {
+        try {
+
+            let mlSrc = el.getAttribute(`ML-${field}`);
+            if (mlSrc) {
+                // skip
+                return false;
+            }
+
+            let src = el.getAttribute(field);
+            if (!src) {
+                // bad
+                return false;
+            } else if (src.startsWith('data:')) {
+                // skip
+                return true;
+            }
+            // init
+            mlSrc = src;
+            el.setAttribute(`ML-${field}`, src);
+            el.removeAttribute(field);
+
+            // call hook to find a mod hook to handle the element
+            // if all mod cannot handle, don't change the element and return false
+            for (const [hookKey, hook] of this.hookReturnModeTable) {
+                try {
+                    const r = await hook(mlSrc);
+                    if (r[0]) {
+                        el.setAttribute(field, r[1]);
+                        return true;
+                    }
+                } catch (e: Error | any) {
+                    console.error(`[HtmlTagSrcHook] fastWrapHtmlImageElement: call hookKey error`, [hookKey, hook, e]);
+                    this.logger.error(`[HtmlTagSrcHook] fastWrapHtmlImageElement: call hookKey[${hookKey}] error [${e?.message ? e.message : e}]`);
+                }
+            }
+            // console.log('[HtmlTagSrcHook] doHook: cannot handing on hookReturnModeTable of the element', [el, el.outerHTML]);
+            for (const [hookKey, hook] of this.hookTable) {
+                try {
+                    if (await hook(el, mlSrc, field)) {
+                        return true;
+                    }
+                } catch (e: Error | any) {
+                    console.error(`[HtmlTagSrcHook] fastWrapHtmlImageElement: call hookKey error`, [hookKey, hook, e]);
+                    this.logger.error(`[HtmlTagSrcHook] fastWrapHtmlImageElement: call hookKey[${hookKey}] error [${e?.message ? e.message : e}]`);
+                }
+            }
+
+            // console.log('[HtmlTagSrcHook] fastWrapHtmlImageElement: cannot handing on hookTable of the element', [el, el.outerHTML]);
+            // console.log('[HtmlTagSrcHook] fastWrapHtmlImageElement: cannot handing the element', [el, el.outerHTML]);
+            el.setAttribute(`ML-${field}_replace_failed`, '1');
+            // if no one can handle the element, do the default action
+            // recover the [field]
+            el.setAttribute(field, mlSrc);
+            return false;
+
+        } catch (e) {
+            console.error('[HtmlTagSrcHook] fastWrapHtmlImageElement Error:', [e, el, el.outerHTML]);
+            return false;
+        }
+    }
+
+    /**
      * covert HtmlElement to use image from mod
      *
      * @example:

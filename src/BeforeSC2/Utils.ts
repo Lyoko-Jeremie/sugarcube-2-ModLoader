@@ -476,6 +476,16 @@ export class ModUtils {
         return modInfo?.bootJson?.addonPlugin?.find(T => T.modName === addonPluginModName && T.addonName === addonName)?.params;
     }
 
+    /**
+     *
+     * ```
+     *      window.modUtils?.fastWrapHtmlImageElement?.(node);
+     * ```
+     */
+    public async fastWrapHtmlImageElement(el: HTMLImageElement | HTMLElement, field: string = 'src') {
+        return this.pSC2DataManager.getHtmlTagSrcHook().fastWrapHtmlImageElement(el, field);
+    }
+
 }
 
 // https://stackoverflow.com/questions/51851677/how-to-get-argument-types-from-function-in-typescript
