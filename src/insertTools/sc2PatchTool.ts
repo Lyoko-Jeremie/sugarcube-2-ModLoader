@@ -9,13 +9,31 @@ import {has} from 'lodash';
     console.log('process.argv.length', process.argv.length);
     console.log('process.argv', process.argv);
     const htmlPath = process.argv[2];
+    const i10nPath = process.argv[3];
     console.log('htmlPath', htmlPath);
+    console.log('i10nPath', i10nPath);
     if (!htmlPath) {
         console.error('no htmlPath');
         process.exit(-1);
         return;
     }
     const htmlF = await promisify(fs.readFile)(htmlPath, {encoding: 'utf-8'});
+    let i10nF;
+    let i10nNode;
+    if (i10nPath) {
+        i10nF = await promisify(fs.readFile)(i10nPath, {encoding: 'utf-8'});
+        i10nNode = `
+<script id="i10n-sc2patch" type="text/javascript">
+    window.initI10n = (l10nStrings)=>{
+        ${i10nF}
+    };
+</script>
+        `;
+    } else {
+        i10nF = undefined;
+        i10nNode = undefined;
+    }
+
 
     const ht = cheerio.load(htmlF);
 
@@ -33,10 +51,14 @@ import {has} from 'lodash';
         return;
     }
 
+    if (i10nNode) {
+        ht(i10nNode).insertBefore(sC2Script);
+    }
+
     let sc2JsText = sC2Script.text();
 
     // window.SugarCube={},jQuery((()=>{
-    // window.SugarCube = {}, window.mainStart =((() => {
+    // window.SugarCube={},window.mainStart=((()=>{
     const starHeadOld = `window.SugarCube={},jQuery((()=>{`;
     const startHeadNew = `window.SugarCube={},window.mainStart=((()=>{`;
 
@@ -46,7 +68,7 @@ import {has} from 'lodash';
     const startTailNew = `}))
 // inject ModLoader on there
 if (typeof window.modSC2DataManager !== 'undefined') {
-window.modSC2DataManager.startInit().then(() => window.jsPreloader.startLoad()).then(() => window.mainStart()).catch(err => {console.error(err);});}else {window.mainStart();
+window.modSC2DataManager.startInit().then(() => window.jsPreloader.startLoad()).then(() => {window.mainStart();window.initI10n(l10nStrings);}).catch(err => {console.error(err);});}else {window.mainStart();window.initI10n(l10nStrings);
 }
     })(window,window.document,jQuery);`;
 
