@@ -21,6 +21,7 @@ const config = {
     insert2html: './src/insertTools/insert2html.ts',
     "insert2html-polyfill": './src/insertTools/insert2html-polyfill.ts',
     sc2ReplaceTool: './src/insertTools/sc2ReplaceTool.ts',
+    sc2PatchTool: './src/insertTools/sc2PatchTool.ts',
     polyfillInsert: './src/insertTools/polyfillInsert.ts',
   },
   output: {
