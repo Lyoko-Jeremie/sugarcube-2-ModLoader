@@ -30,7 +30,7 @@ import {ModPackFileReaderJsZipAdaptor} from "./ModPack/ModPackJsZipAdaptor";
 export class ModUtils {
 
     get version(): string {
-        return '2.101.0';
+        return '2.101.1';
     }
 
     constructor(
