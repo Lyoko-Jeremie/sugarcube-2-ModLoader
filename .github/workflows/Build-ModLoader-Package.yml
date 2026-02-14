@@ -81,6 +81,16 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/ModSubUiAngularJs/ModSubUiAngularJs.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy ModSubUiAngularJs dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/ModSubUiAngularJs/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/ModSubUiAngularJs/dist
+      - name: Copy ModSubUiAngularJs dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/ModSubUiAngularJs/dist-ts/**/*
+          target: ${{ github.workspace }}/out/mod-dist/ModSubUiAngularJs/dist-ts
 
       - name: Build ModLoaderGui
         working-directory: ${{ github.workspace }}/mod/ModLoaderGui
@@ -95,6 +105,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/ModLoaderGui/ModLoaderGui.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy ModLoaderGui dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/ModLoaderGui/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/ModLoaderGui/dist
 
       - name: Build ImageLoaderHook
         working-directory: ${{ github.workspace }}/mod/ImageLoaderHook
@@ -116,6 +131,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/ImageLoaderHook/ModLoader ImageLoaderHookCore.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy ImageLoaderHook dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/ImageLoaderHook/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/ImageLoaderHook/dist
 
       - name: Build ReplacePatch
         working-directory: ${{ github.workspace }}/mod/ReplacePatch
@@ -130,6 +150,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/ReplacePatch/ReplacePatcher.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy ReplacePatch dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/ReplacePatch/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/ReplacePatch/dist
 
       # TweeReplacerLinker must build before `TweeReplacer` and `I18nTweeReplacer`
       - name: Build TweeReplacerLinker
@@ -146,6 +171,16 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/TweeReplacerLinker/TweeReplacerLinker.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy TweeReplacerLinker dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/TweeReplacerLinker/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/TweeReplacerLinker/dist
+      - name: Copy TweeReplacerLinker dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/TweeReplacerLinker/dist-tools/**/*
+          target: ${{ github.workspace }}/out/mod-dist/TweeReplacerLinker/dist-tools
 
       - name: Build TweeReplacer
         working-directory: ${{ github.workspace }}/mod/TweeReplacer
@@ -160,6 +195,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/TweeReplacer/TweeReplacer.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy TweeReplacer dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/TweeReplacer/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/TweeReplacer/dist
 
       - name: Build I18nTweeReplacer
         working-directory: ${{ github.workspace }}/mod/I18nTweeReplacer
@@ -174,6 +214,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/I18nTweeReplacer/I18nTweeReplacer.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy I18nTweeReplacer dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/I18nTweeReplacer/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/I18nTweeReplacer/dist
 
       - name: Build CheckDoLCompressorDictionaries
         working-directory: ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries
@@ -188,6 +233,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries/CheckDoLCompressorDictionaries.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy CheckDoLCompressorDictionaries dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/CheckDoLCompressorDictionaries/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/CheckDoLCompressorDictionaries/dist
 
       - name: Build CheckGameVersion
         working-directory: ${{ github.workspace }}/mod/CheckGameVersion
@@ -202,6 +252,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/CheckGameVersion/CheckGameVersion.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy CheckGameVersion dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/CheckGameVersion/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/CheckGameVersion/dist
 
       - name: Build CheckGameVersionCot
         working-directory: ${{ github.workspace }}/mod/CheckGameVersionCot
@@ -216,6 +271,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/CheckGameVersionCot/CheckGameVersionCot.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy CheckGameVersionCot dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/CheckGameVersionCot/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/CheckGameVersionCot/dist
 
       - name: Build Diff3WayMerge
         working-directory: ${{ github.workspace }}/mod/Diff3WayMerge
@@ -230,6 +290,16 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/Diff3WayMerge/Diff3WayMerge.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy Diff3WayMerge dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/Diff3WayMerge/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/Diff3WayMerge/dist
+      - name: Copy Diff3WayMerge dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/Diff3WayMerge/dist-tool/**/*
+          target: ${{ github.workspace }}/out/mod-dist/Diff3WayMerge/dist-tool
 
       - name: Build DoLTimeWrapperAddon
         working-directory: ${{ github.workspace }}/mod/DoLTimeWrapperAddon
@@ -244,6 +314,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/DoLTimeWrapperAddon/DoLTimeWrapperAddon.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy DoLTimeWrapperAddon dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/DoLTimeWrapperAddon/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/DoLTimeWrapperAddon/dist
 
       - name: Build ModdedClothesAddon
         working-directory: ${{ github.workspace }}/mod/ModdedClothesAddon
@@ -258,6 +333,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/ModdedClothesAddon/ModdedClothesAddon.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy ModdedClothesAddon dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/ModdedClothesAddon/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/ModdedClothesAddon/dist
 
       - name: Build ModdedFeatsAddon
         working-directory: ${{ github.workspace }}/mod/ModdedFeatsAddon
@@ -272,6 +352,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/ModdedFeatsAddon/ModdedFeatsAddon.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy ModdedFeatsAddon dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/ModdedFeatsAddon/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/ModdedFeatsAddon/dist
 
       - name: Build ModdedHairAddon
         working-directory: ${{ github.workspace }}/mod/ModdedHairAddon
@@ -286,6 +371,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/ModdedHairAddon/ModdedHairAddon.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy ModdedHairAddon dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/ModdedHairAddon/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/ModdedHairAddon/dist
 
       - name: Build ConflictChecker
         working-directory: ${{ github.workspace }}/mod/ConflictChecker
@@ -300,6 +390,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/ConflictChecker/ConflictChecker.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy ConflictChecker dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/ConflictChecker/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/ConflictChecker/dist
 
       - name: Build I18nTweeList
         working-directory: ${{ github.workspace }}/mod/I18nTweeList
@@ -314,6 +409,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/I18nTweeList/I18nTweeList.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy I18nTweeList dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/I18nTweeList/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/I18nTweeList/dist
 
       - name: Build I18nScriptList
         working-directory: ${{ github.workspace }}/mod/I18nScriptList
@@ -328,6 +428,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/I18nScriptList/I18nScriptList.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy I18nScriptList dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/I18nScriptList/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/I18nScriptList/dist
 
       - name: Build TweePrefixPostfixAddon
         working-directory: ${{ github.workspace }}/mod/TweePrefixPostfixAddon
@@ -342,6 +447,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/TweePrefixPostfixAddon/TweePrefixPostfixAddon.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy TweePrefixPostfixAddon dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/TweePrefixPostfixAddon/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/TweePrefixPostfixAddon/dist
 
       - name: Build SweetAlert2Mod
         working-directory: ${{ github.workspace }}/mod/SweetAlert2Mod
@@ -356,6 +466,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/SweetAlert2Mod/SweetAlert2Mod.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy SweetAlert2Mod dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/SweetAlert2Mod/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/SweetAlert2Mod/dist
 
       - name: Build ModuleCssReplacer
         working-directory: ${{ github.workspace }}/mod/ModuleCssReplacer
@@ -370,6 +485,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/ModuleCssReplacer/ModuleCssReplacer.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy ModuleCssReplacer dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/ModuleCssReplacer/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/ModuleCssReplacer/dist
 
       - name: Build BeautySelectorAddon
         working-directory: ${{ github.workspace }}/mod/BeautySelectorAddon
@@ -384,6 +504,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/BeautySelectorAddon/BeautySelectorAddon.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy BeautySelectorAddon dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/BeautySelectorAddon/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/BeautySelectorAddon/dist
 
       - name: Build DoLHookWidget
         working-directory: ${{ github.workspace }}/mod/DoLHookWidget
@@ -395,6 +520,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/DoLHookWidget/DoLHookWidget.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy DoLHookWidget dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/DoLHookWidget/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/DoLHookWidget/dist
 
       - name: Build DoLLinkButtonFilter
         working-directory: ${{ github.workspace }}/mod/DoLLinkButtonFilter
@@ -409,6 +539,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/DoLLinkButtonFilter/DoLLinkButtonFilter.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy DoLLinkButtonFilter dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/DoLLinkButtonFilter/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/DoLLinkButtonFilter/dist
 
       - name: Build HookMacroRng
         working-directory: ${{ github.workspace }}/mod/HookMacroRng
@@ -423,6 +558,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/HookMacroRng/HookMacroRng.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy HookMacroRng dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/HookMacroRng/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/HookMacroRng/dist
 
       - name: Build ImageLoaderHook2BeautySelectorAddon
         working-directory: ${{ github.workspace }}/mod/ImageLoaderHook2BeautySelectorAddon
@@ -437,6 +577,11 @@ jobs:
         with:
           source: ${{ github.workspace }}/mod/ImageLoaderHook2BeautySelectorAddon/ImageLoaderHook2BeautySelectorAddon.mod.zip
           target: ${{ github.workspace }}/out
+      - name: Copy ImageLoaderHook2BeautySelectorAddon dist For Type
+        uses: Lyoko-Jeremie/js-copy-github-action@master
+        with:
+          source: ${{ github.workspace }}/mod/ImageLoaderHook2BeautySelectorAddon/dist/**/*
+          target: ${{ github.workspace }}/out/mod-dist/ImageLoaderHook2BeautySelectorAddon/dist
 
       - name: Copy dist-BeforeSC2
         uses: Lyoko-Jeremie/js-copy-github-action@master
